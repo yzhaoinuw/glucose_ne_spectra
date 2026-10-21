@@ -7,7 +7,6 @@ Use this checklist alongside `work_log.md`.
 Active threads — read these first to know what work is in flight:
 
 - [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): waiting on the user's answers about channels, resolution, fit window and the `TDTbin2mat` location. Then write the extraction script and run it on the 8 usable recordings.
-- [GitHub remote](#github-remote-claude-opus-5-5): the user creates the empty `glucose_ne_spectra` repo on github.com; then add the remote and push.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
@@ -36,17 +35,6 @@ Remaining work:
 
 - Get the answers → write the script → run it under SLURM → check the QC plots against the old `.jpg` figures in each folder.
 
-## GitHub remote (claude-opus-5-5)
-
-Status: in progress
-
-The local git repo is initialized on `main`. The cluster has no `gh` CLI and no API token, but SSH auth to GitHub works (`yzhaoinuw`).
-
-Remaining work:
-
-- The user creates an empty **private** repo `yzhaoinuw/glucose_ne_spectra` on github.com, with no README, license or .gitignore.
-- `git remote add origin git@github.com:yzhaoinuw/glucose_ne_spectra.git && git push -u origin main`
-
 ## Background / Paused
 
 Sections below this line are older threads kept for context. They're not the current focus, but recording the state they were left in saves the next agent from re-deriving it.
@@ -54,3 +42,7 @@ Sections below this line are older threads kept for context. They're not the cur
 ### Spectral analysis of NE oscillations
 
 This is the project's actual goal: compare the NE power spectrum before vs. after the glucose (and saline) injection. It's not started yet; it comes after extraction. Method choice (Welch / multitaper / wavelet), frequency bands and window length are undecided. See "Questions Worth Clarifying Later" in `project_overview.md`.
+
+### GitHub remote (claude-opus-5-5)
+
+Done 2026-10-20. `origin` = `git@github.com:yzhaoinuw/glucose_ne_spectra.git` (private), `main` tracks `origin/main`. Push over SSH; there's no `gh` CLI on the cluster.
