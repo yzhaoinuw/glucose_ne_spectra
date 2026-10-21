@@ -1,0 +1,36 @@
+# ---- Raw recordings (never committed; see README "Data") ----
+FiberPhot*/
+FP[0-9]*/
+Subject*/
+data/
+
+# TDT tank / camera / MATLAB data files, wherever they appear
+*.tev
+*.tsq
+*.Tbk
+*.Tdx
+*.tin
+*.tnt
+*.sev
+*.avi
+*.mat
+*.fig
+*.h5
+*.npy
+*.npz
+
+# Generated outputs
+outputs/
+figures/
+
+# OS cruft
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.ipynb_checkpoints/
