@@ -128,7 +128,7 @@ If you only want to understand the current product, read files in this order:
 
 Not blockers, just places where intent would help future agents. The questions that need the experimenters (treatment, injection times, mouse IDs, missing files, recording conditions) are collected in [`questions_for_experimenters.md`](questions_for_experimenters.md); update both when answers come back.
 
-- Which recordings are glucose and which are saline? The folder names mostly don't say. The 13-h FP1/FP2 sessions and the `5H_GLU_*` files are glucose; the rest needs confirming from the lab.
+- Which mice are glucose and which are saline? Morning + evening are one experiment on the same mouse (one injection at ~10:00), so treatment is per mouse, not per session. The 13-h FP1/FP2 sessions and the `5H_GLU_*` files are glucose; the rest is in the experimenter's lab journal.
 - Is the OC (fiber 2) signal part of the analysis, or PFC only?
 - Do the missing `.tev` files (Subject1 evening, Subject2, Subject3 evening, Subject33, Subject5) exist elsewhere, for example on the original `H:\Fiber photometry\Glucose\` drive?
 - What spectral method and frequency bands are of interest (Welch PSD, multitaper, wavelet / time-frequency)? And what is the slowest oscillation that matters? That sets the window length.

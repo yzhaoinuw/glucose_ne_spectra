@@ -10,6 +10,19 @@ Update this log at the end of any substantive work session unless the user expli
 
 **Setting this up for the first time?** Leave this file empty. It starts accumulating from the next session. Backfilling it from git history produces exactly the "implemented function X" noise the log exists to avoid.
 
+## 2026-10-21
+
+### Experimenter's summary deck: design answers (claude-opus-5-5)
+
+- Read `Summary_glucose_data_files.pptx` (E. Rebeka Kovács). Most content is figures; read via extracted slide images (no `markitdown`/`pdftoppm` on the cluster).
+- Key correction: morning + evening sessions are **one experiment per mouse** (injection at 10:00, break 14–17, end 22:00), not two treatments. The `_sal_evening` variable names in the dip scripts mean the saline group's evening session, not "evening = saline". Treatment is now per mouse; the session table marks evenings "same as morning".
+- Consequence: our 8 usable sessions are at most 6 mice, while her figures use 5 glucose + 3 saline. Per-mouse group assignment and exact injection times are only in her paper lab journal; added as new questions A1–A3.
+- Her glucose group is near baseline at 9–12 h, loosely supporting v2's end-of-session fit assumption; not treated as confirmation, since 1 of 5 mice stays elevated.
+- Logged a 48-h glucose/saline study with EEG/EMG (16 mice) on the J: drive as a candidate dataset; not requested yet.
+- Gitignored `*.ppt`/`*.pptx`: lab presentations stay local, like the data.
+- Verification:
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ## 2026-10-20
 
 ### Glucose/saline mapping + questions for the experimenters (claude-opus-5-5)

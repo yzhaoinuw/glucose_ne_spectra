@@ -26,7 +26,7 @@ Outputs (format in `README.md`):
 
 Remaining work:
 
-- **The user confirms v2's assumption** that NE is back to baseline in the last hour of the 13-h sessions (~12 h post-injection). If not, the alternatives are a baseline-only fit (poorly constrained over 13 h) or treating hour-scale levels as unidentifiable and analysing only oscillations.
+- **The user confirms v2's assumption** that NE is back to baseline in the last hour of the 13-h sessions (~12 h post-injection). The experimenter's glucose group mean is near baseline at 9–12 h, which loosely supports it, but 1 of her 5 mice is still elevated at 11–12 h. If not, the alternatives are a baseline-only fit (poorly constrained over 13 h) or treating hour-scale levels as unidentifiable and analysing only oscillations.
 - For the 5-h sessions, v2 still uses the whole-recording fit, so a sustained NE change over the session is partly absorbed. It's small in practice: baseline offsets were 0.5–3%.
 - Optional later: OC fiber (`465C`/`405C`, 4 full tanks only); missing `.tev` files, if they can be recovered from the acquisition drive; check the TDT demodulator filter setting to confirm the ~6 Hz roll-off.
 
@@ -45,7 +45,9 @@ Constraints found during extraction:
 Open questions for the user:
 
 - Method (Welch / multitaper / time-frequency), bands of interest, and the analysis windows (baseline vs. post-injection hours; the legacy injection times are hand-entered per mouse in the batch script).
-- Which recordings are glucose vs. saline, and the injection times. **Blocked on the experimenters:** the questions are in [`questions_for_experimenters.md`](../questions_for_experimenters.md). The user is sending them.
+- Design is now known (experimenter's deck, 2026-10-21): one injection per mouse at ~10:00 (~60 min into the morning / 13-h recording); the evening session is the same experiment at ~7–12 h post-injection. So analysis windows can be baseline (0–60 min), early post (1–4 h, morning) and late post (7–12 h, evening).
+- **Still blocked:** which mouse is glucose vs. saline, and exact injection times. Both are in the experimenter's paper lab journal at CTN. Our usable data is at most 6 mice. See "Answered so far" and A1–A3 in [`questions_for_experimenters.md`](../questions_for_experimenters.md).
+- **Possible new data:** a 48-h glucose/saline study (16 mice, PFC NE + unscored EEG/EMG) on the J: drive, not on the cluster. Larger n and EEG for sleep-state control; worth asking for a copy.
 
 ## Background / Paused
 

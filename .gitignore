@@ -34,3 +34,7 @@ __pycache__/
 .venv/
 *.egg-info/
 .ipynb_checkpoints/
+
+# Lab presentations shared by the experimenters (kept locally, not versioned)
+*.ppt
+*.pptx

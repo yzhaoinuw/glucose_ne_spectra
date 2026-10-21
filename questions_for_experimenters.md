@@ -6,6 +6,28 @@ For the people who ran the glucose fiber-photometry recordings (the tanks name R
 
 Questions are in priority order. Section A blocks the analysis.
 
+## Answered so far (Rebeka's summary deck, received 2026-10-21)
+
+Source: `Summary_glucose_data_files.pptx` in the repo root (gitignored), by E. Rebeka Kovács.
+
+- **Design (Q3):** one injection per mouse. Morning + evening are **one experiment**: baseline from 09:00, IP saline or glucose at 10:00, recording to 14:00, a break 14:00–17:00, then recording 17:00–22:00. The evening session is ~7–12 h post-injection, **not** a second dose or a separate control. The 13-h sessions are the same protocol with no break.
+- **Injection time (Q4):** ~10:00, i.e. ~60 min into the morning / 13-h recording. Exact timestamps per mouse are in her paper lab journal, left at CTN.
+- **Groups:** her PFC figures use **5 glucose and 3 saline mice**, with time points at baseline, 1–3 h and 8–12 h post-injection. The deck doesn't say which mouse is in which group.
+- **Fibers (Q7, partly):** this study recorded PFC and OC in every mouse. OC is still undefined.
+- **Her result (Q15):** glucose raised the PFC NE level at 1 h (paired test, \*\*), staying up ~3 h and back near baseline by 8 h; saline was n.s. She cites Levin 1991 (plasma NE rises after IP glucose).
+- **Back to baseline by ~12 h (Q16):** her glucose group mean is near baseline at 9–12 h, which loosely supports the v2 fit. One of the 5 mice is still elevated (~+8 z) at 11–12 h.
+- **Where the rest lives:** `J:\CTN\NedergaardLAB\Personal_folders\Rebeka\Glucose\` holds this study (`5H_13H_Glucose_Saline`), her `Analyses` folder with processed per-animal data, and several more presentations.
+
+New, from the deck:
+
+- **A 48-h study** (`48H_FP+EEG_Glucose+Saline`, same J: folder; not on the cluster): PFC NE only, glucose and saline, n = 4 per group per sex (16 mice). Habituation from 15:00 the day before, baseline 09:00, injection 11:00, recording ends 46 h after. It also has **unscored EEG/EMG**; the EEG–photometry sync TTL exists for only about half the files (which ones is in the lab journal). She warns that the "bump" in her processed 48-h traces is a fitting artifact of the long recording.
+
+Still open after the deck — new questions:
+
+- **A1. Which mouse is glucose and which is saline?** Morning + evening are the same mouse, so our 8 usable sessions are at most 6 mice (22, 4, FP1, FP2, 1, 3), fewer if FP1/FP2 are Subject1/2. Her figures use 8 mice. Which of her 8 are ours, and which group is each in?
+- **A2. Could someone copy the J: `Glucose` folder to the cluster?** Mainly the 48-h data (FP + EEG), the `Analyses` folder and the presentations.
+- **A3. Lab journal:** could the relevant pages (injection timestamps, TTL availability for the 48-h files) be photographed or transcribed?
+
 ## A. Treatment and timing (blocking)
 
 1. **Please fill in the session table below.** For each session: glucose or saline, the injection time, and the mouse ID.
@@ -48,19 +70,19 @@ Please fill in what you know; "?" is fine.
 | Folder | Mouse ID | Date | Glucose / saline | Dose | Injection time (clock or min into recording) | Fasted? | Notes |
 |---|---|---|---|---|---|---|---|
 | `FiberPhot22_240324_morning` | 22? (block says 2) | 24 Mar 2024 | glucose? | | ~? | | |
-| `FiberPhot22_240324_evening` | 22? | 24 Mar 2024 | ? | | | | |
+| `FiberPhot22_240324_evening` | 22? | 24 Mar 2024 | same as morning | | | | |
 | `FiberPhot4_260324_morning` | 4 | 26 Mar 2024 | glucose? | | | | |
-| `FiberPhot4_260324_evening` | 4 | 26 Mar 2024 | ? | | | | |
+| `FiberPhot4_260324_evening` | 4 | 26 Mar 2024 | same as morning | | | | |
 | `FP1_glucose_13hours_090424` | FP1 | 9 Apr 2024 | glucose | | | | |
 | `FP2_glucose_13hours_100424` | FP2 | 10 Apr 2024 | glucose | | | | |
 | `Subject1-240323-091543_morning` | 1 | 23 Mar 2024 | glucose | | | | |
-| `Subject1-240323-171604_evening` | 1 | 23 Mar 2024 | ? | | | | raw data missing |
+| `Subject1-240323-171604_evening` | 1 | 23 Mar 2024 | same as morning | | | | raw data missing |
 | `Subject2-240321-093251_210324` | 2 | 21 Mar 2024 | ? | | | | raw data missing |
 | `Subject3-240322-092543_morning` | 3? (block says 1) | 22 Mar 2024 | glucose | | | | |
-| `Subject3-240322-172818_evening` | 3 | 22 Mar 2024 | ? | | | | raw data missing |
+| `Subject3-240322-172818_evening` | 3 | 22 Mar 2024 | same as morning | | | | raw data missing |
 | `Subject33-240324-093611_morning` | 33 | 24 Mar 2024 | ? | | | | raw data missing |
-| `Subject33-240324-174256_evening` | 33 | 24 Mar 2024 | ? | | | | raw data missing |
+| `Subject33-240324-174256_evening` | 33 | 24 Mar 2024 | same as morning | | | | raw data missing |
 | `Subject5-240326-090337_morning` | 5 | 26 Mar 2024 | glucose? | | | | raw data missing |
-| `Subject5-240326-170315_evening` | 5 | 26 Mar 2024 | ? | | | | raw data missing |
+| `Subject5-240326-170315_evening` | 5 | 26 Mar 2024 | same as morning | | | | raw data missing |
 
 "glucose?" means the old morning glucose script includes the session but nothing in the recording confirms it. Plain "glucose" is confirmed by a folder or file name.
