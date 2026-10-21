@@ -45,7 +45,7 @@ Constraints found during extraction:
 Open questions for the user:
 
 - Method (Welch / multitaper / time-frequency), bands of interest, and the analysis windows (baseline vs. post-injection hours; the legacy injection times are hand-entered per mouse in the batch script).
-- Which recordings are glucose vs. saline.
+- Which recordings are glucose vs. saline, and the injection times. **Blocked on the experimenters:** the questions are in [`questions_for_experimenters.md`](../questions_for_experimenters.md). The user is sending them.
 
 ## Background / Paused
 

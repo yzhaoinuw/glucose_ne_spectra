@@ -126,7 +126,7 @@ If you only want to understand the current product, read files in this order:
 
 ## Questions Worth Clarifying Later
 
-Not blockers, just places where intent would help future agents:
+Not blockers, just places where intent would help future agents. The questions that need the experimenters (treatment, injection times, mouse IDs, missing files, recording conditions) are collected in [`questions_for_experimenters.md`](questions_for_experimenters.md); update both when answers come back.
 
 - Which recordings are glucose and which are saline? The folder names mostly don't say. The 13-h FP1/FP2 sessions and the `5H_GLU_*` files are glucose; the rest needs confirming from the lab.
 - Is the OC (fiber 2) signal part of the analysis, or PFC only?

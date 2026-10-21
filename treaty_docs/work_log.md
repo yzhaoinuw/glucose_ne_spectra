@@ -12,6 +12,14 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-20
 
+### Glucose/saline mapping + questions for the experimenters (claude-opus-5-5)
+
+- Treatment labels aren't in the recordings (`.tnt` notes empty, no TTL store). Confirmed glucose only from names: FP1/FP2 13-h, Subject1 and Subject3 morning (`5H_GLU_*`). FiberPhot4/22 morning are glucose only by the legacy morning script. The evening sessions are unlabeled. The `_sal_evening` variable names in the dip scripts hint at saline, but there's no mapping. Decided not to infer treatment from the traces, since that would bias the comparison.
+- Found mouse-ID conflicts between folder and block names (`FiberPhot22_240324_morning` holds block `FiberPhot2_240324`; `Subject3-..._morning` holds `Subject1-240322-092543`). Added these to the questions.
+- Wrote `questions_for_experimenters.md`: 16 prioritized questions (treatment/dose/design/injection times first, then mouse IDs, fibers, missing files, light cycle, sleep/EEG, acquisition settings, expectations) and a per-session fill-in table. The spectral analysis's treatment comparison waits on the answers.
+- Verification:
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### v2 extraction: ~20 Hz + robust, segment-anchored fit (claude-opus-5-5)
 
 - On request, made a second round of extraction with downsampling and a more robust fit. Downsampled ×50 (~20.35 Hz) with `resample` (anti-aliased). The Nyquist stays above the ~6 Hz roll-off, so nothing recorded is lost.

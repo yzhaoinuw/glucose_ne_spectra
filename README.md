@@ -83,4 +83,4 @@ Each top-level `FiberPhot*/`, `FP*/` or `Subject*/` folder is one TDT recording 
 | `Subject5-240326-090337_morning` | 5, morning | ❌ `.tev` and `.tsq` missing |
 | `Subject5-240326-170315_evening` | 5, evening | ❌ `.tev` and `.tsq` missing |
 
-The missing files may still exist on the original acquisition drive (`H:\Fiber photometry\Glucose\`). Which sessions are glucose and which are saline isn't fully recorded in the folder names; see the open questions in `project_overview.md`.
+The missing files may still exist on the original acquisition drive (`H:\Fiber photometry\Glucose\`). Which sessions are glucose and which are saline isn't fully recorded in the folder names; see [`questions_for_experimenters.md`](questions_for_experimenters.md), which is waiting on answers from the lab.
