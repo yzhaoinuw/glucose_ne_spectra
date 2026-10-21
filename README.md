@@ -14,7 +14,29 @@ This repo analyzes fiber-photometry recordings of norepinephrine (NE) in the mou
 |---|---|
 | `matlab_scripts/` | The lab's original MATLAB pipeline: ΔF/F preprocessing, hourly-bin stats and NE-"dip" detection. **Reference only.** The new analysis is written in Python. See `project_overview.md` for what each script does and its known bugs. |
 | `AGENTS.md`, `project_overview.md`, `treaty_docs/` | Project documentation and work log ([Agent Collab Treaty](https://github.com/yzhaoinuw/agent_collab_treaty)). Start at `AGENTS.md`. |
-| *(coming)* Python package | NE extraction and spectral analysis |
+| `extraction/` | MATLAB extraction of full-rate PFC NE ΔF/F from the raw recordings (`extract_ne_pfc.m`, SLURM wrapper), plus the vendored TDT reader (`tdt/TDTbin2mat.m`, `tdt/SEV2mat.m`) |
+| *(coming)* Python package | Spectral analysis |
+
+## Extracted NE traces
+
+```bash
+mkdir -p outputs/logs && sbatch extraction/run_extract_ne_pfc.sbatch   # from the repo root, ~15 min
+```
+
+The job writes `outputs/ne_pfc_fullrate/<recording>.mat`, one file per usable recording (gitignored). It also writes a QC figure per recording to `qc/` and a `summary.csv`. Each `.mat` is v7, so `scipy.io.loadmat` reads it, and it holds:
+
+| Variable | Meaning |
+|---|---|
+| `dff` | PFC NE ΔF/F in %, **full rate, unsmoothed** |
+| `signal_465`, `signal_405` | Raw signal and isosbestic control, same samples as `dff` |
+| `fs` | Sampling rate (~1017.25 Hz) |
+| `t0_s` | Time of the first sample from recording start (~1 s); `t = t0_s + (0:N-1)/fs` |
+| `fit_coef` | `[slope intercept]` of the 405→465 linear fit |
+| provenance | `recording`, `source`, `source_files`, `channel`, `n_samples_*`, `git_commit`, … |
+
+ΔF/F = 100·(465 − fit)/fit. The fit is a linear 405→465 fit over the whole recording, smoothed with the legacy 1000-sample moving average. The ΔF/F itself is not smoothed or downsampled.
+
+**Bandwidth:** the TDT photometry demodulator low-passes the signal at about 6 Hz. Above about 1–2 Hz, the ΔF/F spectrum matches the 405 control spectrum, so the NE-specific content is below about 1 Hz.
 
 ## Data
 

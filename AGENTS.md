@@ -15,7 +15,7 @@ When running code, tests, or the application for this repository, use:
 - **Python analysis env:** not created yet. When the first Python code lands, create a conda env (planned name `glucose_ne_spectra`, Python ≥ 3.10) and record the activation command here. Do not use the cluster's base Python, which is 3.7.
 - **Git:** the system git is 1.8. Load a newer one first with `module load git/2.30.1`.
 - **Treaty CLI:** installed in its own venv at `~/.local/venvs/treaty/`, run as `~/.local/venvs/treaty/bin/treaty`.
-- **MATLAB** (reference scripts only): `module load matlab`. The default is R2022b.
+- **MATLAB** (extraction + reference scripts): `module load matlab` loads R2022b, the only enabled version. Don't pipe `module load` (e.g. `| tail`); that runs it in a subshell and `matlab` won't be on `PATH`. MATLAB needs a compute node: quick checks use `srun -p debug -A dkell12_lab -t 00:15:00 --mem=8G bash -lc 'module load matlab; matlab -nodisplay -batch "..."'`.
 - **Heavy jobs** (reading the ~3.5 GB TDT tanks, spectral analysis over all recordings) go through SLURM (`sbatch`/`srun`), not the login node.
 
 Typical startup:
@@ -31,11 +31,13 @@ After activation, use that environment for commands such as the verification com
 
 Short recipes for the things you'll usually do in a session.
 
-Run the app for manual testing:
+Re-run the NE extraction (all 8 usable recordings → `outputs/ne_pfc_fullrate/`, about 15 min):
 
 ```
-# No app. Analysis scripts will live under the Python package once it exists.
+mkdir -p outputs/logs && sbatch extraction/run_extract_ne_pfc.sbatch
 ```
+
+SLURM here does not expand `%x` in `--output`. Name log files literally.
 
 Verify the repo is in good shape — the CI-equivalent check:
 

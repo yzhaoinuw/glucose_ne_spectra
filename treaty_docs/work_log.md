@@ -12,6 +12,21 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-20
 
+### Full-rate PFC NE extraction (claude-opus-5-5)
+
+- User decisions: PFC only; keep the original ~1017 Hz rate for spectral work; fit over the whole recording; use `TDTbin2mat` from the user's `preprocess_sleep_data` repo. It's vendored in `extraction/tdt/` together with `SEV2mat.m`, which `TDTbin2mat` calls unconditionally.
+- Extraction stays in MATLAB (not Python) because the user supplied the MATLAB TDT reader and the legacy normalization is MATLAB. Python takes over at the analysis step.
+- Kept the legacy normalization (linear 405→465 fit, fitted control smoothed with a 1000-sample `filtfilt` moving average) but dropped the legacy smoothing and ×100 downsampling of ΔF/F. Those act as a ~0.5 Hz low-pass. Raw 465/405 are saved alongside, so the user can re-normalize or use 405 as a spectral control.
+- Found that the pre-extracted `*_signal_{465,405}.mat` arrays are exactly `round(fs)` = 1017 samples shorter than their `.tsq` index: the legacy 1-s trim was already applied. The script treats a shortfall as already trimmed, so all recordings start ~1 s in and none are trimmed twice. Those arrays have no `fs`; it's read from the `.tsq` with `TDTbin2mat(...,'HEADERS',1)`, which doesn't need the `.tev`.
+- There is no TTL store in these tanks. The legacy "first TTL" cut was a stub, and as written (`signal(1017.25:end)`) it would have errored. It's now an explicit 1-s trim.
+- Spectral finding from the QC PSDs: a hardware roll-off at about 6 Hz, and the ΔF/F PSD equals the 405 PSD above about 1–2 Hz. NE-specific content is below about 1 Hz. Recorded in `next_steps.md` as a constraint for the spectral analysis.
+- Output saved as MATLAB v7 (not v7.3) so `scipy.io.loadmat` reads it directly; every variable is well under v7's 2 GB limit.
+- Verification:
+  - `srun -p debug ... extract_ne_pfc([], <scratch>, {'Subject1-240323-091543_morning','FiberPhot22_240324_morning'})`: both ok, ~50 s each, 2.9 GB peak RSS. The FiberPhot22 ΔF/F visually matches the legacy `raw+normalized_PFC_mouse22_morning.jpg`.
+  - Full run: `sbatch extraction/run_extract_ne_pfc.sbatch` (job 31468026). COMPLETED in 8 min 21 s, all 8 ok and no warnings; 1.8 GB written. All 4 `.mat` sources showed `n_missing_vs_tsq = 1017`, all 4 tanks 0.
+  - QC: the 13-h FP1/FP2 whole-recording fits leave the baseline hour offset at about −8% / −13% ΔF/F (405 and 465 bleach at different rates). The legacy outputs for these were named `BL+end_fitting`, which suggests a segment fit was used before. Flagged in `next_steps.md`; not changed, since the user chose the whole-recording default.
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### Repo setup: glucose_ne_spectra + treaty adoption (claude-opus-5-5)
 
 - Made the existing data directory the repo root instead of moving the 20 GB of data into a `data/` subfolder. The recordings are a labmate's shared folders, and other people may reference those paths. `.gitignore` excludes them by folder pattern (`FiberPhot*/`, `FP[0-9]*/`, `Subject*/`) and by data extension.

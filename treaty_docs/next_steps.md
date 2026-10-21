@@ -6,7 +6,8 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): waiting on the user's answers about channels, resolution, fit window and the `TDTbin2mat` location. Then write the extraction script and run it on the 8 usable recordings.
+- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): PFC-only full-rate traces for all 8 usable recordings are in `outputs/ne_pfc_fullrate/`. Open item: the fit window for the 13-h sessions.
+- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Next: agree on method, bands and baseline/post windows with the user.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
@@ -14,34 +15,38 @@ Other sections below are background or paused; treat them as reference unless a 
 
 ## NE extraction to .mat (claude-opus-5-5)
 
-Status: blocked on user input
+Status: done 2026-10-20. All 8 recordings extracted (SLURM job 31468026, 8.5 min, 1.8 GB)
 
-Extract a per-recording NE trace into one `.mat` file each, for the user's own downstream analyses. Follow the legacy preprocessing in `matlab_scripts/Pre_process_batch_and_analyse_Glucose_PFC_morning.m`, with these bugs fixed: use each recording's own sampling rate, actually apply the start trim, no `eval`-generated variable names, and label the output ΔF/F % rather than "z score".
+Decisions (user, 2026-10-20): **PFC only**, **full sampling rate** (no smoothing/downsampling of ΔF/F, for spectral work), fit over the **whole recording**, reader = **`TDTbin2mat`** from the user's `preprocess_sleep_data` repo (vendored in `extraction/tdt/`).
 
-Proposed plan:
-
-- Linear 405→465 `polyfit` → smooth the fit → ΔF/F % = 100·(465 − fit)/fit → smooth → downsample ×100 (about 10 Hz).
-- One `.mat` per recording containing `dff`, `time_min`, `fs`, the channel name, the fit coefficients and the source path. Also save a QC plot (raw vs. fit).
-- 8 recordings can be extracted: 4 full tanks (PFC + OC) and 4 pre-extracted `.mat` (single fiber). See the README table.
-
-Open questions for the user (asked 2026-10-20):
-
-1. PFC only, or OC too?
-2. Is ~10 Hz enough, or do we also need the full ~1 kHz trace? For a spectral analysis, the ×100 downsampling caps the spectrum at about 5 Hz, and the 1000-sample smoothing strongly attenuates anything above about 0.5 Hz.
-3. Fit over the whole recording (default), or a baseline-only window?
-4. Where is `TDTbin2mat`? Alternative: the Python `tdt` package (`tdt.read_block`) reads tanks directly, with no MATLAB needed.
+Output: `outputs/ne_pfc_fullrate/<recording>.mat` + `qc/*.png` + `summary.csv`; format in `README.md`.
 
 Remaining work:
 
-- Get the answers → write the script → run it under SLURM → check the QC plots against the old `.jpg` figures in each folder.
+- **Fit window for the 13-h sessions:** with the whole-recording fit, the FP1/FP2 baseline hour sits at about −8% / −13% ΔF/F, because 405 and 465 bleach differently over 13 h. That biases baseline-vs-post levels and power below about 0.001 Hz, but barely affects faster oscillations. Options: fit baseline + end segments (as the legacy `BL+end_fitting` outputs apparently did), fit only the first ~5 h to match the other sessions, or high-pass/detrend before spectral analysis. The user should decide.
+- The user reviews the other QC figures in `outputs/ne_pfc_fullrate/qc/`.
+- Optional later: OC fiber (`465C`/`405C`, 4 full tanks only); missing `.tev` files, if they can be recovered from the acquisition drive.
+
+## Spectral analysis of NE oscillations (claude-opus-5-5)
+
+Status: not started
+
+Compare the NE power spectrum before vs. after the IP glucose (and saline) injection.
+
+Constraints found during extraction:
+
+- Usable band is **below about 1 Hz**. The TDT demodulator cuts at about 6 Hz, and above about 1–2 Hz the ΔF/F PSD equals the 405 control PSD. Decimating to about 10–20 Hz (anti-aliased) before spectral work is safe and makes everything ~50–100× smaller.
+- The 405 control carries comparable low-frequency power (Subject1 shows a 405 bump near 0.5 Hz). Treat the 405 spectrum as a control for every NE spectral claim.
+- The infraslow range (about 0.01–0.1 Hz) needs long windows. A 60-s Welch window gives about 0.017 Hz resolution, and the baseline is only about 60 min.
+
+Open questions for the user:
+
+- Method (Welch / multitaper / time-frequency), bands of interest, and the analysis windows (baseline vs. post-injection hours; the legacy injection times are hand-entered per mouse in the batch script).
+- Which recordings are glucose vs. saline.
 
 ## Background / Paused
 
 Sections below this line are older threads kept for context. They're not the current focus, but recording the state they were left in saves the next agent from re-deriving it.
-
-### Spectral analysis of NE oscillations
-
-This is the project's actual goal: compare the NE power spectrum before vs. after the glucose (and saline) injection. It's not started yet; it comes after extraction. Method choice (Welch / multitaper / wavelet), frequency bands and window length are undecided. See "Questions Worth Clarifying Later" in `project_overview.md`.
 
 ### GitHub remote (claude-opus-5-5)
 
