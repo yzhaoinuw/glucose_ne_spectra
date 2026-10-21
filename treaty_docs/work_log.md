@@ -12,6 +12,20 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-20
 
+### v2 extraction: ~20 Hz + robust, segment-anchored fit (claude-opus-5-5)
+
+- On request, made a second round of extraction with downsampling and a more robust fit. Downsampled ×50 (~20.35 Hz) with `resample` (anti-aliased). The Nyquist stays above the ~6 Hz roll-off, so nothing recorded is lost.
+- **Tried and rejected: per-channel double-exponential bleaching fits + robust motion regression** (the pyPhotometry-style approach). On FP2 it made the baseline worse (−19.5% vs. v1's −12.7%): a monotonic bleach fit to 465 can't tell the hours-long post-glucose NE rise from bleaching, and robust weights don't help when the "outlier" lasts 4 h. On FiberPhot22 the motion slope came out at 2.8, which raised the ΔF/F noise floor ~10× above 0.3 Hz and shrank the 80–95 min NE dip. Not committed.
+- **Adopted:** keep the legacy linear 405→465 mapping and the 1-s control smoothing, but fit robustly (bisquare `robustfit`). For sessions ≥ 10 h, fit only on baseline (< 50 min) + last 60 min, following the lab's earlier `BL+end_fitting` outputs. A prototype over all 8 showed a robust *whole-recording* fit barely differs from v1, so the fit window is what matters. 5-h sessions keep the whole-recording fit, because their end (~4 h post-injection) can't be assumed NE-neutral.
+- Result: 13-h baselines go from −7.9 / −12.7% to −0.4 / +0.1%, and the 2–4 h post-injection level reads +11.5% (FP1) / +20.9% (FP2). Fit slopes fall from 1.47 / 2.43 to 0.76 / 1.39. The 5-h sessions change by ≤ 1.2 points. v2 and v1 PSDs are nearly identical, so the oscillation content isn't distorted.
+- Refactored the loading/trim into `load_pfc_raw.m` + `pfc_recordings.m`, shared by v1 and v2. The refactored v1 reproduces the committed v1 output bit-for-bit (Subject1: `isequal` on dff, 465, t0, coefs).
+- Softened the docs' "TDT cuts at 6 Hz" to an inference (a consistent roll-off in all recordings, matching Synapse's usual default). The filter setting itself hasn't been checked.
+- The v2 run's `.mat` files record `git_commit = 8f11129`, the commit before the v2 code. The code that produced them is the next commit. AGENTS now says to commit before extraction runs.
+- Verification:
+  - Debug-node tests on FP2 + FiberPhot22 morning; QC figures inspected.
+  - Full run: batch job 31468108 sat in `launch_failed_requeued_held` (a node failure on bhc0005; it never started) and was cancelled. Re-run with `srun -p debug ... extract_ne_pfc_ds`: all 8 ok, no warnings, 52 MB. Log in `outputs/logs/extract_ne_pfc_ds_debug.log`.
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### Full-rate PFC NE extraction (claude-opus-5-5)
 
 - User decisions: PFC only; keep the original ~1017 Hz rate for spectral work; fit over the whole recording; use `TDTbin2mat` from the user's `preprocess_sleep_data` repo. It's vendored in `extraction/tdt/` together with `SEV2mat.m`, which `TDTbin2mat` calls unconditionally.

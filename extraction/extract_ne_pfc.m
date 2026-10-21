@@ -38,24 +38,7 @@ if nargin < 1 || isempty(data_root), data_root = repo_root; end
 if nargin < 2 || isempty(out_dir),   out_dir = fullfile(repo_root, 'outputs', 'ne_pfc_fullrate'); end
 if nargin < 3, only = {}; end
 
-% Recordings with usable raw PFC signal (see README "Which recordings have usable signal").
-%   'tank': full TDT tank, read 465A/405A with TDTbin2mat
-%   'mat' : no .tev; raw single-fiber arrays pre-extracted to <prefix>_signal_{465,405}.mat
-%           (presumed PFC = 465A/405A, the channels the legacy batch script used)
-recs = {
-    'FiberPhot22_240324_morning',      'tank', ''
-    'FiberPhot22_240324_evening',      'tank', ''
-    'FiberPhot4_260324_morning',       'tank', ''
-    'FiberPhot4_260324_evening',       'tank', ''
-    'FP1_glucose_13hours_090424',      'mat',  '13H_GLU_FP1'
-    'FP2_glucose_13hours_100424',      'mat',  '13H_GLU_FP2'
-    'Subject1-240323-091543_morning',  'mat',  '5H_GLU_FP1'
-    'Subject3-240322-092543_morning',  'mat',  '5H_GLU_FP3'
-    };
-if ~isempty(only)
-    recs = recs(ismember(recs(:,1), only), :);
-    assert(~isempty(recs), 'None of the requested recordings are in the list.');
-end
+recs = pfc_recordings(only);
 
 if ~exist(fullfile(out_dir, 'qc'), 'dir'), mkdir(fullfile(out_dir, 'qc')); end
 git_commit = get_git_commit(repo_root);
@@ -67,50 +50,12 @@ summary = table('Size', [n_rec 9], ...
     'VariableNames', {'recording','source','fs','n_samples','duration_h','fit_slope','fit_intercept','n_missing_vs_tsq','status'});
 
 for k = 1:n_rec
-    name = recs{k,1}; src = recs{k,2}; prefix = recs{k,3};
-    rec_dir = fullfile(data_root, name);
+    name = recs{k,1}; src = recs{k,2};
     summary.recording(k) = name; summary.source(k) = src;
     fprintf('\n[%s] %s (%s)\n', datestr(now, 'HH:MM:SS'), name, src);
     try
-        % Sampling rate and expected length come from the TSQ index, which every
-        % usable recording has (the .tev is not needed for headers).
-        heads = TDTbin2mat([rec_dir filesep], 'HEADERS', 1);
-        fs = heads.stores.x465A.fs;
-        assert(abs(heads.stores.x405A.fs - fs) < 1e-6, '465A and 405A sampling rates differ');
-        n_tsq = tsq_sample_count(heads.stores.x465A);
-
-        switch src
-            case 'tank'
-                d = TDTbin2mat([rec_dir filesep], 'TYPE', {'streams'}, 'STORE', {'465A', '405A'});
-                s465 = d.streams.x465A.data;
-                s405 = d.streams.x405A.data;
-                assert(abs(d.streams.x465A.fs - fs) < 1e-6, 'stream fs differs from TSQ fs');
-                source_files = {rec_dir};
-            case 'mat'
-                f465 = fullfile(rec_dir, [prefix '_signal_465.mat']);
-                f405 = fullfile(rec_dir, [prefix '_signal_405.mat']);
-                s465 = getfield(load(f465, 'signal_465'), 'signal_465'); %#ok<GFLD>
-                s405 = getfield(load(f405, 'signal_405'), 'signal_405'); %#ok<GFLD>
-                source_files = {f465, f405};
-        end
-        s465 = s465(:)'; s405 = s405(:)';
-        n_source = [numel(s465) numel(s405)];
-        if n_source(1) ~= n_source(2)
-            warning('%s: 465 has %d samples, 405 has %d; truncating to the shorter.', name, n_source);
-        end
-        % 1. start trim. The pre-extracted .mat arrays are ~1 s shorter than the
-        % TSQ index: they were already given the legacy 1-s trim when saved.
-        % Treat any shortfall as already trimmed from the start, and trim only
-        % what is left of TRIM_S, so every recording starts at the same point.
-        n = min(n_source);
-        n_missing = n_tsq - n;
-        if n_missing < 0 || n_missing > 2 * round(TRIM_S * fs)
-            warning('%s: source has %d samples but the TSQ indexes %d.', name, n, n_tsq);
-        end
-        n_missing = max(0, n_missing);
-        n_trim = max(0, round(TRIM_S * fs) - n_missing);
-        s465 = s465(n_trim+1:n);
-        s405 = s405(n_trim+1:n);
+        R = load_pfc_raw(data_root, recs(k,:), TRIM_S);
+        s465 = R.s465; s405 = R.s405; fs = R.fs;
 
         % 2-4. fit, smooth the fitted control, dF/F
         y = double(s465);
@@ -130,21 +75,18 @@ for k = 1:n_rec
         S.signal_465 = single(s465);
         S.signal_405 = single(s405);
         S.fs = fs;
-        S.t0_s = (n_missing + n_trim) / fs;
+        S.t0_s = R.t0_s;
         S.fit_coef = fit_coef;
         S.fit_window = 'whole recording after the start trim';
         S.smoothing = sprintf(['fitted control only: filtfilt with a %d-sample moving average. ' ...
             'dff itself is unsmoothed and not downsampled.'], MEAN_FILTER_ORDER);
         S.units = 'dff: % dF/F; signal_465/405: raw TDT units';
-        S.channel = 'PFC fiber: 465A (GRAB-NE hSyn-NE2m) / 405A (isosbestic)';
-        if strcmp(src, 'mat')
-            S.channel = [S.channel ' -- presumed; source .mat files do not record the store'];
-        end
+        S.channel = R.channel;
         S.recording = name;
         S.source = src;
-        S.source_files = source_files;
-        S.n_samples_source = n_source;
-        S.n_samples_tsq = n_tsq;
+        S.source_files = R.source_files;
+        S.n_samples_source = R.n_source;
+        S.n_samples_tsq = R.n_tsq;
         S.created = datestr(now, 'yyyy-mm-dd HH:MM:SS');
         S.script = 'extraction/extract_ne_pfc.m';
         S.git_commit = git_commit;
@@ -157,10 +99,10 @@ for k = 1:n_rec
         summary.duration_h(k) = numel(dff) / fs / 3600;
         summary.fit_slope(k) = fit_coef(1);
         summary.fit_intercept(k) = fit_coef(2);
-        summary.n_missing_vs_tsq(k) = n_missing;
+        summary.n_missing_vs_tsq(k) = R.n_missing;
         summary.status(k) = "ok";
         fprintf('  ok: %.2f h at %.3f Hz, fit = %.4f*405 + %.4f\n', summary.duration_h(k), fs, fit_coef);
-        clear s465 s405 control_fit dff S d
+        clear R s465 s405 control_fit dff S
     catch err
         summary.status(k) = "FAILED: " + string(err.message);
         fprintf(2, '  FAILED: %s\n', err.message);
@@ -169,22 +111,6 @@ end
 
 writetable(summary, fullfile(out_dir, 'summary.csv'));
 disp(summary);
-end
-
-
-function n = tsq_sample_count(store)
-% Samples indexed for a float32 stream store: blocks x (block size in 32-bit words - 10 header words).
-assert(store.dform == 0, 'expected float32 stream data (dform 0)');
-ts = store.ts;
-if iscell(ts), ts = [ts{:}]; end
-n_blocks = numel(ts);
-n = double(n_blocks) * (double(store.size) - 10);
-end
-
-
-function c = get_git_commit(repo_root)
-[status, out] = system(sprintf('cd "%s" && git rev-parse --short HEAD 2>/dev/null', repo_root));
-if status == 0, c = strtrim(out); else, c = 'unknown'; end
 end
 
 

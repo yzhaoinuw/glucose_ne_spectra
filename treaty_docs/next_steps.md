@@ -6,7 +6,7 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): PFC-only full-rate traces for all 8 usable recordings are in `outputs/ne_pfc_fullrate/`. Open item: the fit window for the 13-h sessions.
+- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz, robust baseline+end fit for the 13-h sessions) is the recommended output in `outputs/ne_pfc_ds20/`. Open: the user confirms v2's fit-window assumption.
 - [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Next: agree on method, bands and baseline/post windows with the user.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
@@ -15,17 +15,20 @@ Other sections below are background or paused; treat them as reference unless a 
 
 ## NE extraction to .mat (claude-opus-5-5)
 
-Status: done 2026-10-20. All 8 recordings extracted (SLURM job 31468026, 8.5 min, 1.8 GB)
+Status: done 2026-10-20 (v1 and v2); awaiting the user's sign-off on v2's fit assumption
 
-Decisions (user, 2026-10-20): **PFC only**, **full sampling rate** (no smoothing/downsampling of ΔF/F, for spectral work), fit over the **whole recording**, reader = **`TDTbin2mat`** from the user's `preprocess_sleep_data` repo (vendored in `extraction/tdt/`).
+Decisions (user, 2026-10-20): **PFC only**; reader = **`TDTbin2mat`** from the user's `preprocess_sleep_data` repo (vendored in `extraction/tdt/`). First round (v1): full rate, whole-recording fit. Second round (v2), on request: downsample and make the fit more robust.
 
-Output: `outputs/ne_pfc_fullrate/<recording>.mat` + `qc/*.png` + `summary.csv`; format in `README.md`.
+Outputs (format in `README.md`):
+
+- **v2 `outputs/ne_pfc_ds20/` (recommended):** ×50 → ~20.35 Hz; robust bisquare 405→465 fit; sessions ≥ 10 h fit on baseline (< 50 min) + last 60 min, shorter ones on the whole recording.
+- v1 `outputs/ne_pfc_fullrate/`: full rate, least-squares whole-recording fit. Kept for comparison and full-rate checks.
 
 Remaining work:
 
-- **Fit window for the 13-h sessions:** with the whole-recording fit, the FP1/FP2 baseline hour sits at about −8% / −13% ΔF/F, because 405 and 465 bleach differently over 13 h. That biases baseline-vs-post levels and power below about 0.001 Hz, but barely affects faster oscillations. Options: fit baseline + end segments (as the legacy `BL+end_fitting` outputs apparently did), fit only the first ~5 h to match the other sessions, or high-pass/detrend before spectral analysis. The user should decide.
-- The user reviews the other QC figures in `outputs/ne_pfc_fullrate/qc/`.
-- Optional later: OC fiber (`465C`/`405C`, 4 full tanks only); missing `.tev` files, if they can be recovered from the acquisition drive.
+- **The user confirms v2's assumption** that NE is back to baseline in the last hour of the 13-h sessions (~12 h post-injection). If not, the alternatives are a baseline-only fit (poorly constrained over 13 h) or treating hour-scale levels as unidentifiable and analysing only oscillations.
+- For the 5-h sessions, v2 still uses the whole-recording fit, so a sustained NE change over the session is partly absorbed. It's small in practice: baseline offsets were 0.5–3%.
+- Optional later: OC fiber (`465C`/`405C`, 4 full tanks only); missing `.tev` files, if they can be recovered from the acquisition drive; check the TDT demodulator filter setting to confirm the ~6 Hz roll-off.
 
 ## Spectral analysis of NE oscillations (claude-opus-5-5)
 
@@ -35,7 +38,7 @@ Compare the NE power spectrum before vs. after the IP glucose (and saline) injec
 
 Constraints found during extraction:
 
-- Usable band is **below about 1 Hz**. The TDT demodulator cuts at about 6 Hz, and above about 1–2 Hz the ΔF/F PSD equals the 405 control PSD. Decimating to about 10–20 Hz (anti-aliased) before spectral work is safe and makes everything ~50–100× smaller.
+- Usable band is **below about 1 Hz**. Every recording rolls off steeply at about 6 Hz, presumably the TDT demodulator's low-pass (setting not verified), and above about 1–2 Hz the ΔF/F PSD equals the 405 control PSD. Decimating to about 10–20 Hz (anti-aliased) before spectral work is safe and makes everything ~50–100× smaller.
 - The 405 control carries comparable low-frequency power (Subject1 shows a 405 bump near 0.5 Hz). Treat the 405 spectrum as a control for every NE spectral claim.
 - The infraslow range (about 0.01–0.1 Hz) needs long windows. A 60-s Welch window gives about 0.017 Hz resolution, and the baseline is only about 60 min.
 

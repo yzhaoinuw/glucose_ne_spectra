@@ -31,13 +31,17 @@ After activation, use that environment for commands such as the verification com
 
 Short recipes for the things you'll usually do in a session.
 
-Re-run the NE extraction (all 8 usable recordings → `outputs/ne_pfc_fullrate/`, about 15 min):
+Re-run the NE extraction for all 8 usable recordings. v2 (~20 Hz, recommended) goes to `outputs/ne_pfc_ds20/`; v1 (full rate) goes to `outputs/ne_pfc_fullrate/`:
 
 ```
-mkdir -p outputs/logs && sbatch extraction/run_extract_ne_pfc.sbatch
+mkdir -p outputs/logs
+sbatch extraction/run_extract_ne_pfc_ds.sbatch   # v2
+sbatch extraction/run_extract_ne_pfc.sbatch      # v1
 ```
 
-SLURM here does not expand `%x` in `--output`. Name log files literally.
+Commit before an extraction run: the outputs record `git rev-parse HEAD`.
+
+SLURM here does not expand `%x` in `--output`. Name log files literally. If a job shows `launch_failed_requeued_held` in `squeue`, it never started: `scancel` it and resubmit, or run on `-p debug` with `srun` (≤ 1 h; both extractions fit).
 
 Verify the repo is in good shape — the CI-equivalent check:
 
