@@ -8,9 +8,19 @@ If today's date already has a `## YYYY-MM-DD` header at the top, add a new `###`
 
 Update this log at the end of any substantive work session unless the user explicitly asks not to document it. **The log records decisions about the project, not the content of the work produced** — the diff already says what changed. See [Work Log Discipline](treaty_conventions.md#work-log-discipline) for what counts as substantive and what to skip.
 
-**Setting this up for the first time?** Leave this file empty. It starts accumulating from the next session. Backfilling it from git history produces exactly the "implemented function X" noise the log exists to avoid.
-
 ## 2026-10-23
+
+### Treaty update v0.9.0 -> v0.10.0 (claude-opus-5-5)
+
+- On request, upgraded the treaty CLI 0.9.0 -> 0.10.0 (own venv, Copier 9.19.1, Python 3.12) and updated the template v0.9.0 -> v0.10.0. The template change touched only `treaty_conventions.md`, which had no local edits. Preview and apply matched, with no conflicts.
+- Upgraded the CLI before updating. CLI 0.9.0 would have applied v0.10.0 without any notice, but the v0.10.0 follow-up (step 6, new `treaty validate` warnings) only works with the new CLI.
+- Followed the two new warnings: deleted the first-run paragraph from `work_log.md` and the stale "Other sections below are background" line from `next_steps.md`. The active threads were already `##` and paused ones `###`, so nothing else moved.
+- Posted the assessment to the treaty repo: comments on #23 (old-CLI adopters miss the new warnings; suggest an "upgrade the CLI first" step) and #26 (a fresh install trips the stale-line warning), and new issue #32 (release notes are empty and the dry run shows no content diff).
+- Verification:
+  - `treaty validate .` before (2 warnings) and after (clean)
+  - `treaty diff` with CLI 0.9.0 and 0.10.0
+  - `treaty update --dry-run` with both CLIs, then `treaty update`
+  - `treaty init --defaults` + `treaty validate .` in a throwaway repo (reproduces the stale-line warning on a fresh install)
 
 ### Recovering the missing .tev/.tsq files from the CTN drive (claude-opus-5-5)
 

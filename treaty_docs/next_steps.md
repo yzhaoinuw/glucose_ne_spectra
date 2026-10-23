@@ -11,8 +11,6 @@ Active threads — read these first to know what work is in flight:
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
-Other sections below are background or paused; treat them as reference unless a new request reopens them.
-
 ## NE extraction to .mat (claude-opus-5-5)
 
 Status: done 2026-10-20 (v1 and v2); awaiting the user's sign-off on v2's fit assumption
