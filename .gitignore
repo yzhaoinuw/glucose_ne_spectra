@@ -3,6 +3,7 @@ FiberPhot*/
 FP[0-9]*/
 Subject*/
 data/
+recovered_raw/
 
 # TDT tank / camera / MATLAB data files, wherever they appear
 *.tev

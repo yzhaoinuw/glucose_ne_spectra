@@ -10,6 +10,18 @@ Update this log at the end of any substantive work session unless the user expli
 
 **Setting this up for the first time?** Leave this file empty. It starts accumulating from the next session. Backfilling it from git history produces exactly the "implemented function X" noise the log exists to avoid.
 
+## 2026-10-23
+
+### Recovering the missing .tev/.tsq files from the CTN drive (claude-opus-5-5)
+
+- The 7 sessions without raw signal may exist in Rebeka's folder on the CTN J: drive (`J:\CTN\NedergaardLAB\Personal_folders\Rebeka\Glucose`). A labmate there (BlueHive user `vuntiet2`, in `dkell12_lab`) will run `transfer/fetch_missing_tev.sh` from Windows (Git Bash or WSL). Scope: the missing files only (7 `.tev`, 3 `.tsq`). The full tanks for FP1/FP2 and the Subject1/3 mornings are deferred.
+- Files land in `recovered_raw/<session>/` (gitignored), not in the recording folders, which belong to `mgianne3`. Merging them in is the owner's call. The TDT reader will need these files next to the rest of each tank (e.g. symlinks under `outputs/`).
+- Safe to re-run: each file goes over as `.part` and is renamed only after its SHA-256 matches the source, so a file with its final name is complete and gets skipped. scp can't resume partway through a file, so an interrupted file starts over.
+- Source files are matched by recording stamp. One counts as the right recording only if the `.Tdx` next to it matches BlueHive's copy, so an unrelated file with the same stamp isn't picked up.
+- Verification:
+  - Local end-to-end test with stand-in ssh/scp: dry run, one forced interrupted copy that was retried, re-run skipping everything, `sha256sum -c` and `cmp` against the source.
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ## 2026-10-21
 
 ### Experimenter's summary deck: design answers (claude-opus-5-5)

@@ -28,7 +28,8 @@ Remaining work:
 
 - **The user confirms v2's assumption** that NE is back to baseline in the last hour of the 13-h sessions (~12 h post-injection). The experimenter's glucose group mean is near baseline at 9–12 h, which loosely supports it, but 1 of her 5 mice is still elevated at 11–12 h. If not, the alternatives are a baseline-only fit (poorly constrained over 13 h) or treating hour-scale levels as unidentifiable and analysing only oscillations.
 - For the 5-h sessions, v2 still uses the whole-recording fit, so a sustained NE change over the session is partly absorbed. It's small in practice: baseline offsets were 0.5–3%.
-- Optional later: OC fiber (`465C`/`405C`, 4 full tanks only); missing `.tev` files, if they can be recovered from the acquisition drive; check the TDT demodulator filter setting to confirm the ~6 Hz roll-off.
+- Missing `.tev`/`.tsq`: `transfer/fetch_missing_tev.sh` is ready for the CTN-side run (2026-10-23). After it runs, check its log and `recovered_raw/*/SHA256SUMS`, then add the 7 sessions to the extraction.
+- Optional later: OC fiber (`465C`/`405C`, 4 full tanks only); check the TDT demodulator filter setting to confirm the ~6 Hz roll-off.
 
 ## Spectral analysis of NE oscillations (claude-opus-5-5)
 
