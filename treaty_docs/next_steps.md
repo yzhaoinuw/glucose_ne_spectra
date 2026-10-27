@@ -6,7 +6,7 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). First pass done 2026-10-27 (`spectra/`, option (c): 465 and 405 side by side, no single fit). Next: the user reviews the figures; decide on stats, the sleep-state confound and FP1/FP2 identity before any claim.
+- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). First pass done 2026-10-27 (`spectra/`, option (c)); report in `reports/2026-10-27_first5h_ne_spectra.md`. Next: the user reviews the figures; decide on stats, the sleep-state confound and FP1/FP2 identity before any claim.
 - [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; `spectra/` uses its raw traces, not its `dff`.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
@@ -18,7 +18,7 @@ Status: first pass 2026-10-27 (claude-opus-5-5, effort low). Method and outputs 
 First-pass observations (descriptive, n = 6 vs. 3, not a result yet):
 
 - **0.01–0.05 Hz:** the 405-independent 465 power drops about 3–9× in 3 of 6 glucose mice (#5, FP1, FP2) for ~2–3 h, and briefly in #3 (+20–80 min). #4 and #22 don't drop (#22 rises). All 3 saline mice stay at 0 to +0.7 log2. The responders are the mice whose 465 level rose most, and 2 of the 3 are the FP sessions whose identity is unresolved.
-- **Above 0.05 Hz**, the 405-independent change is near 0 in both groups. The early glucose peak at ~0.15 Hz (+20–80 min) is coherent with 405 (artifact or hemodynamic) and drops out.
+- **0.05–0.2 Hz:** the 405-independent glucose drop extends to ~0.1 Hz (mean −0.58 log2 over the first 2 h). **0.2–1 Hz:** near 0 in both groups. The early glucose peak at ~0.15 Hz (+20–80 min) is coherent with 405 (artifact or hemodynamic) and drops out.
 - 465–405 baseline coherence is 0.4–0.9 at 0.05–1 Hz in most mice (low in #22 and #33), so most of the 465 power there is shared with 405.
 - Infraslow NE oscillations are a NREM-sleep feature, so a drop may mean less sleep rather than a direct glucose effect on NE dynamics. No EEG; video scoring is the experimenter's suggestion.
 

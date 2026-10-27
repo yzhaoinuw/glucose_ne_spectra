@@ -13,9 +13,10 @@ Update this log at the end of any substantive work session unless the user expli
 ### Spectral pipeline, first pass (option c) (claude-opus-5-5, effort low)
 
 - User chose option (c): no single 405 fit. 465 and 405 spectra, their coherence, and the 465 power 405 can't predict, P465 × (1 − coherence), with a baseline-only-fit ΔF/F as a cross-check. The baseline-only fit is also negative for #5 (−0.16), which confirms that (a) alone wouldn't have been enough.
-- User asked for the results to be tracked: they moved from `outputs/` to `results/spectra_first5h/` (~1.4 MB CSV/PNG, committed). Each run writes `provenance.txt` with the code commit. Not pushed: `origin` is public and these are unpublished lab data.
+- Wrote `reports/2026-10-27_first5h_ne_spectra.md` (summary, dataset, methods, results, caveats, next steps). Tables come straight from `results/`. Pushed to the public `origin` at the user's request.
+- User asked for the results to be tracked: they moved from `outputs/` to `results/spectra_first5h/` (~1.4 MB CSV/PNG, committed). Each run writes `provenance.txt` with the code commit. Pushed later the same day at the user's explicit request, despite the public remote.
 - First Python code: `spectra/` + `tests/`, conda env `glucose_ne_spectra` (miniforge3/25.11.0-1, Python 3.11). Default windows and bands chosen for a first look and listed in README; open to revision.
-- First pass, descriptive only: 0.01–0.05 Hz 405-independent 465 power falls 3–9× for ~2–3 h in 3 of 6 glucose mice (#5, FP1, FP2), briefly in #3; not in #4, #22 or any saline mouse. No 405-independent change above 0.05 Hz. Caveats recorded in next steps (sleep state, FP identity, n).
+- First pass, descriptive only: 0.01–0.05 Hz 405-independent 465 power falls 3–9× for ~2–3 h in 3 of 6 glucose mice (#5, FP1, FP2), briefly in #3; not in #4, #22 or any saline mouse. The drop extends to ~0.1 Hz; no 405-independent change at 0.2–1 Hz. Caveats recorded in next steps (sleep state, FP identity, n).
 - Verification:
   - `python -m pytest -q tests` (5 passed); `black -l 110` on `spectra/`, `tests/`
   - `python -m spectra.run_first5h` (log `outputs/spectra_first5h/run.log`); inspected `band_change.png`, `spectral_change.png`, `per_mouse/5_glucose.png`
