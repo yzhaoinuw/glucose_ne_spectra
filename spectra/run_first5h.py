@@ -1,12 +1,16 @@
 """Spectral comparison, post-injection vs. baseline, on the first 5 h of each session.
 
 Reads the ~20 Hz raw 465/405 traces from the first-5-h extraction (the
-MATLAB fit stored there is not used) and writes CSVs and figures.
+MATLAB fit stored there is not used) and writes CSVs and figures to
+results/spectra_first5h/ (tracked in git), with the code commit in
+provenance.txt.
 
     python -m spectra.run_first5h [--in-dir ...] [--out-dir ...]
 """
 
 import argparse
+import subprocess
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -91,14 +95,32 @@ def analyse(in_dir):
     return bands, bins, pd.DataFrame(fit_rows), per_mouse
 
 
+def git_state():
+    """Short HEAD hash, with "-dirty" if spectra/ has uncommitted changes."""
+    run = lambda *a: subprocess.run(["git", *a], cwd=REPO, capture_output=True, text=True)
+    try:
+        head = run("rev-parse", "--short", "HEAD")
+    except FileNotFoundError:
+        return "unknown (git not available)"
+    if head.returncode != 0:
+        return "unknown (git not available)"
+    dirty = run("status", "--porcelain", "--", "spectra").stdout.strip()
+    return head.stdout.strip() + ("-dirty" if dirty else "")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--in-dir", type=Path, default=REPO / "outputs" / "ne_pfc_ds20_first5h")
-    ap.add_argument("--out-dir", type=Path, default=REPO / "outputs" / "spectra_first5h")
+    ap.add_argument("--out-dir", type=Path, default=REPO / "results" / "spectra_first5h")
     args = ap.parse_args(argv)
     (args.out_dir / "per_mouse").mkdir(parents=True, exist_ok=True)
 
     bands, bins, fits, per_mouse = analyse(args.in_dir)
+    (args.out_dir / "provenance.txt").write_text(
+        f"code commit: {git_state()}\ncreated: {datetime.now():%Y-%m-%d %H:%M:%S}\n"
+        f"input: {args.in_dir.relative_to(REPO) if args.in_dir.is_relative_to(REPO) else args.in_dir}\n"
+        "script: python -m spectra.run_first5h\n"
+    )
     bands.to_csv(args.out_dir / "band_power.csv", index=False)
     bins.to_csv(args.out_dir / "spectra_logbinned.csv", index=False)
     fits.to_csv(args.out_dir / "baseline_fits.csv", index=False)

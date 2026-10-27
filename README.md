@@ -55,14 +55,14 @@ Run them all from the repo root after `mkdir -p outputs/logs`. Each writes one `
 
 ```
 conda activate glucose_ne_spectra
-python -m spectra.run_first5h      # ~1 min; reads outputs/ne_pfc_ds20_first5h/, writes outputs/spectra_first5h/
+python -m spectra.run_first5h      # ~1 min; reads outputs/ne_pfc_ds20_first5h/, writes results/spectra_first5h/ (tracked)
 ```
 
 - **Windows** (`spectra/sessions.py`): baseline = 5 min → injection − 3 min; skip 20 min after the injection; then 60-min blocks (+20–80, +80–140, +140–200, +200–end ≈ 35–40 min).
 - **Spectra:** Welch, 2-min Hann segments, 50% overlap, linear detrend per segment (~0.008 Hz resolution). Each channel is expressed as % of its own window mean.
 - **Measures:** the 465 and 405 spectra; the 465–405 coherence; **the part of 465 not predicted by 405**, P465 × (1 − coherence), which is a per-frequency regression on 405; and, as a cross-check, ΔF/F with a robust fit on the baseline only.
 - **Bands:** 0.01–0.05, 0.05–0.2, 0.2–1 Hz. Band power is reported as log2 change vs. baseline (coherence as a difference).
-- **Outputs:** `band_power.csv`, `spectra_logbinned.csv`, `baseline_fits.csv`, `band_change.png`, `spectral_change.png`, `coherence.png`, `per_mouse/*.png`.
+- **Outputs** (in `results/spectra_first5h/`, committed; `provenance.txt` names the code commit): `band_power.csv`, `spectra_logbinned.csv`, `baseline_fits.csv`, `band_change.png`, `spectral_change.png`, `coherence.png`, `per_mouse/*.png`.
 
 ## Data
 
