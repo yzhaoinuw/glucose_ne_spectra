@@ -6,50 +6,47 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz, robust baseline+end fit for the 13-h sessions) is the recommended output in `outputs/ne_pfc_ds20/`. Open: v2's fit-window assumption, now doubtful because lights go off at 19:00 (2026-10-26).
-- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Groups and injection times are now known (2026-10-26). But only 1 usable session is saline, so the comparison waits on the missing-file transfer. Next: agree on method, bands and windows with the user.
+- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). Next: pull the 3 missing tanks from Rebeka's OneDrive, re-extract FP1/FP2 on their first 5 h, then build the spectral pipeline.
+- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. Needs a first-5-h variant for the 13-h sessions plus the 3 recovered sessions.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
-## NE extraction to .mat (claude-opus-5-5)
-
-Status: done 2026-10-20 (v1 and v2); awaiting the user's sign-off on v2's fit assumption
-
-Decisions (user, 2026-10-20): **PFC only**; reader = **`TDTbin2mat`** from the user's `preprocess_sleep_data` repo (vendored in `extraction/tdt/`). First round (v1): full rate, whole-recording fit. Second round (v2), on request: downsample and make the fit more robust.
-
-Outputs (format in `README.md`):
-
-- **v2 `outputs/ne_pfc_ds20/` (recommended):** ×50 → ~20.35 Hz; robust bisquare 405→465 fit; sessions ≥ 10 h fit on baseline (< 50 min) + last 60 min, shorter ones on the whole recording.
-- v1 `outputs/ne_pfc_fullrate/`: full rate, least-squares whole-recording fit. Kept for comparison and full-rate checks.
-
-Remaining work:
-
-- **Lights-off at 19:00 (2026-10-26) puts v2's fitted last hour in the dark phase** while the baseline is in the light. The data can't test the assumption (the fit-free ratio drifts even in saline). Leaning: treat hour-scale levels in the 13-h sessions as unidentifiable and analyse oscillations within windows. Needs the user's call.
-- Original question: **the user confirms v2's assumption** that NE is back to baseline in the last hour of the 13-h sessions (~12 h post-injection). The experimenter's glucose group mean is near baseline at 9–12 h, which loosely supports it, but 1 of her 5 mice is still elevated at 11–12 h. If not, the alternatives are a baseline-only fit (poorly constrained over 13 h) or treating hour-scale levels as unidentifiable and analysing only oscillations.
-- For the 5-h sessions, v2 still uses the whole-recording fit, so a sustained NE change over the session is partly absorbed. It's small in practice: baseline offsets were 0.5–3%.
-- Missing `.tev`/`.tsq`: `transfer/fetch_missing_tev.sh` is ready for the CTN-side run (2026-10-23). Now high priority: these files hold 3 of the 4 saline sessions. After it runs, check its log and `recovered_raw/*/SHA256SUMS`, then add the 7 sessions to the extraction.
-- Optional later: OC fiber (`465C`/`405C`, 4 full tanks only); check the TDT demodulator filter setting to confirm the ~6 Hz roll-off.
-
 ## Spectral analysis of NE oscillations (claude-opus-5-5)
 
-Status: not started
+Status: scope decided 2026-10-27, not started (claude-opus-5-5, effort high)
 
-Compare the NE power spectrum before vs. after the IP glucose (and saline) injection.
+Compare the PFC NE power spectrum after the IP injection with each mouse's own baseline, glucose vs. saline.
+
+Decisions (user, 2026-10-27):
+
+- **First 5 h of each recording only** (~09:00–14:00): ~1 h baseline, the injection at 59–67 min, ~4 h after. All light phase (lights 07–19), so lights-off and the 13-h end-of-session fit both drop out. Evening sessions are not used.
+- **Spectra are the focus**; hour-scale NE level is secondary.
+- **48-h study is out of scope** for now.
+
+Cohort (session table in [`questions_for_experimenters.md`](../questions_for_experimenters.md)): glucose #3, #4, #5, #22, FP1, FP2; saline #1, #2, #33. Have raw data for all but #2, #33 and #5. Pending the experimenter: whether FP2 ("#2") is a repeat mouse, plus exclusions, fasting/dose and fiber A = PFC (the 4 questions at the top of that file).
+
+Windows: baseline = recording start → out-of-cage / injection; skip 20 min after the injection (handling spike, confirmed by the experimenter); then post-injection blocks to ~4 h. Compare post with the mouse's own baseline, then glucose vs. saline on that change.
 
 Constraints found during extraction:
 
-- Usable band is **below about 1 Hz**. Every recording rolls off steeply at about 6 Hz, presumably the TDT demodulator's low-pass (setting not verified), and above about 1–2 Hz the ΔF/F PSD equals the 405 control PSD. Decimating to about 10–20 Hz (anti-aliased) before spectral work is safe and makes everything ~50–100× smaller.
+- Usable band is **below about 1 Hz**. Every recording rolls off steeply at about 6 Hz, and above about 1–2 Hz the ΔF/F PSD equals the 405 control PSD. ~20 Hz data is plenty.
 - The 405 control carries comparable low-frequency power (Subject1 shows a 405 bump near 0.5 Hz). Treat the 405 spectrum as a control for every NE spectral claim.
-- The infraslow range (about 0.01–0.1 Hz) needs long windows. A 60-s Welch window gives about 0.017 Hz resolution, and the baseline is only about 60 min.
+- The baseline is only ~1 h: 2-min Welch windows (≈0.008 Hz resolution, ~60 half-overlapping segments) reach ~0.01 Hz, nothing slower. Detrend within windows; slow drift leaks into the lowest bins.
+- Quick look (2026-10-26, not a result): 0.01–0.1 Hz ΔF/F power fell for ~3 h after glucose in FP1/FP2, but 405 fell too and FiberPhot22 morning didn't show it.
 
-Open questions for the user:
+Open for the user: method (Welch / multitaper / time-frequency), bands, block length. Sleep state is a confound with no EEG here; the experimenter suggests scoring from video + NE.
 
-- Method (Welch / multitaper / time-frequency), bands of interest, and the analysis windows (baseline vs. post-injection hours; the legacy injection times are hand-entered per mouse in the batch script).
-- Design is now known (experimenter's deck, 2026-10-21): one injection per mouse at ~10:00 (~60 min into the morning / 13-h recording); the evening session is the same experiment at ~7–12 h post-injection. So analysis windows can be baseline (0–60 min), early post (injection + 20 min to 4 h, morning) and late post (7–12 h, evening).
-- **Lights off at 19:00** (experimenter, 2026-10-26): baseline and early post are all light phase. Split late windows at 19:00 (lights off ~1–2 h into each evening) and compare them with saline at matched clock time, not with the morning baseline. Sleep state is a confound: no EEG here; the experimenter suggests scoring from video + NE.
-- **Groups and injection times: answered 2026-10-26** (experimenter's table; session table in [`questions_for_experimenters.md`](../questions_for_experimenters.md)). Glucose = #3, #4, #5, #22, FP1, FP2; saline = #1, #2, #33. Injection at 59–62 min into each morning recording (FP1 66.5 min); evenings start ~7.0–7.2 h after the injection.
-- **New blocker: saline n.** With raw data we have glucose from 5 mice (#3, #4, #22, FP1, FP2; 7 sessions) but saline from 1 (Subject1 morning). Saline #2 (13-h), #33 (morning+evening) and #1 evening need the missing `.tev` files. Open: is FP2 ("#2") a repeat mouse (A1)?
-- **Possible new data:** a 48-h glucose/saline study on the J: drive, not on the cluster. It is a within-subject crossover of 8 mice (4M, 4F; glucose first, then saline 2–3 weeks later) with PFC NE + unscored EEG/EMG. Same mice in both arms, plus EEG for sleep state, so it may be the stronger dataset for the treatment comparison. Worth asking for a copy.
+## NE extraction to .mat (claude-opus-5-5)
+
+Status: v1/v2 done 2026-10-20; first-5-h variant and 3 recovered sessions to do
+
+Decisions (user, 2026-10-20): **PFC only**; reader = **`TDTbin2mat`** from the user's `preprocess_sleep_data` repo (vendored in `extraction/tdt/`). v1 = full rate, whole-recording fit; v2 = ×50 → ~20.35 Hz, robust bisquare 405→465 fit (format in `README.md`).
+
+Remaining work:
+
+- **Missing tanks from OneDrive** (all confirmed present there, 2026-10-27): `.tev` for `Subject2-240321-093251_210324` (13-h, ~6–7 GB), `Subject33-240324-093611_morning`, `Subject5-240326-090337_morning` (+ its `.tsq`). Search by stamp (`240321-093251`, `240324-093611`, `240326-090337`); blocks are all named `Subject1-<stamp>` in tank `EliseFiber1-240321-092235`. Put them in `recovered_raw/<our folder>/`, keep filenames, and check that OneDrive's `.Tdx` matches ours. A plain SharePoint `download.aspx?UniqueId=…` link returns 403 without login cookies; the user plans to download via a browser on the cluster. The CTN script `transfer/fetch_missing_tev.sh` is superseded.
+- **First-5-h extraction:** fit FP1/FP2 (and #2) on their first 5 h with the same whole-window fit as the 5-h mornings, so every mouse is processed the same way. v2's 13-h baseline + last-hour fit (doubtful since lights go off at 19:00) is then no longer used.
+- Optional later: OC fiber (`465C`/`405C`).
 
 ## Background / Paused
 

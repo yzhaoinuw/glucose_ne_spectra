@@ -8,6 +8,16 @@ If today's date already has a `## YYYY-MM-DD` header at the top, add a new `###`
 
 Update this log at the end of any substantive work session unless the user explicitly asks not to document it. **The log records decisions about the project, not the content of the work produced** — the diff already says what changed. See [Work Log Discipline](treaty_conventions.md#work-log-discipline) for what counts as substantive and what to skip.
 
+## 2026-10-27
+
+### Analysis scope: first 5 h, spectra only; last questions for the experimenter (claude-opus-5-5, effort high)
+
+- User decisions: analyse the **first 5 h of each recording** (baseline + ~4 h after the injection, all light phase), focus on **spectra** rather than NE level, and put the 48-h study aside. This drops the evening sessions and makes the 13-h end-of-session fit moot.
+- Only 3 tanks are still needed (#2, #33, #5 mornings; 6 glucose + 3 saline after). The user found them on Rebeka's OneDrive, which supersedes the CTN transfer script. Direct pulls from SharePoint need login cookies (`download.aspx?UniqueId=` → 403 anonymously). The compute node has internet, `rclone` 1.69.2 and `aria2c`.
+- Rewrote `questions_for_experimenters.md` to be read by the experimenter: 4 last questions at the top (FP1/FP2 identity, exclusions, fasting/dose concentration, fiber A = PFC), the 9-mouse session table, and a condensed record of answers. The original question list is in git history. Dropped the modulation/filter question: it doesn't matter below 1 Hz.
+- Verification:
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ## 2026-10-26
 
 ### Experimenter's answers on light cycle, handling, acquisition (claude-opus-5-5, effort high)
