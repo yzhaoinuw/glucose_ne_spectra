@@ -22,11 +22,32 @@ New, from the deck:
 
 - **A 48-h study** (`48H_FP+EEG_Glucose+Saline`, same J: folder; not on the cluster): PFC NE only, glucose and saline, n = 4 per group per sex (16 mice). Habituation from 15:00 the day before, baseline 09:00, injection 11:00, recording ends 46 h after. It also has **unscored EEG/EMG**; the EEG–photometry sync TTL exists for only about half the files (which ones is in the lab journal). She warns that the "bump" in her processed 48-h traces is a fitting artifact of the long recording.
 
-Still open after the deck — new questions:
+## Answered by Rebeka's notebook table (received 2026-10-26)
 
-- **A1. Which mouse is glucose and which is saline?** Morning + evening are the same mouse, so our 8 usable sessions are at most 6 mice (22, 4, FP1, FP2, 1, 3), fewer if FP1/FP2 are Subject1/2. Her figures use 8 mice. Which of her 8 are ours, and which group is each in?
-- **A2. Could someone copy the J: `Glucose` folder to the cluster?** Mainly the 48-h data (FP + EEG), the `Analyses` folder and the presentations.
-- **A3. Lab journal:** could the relevant pages (injection timestamps, TTL availability for the 48-h files) be photographed or transcribed?
+Source: `glucose_study_digitized.xlsx` in the repo root (gitignored), her digitized lab journal. One sheet covers the 5+5-h / 13-h study, one the 48-h study.
+
+- **Groups (A1, Q1):** glucose = mice #3, #4, #5, #22, FP1, FP2; saline = #1, #2, #33. Mouse **#1 is saline**, even though its files are named `5H_GLU_*`: "GLU" names the study, not the treatment. The legacy morning glucose script uses exactly the 6 glucose mice, which agrees.
+- **Injection times (Q4):** clock times for every mouse. On the `.tsq` clock (Copenhagen time: UTC+1 in March, UTC+2 in April), every start and stop in the sheet matches the recording to the minute. Injection is at 59–62 min into the morning / 13-h recording, 66.5 min for FP1. The evening sessions start ~7.0 h after injection (7.2 h for #22). The legacy "out of cage" times fall 0–2 min before these injections.
+- **Dose (Q2, partly):** 20 µL/g body weight for both glucose and saline (0.49–0.60 mL). All mice are male, 24.5–30 g.
+- **Mouse IDs (Q6):** #22 is "new #2", so the `FiberPhot2_240324` block is mouse 22. The sheet's only mouse on 22 Mar is #3, so the `Subject1-240322-092543` block is mouse 3. #4 = RZ10-1, #5 = RZ10-2. FP1 = "#2.1" and FP2 = "#2", so neither is Subject1.
+- **Subject2 is a 13-h session** (09:33–22:50, saline). It is the only 13-h saline recording, and its `.tev` is missing.
+- **48-h study:** a **crossover of 8 mice** (4 male COM9/10/12/13, 4 female COM14/15/16/18). Each mouse got glucose first and saline 2–3 weeks later (males 8 and 29 May 2024, females 3 and 17 June 2024), injected ~11:00–11:30. That is 8 mice in both conditions, not 16 mice. Rig (R210-1/-2) and fiber (A/C) are listed per session, and a mouse's fiber can change between its two sessions. Male glucose start times are marked "9:00(?)".
+
+What this means for us: of the 8 sessions with raw data, **only Subject1 morning is saline** (1 mouse, baseline + 4 h after injection). The other saline sessions (#2, #33, #1 evening) are all missing their `.tev`. So the saline comparison depends on recovering those files.
+
+Still open:
+
+- **A1. Is FP2 ("#2") the original #2 (saline on 21 Mar), the "new #2" (#22, glucose on 24 Mar), or a new mouse?** And is FP1 ("#2.1") a new mouse? Her figures use 5 glucose mice, but the table lists 6 glucose IDs, so one may be a repeat or excluded.
+- **A2. Could someone copy the J: `Glucose` folder to the cluster?** Mainly the 48-h data (FP + EEG), the `Analyses` folder and the presentations. Plus the 7 missing `.tev`/`.tsq` files, which now hold 3 of our 4 saline sessions.
+- **A3. Lab journal:** which 48-h files have the EEG–photometry TTL? Glucose concentration (to give the dose in g/kg)?
+- Still unanswered from below: fasting / blood glucose (Q5), which fiber is PFC for each 5-h mouse and what OC is (Q7), known problems (Q10), LED modulation frequencies and demodulator low-pass (Q14).
+
+## Answered by Rebeka by message (2026-10-26)
+
+- **Light cycle (Q11):** lights on 07:00–19:00, off 19:00–07:00. Baseline and the morning session are all in the light. **Lights go off ~1–2 h into each evening session and ~9.7–9.9 h into the 13-h sessions**, so the last 3 h of every long recording are in the dark (active) phase.
+- **Sleep / EEG (Q12):** EEG/EMG exists only for the 48-h study. For the 5+5-h / 13-h study, she suggests scoring sleep from the video plus the NE trace.
+- **Handling (Q13):** at most 1 min out of the recording chamber, then back into the same chamber. Food and water were available. The legacy 20-min post-injection exclusion came from looking at the NE trace: handling and injection cause a spike.
+- **Acquisition (Q14, partly):** settings did not change between sessions. LED power: 405 nm at 10–20 µW, 465 nm at 20–30 µW. Modulation frequencies and the demodulator filter need Verena to check the rig protocols at CTN.
 
 ## A. Treatment and timing (blocking)
 
@@ -65,24 +86,22 @@ Still open after the deck — new questions:
 
 ## Session table
 
-Please fill in what you know; "?" is fine.
+| Folder | Mouse ID | Date | Group | Dose (mL) | Injection (clock / into recording) | Raw data |
+|---|---|---|---|---|---|---|
+| `Subject2-240321-093251_210324` | #2 | 21 Mar 2024 | saline | 0.49 | 10:33 / +60.1 min (13-h session) | missing |
+| `Subject3-240322-092543_morning` | #3 (block says 1) | 22 Mar 2024 | glucose | 0.54 | 10:28 / +62.2 min | ✅ |
+| `Subject3-240322-172818_evening` | #3 | 22 Mar 2024 | glucose | | starts 7.01 h after | missing |
+| `Subject1-240323-091543_morning` | #1 | 23 Mar 2024 | **saline** | 0.52 | 10:16 / +60.2 min | ✅ |
+| `Subject1-240323-171604_evening` | #1 | 23 Mar 2024 | saline | | starts 7.00 h after | missing |
+| `FiberPhot22_240324_morning` | #22 = "new #2" (block says 2) | 24 Mar 2024 | glucose | 0.58 | 10:40 / +58.9 min | ✅ |
+| `FiberPhot22_240324_evening` | #22 | 24 Mar 2024 | glucose | | starts 7.22 h after | ✅ |
+| `Subject33-240324-093611_morning` | #33 = "new #3" | 24 Mar 2024 | saline | 0.54 | 10:37 / +60.8 min | missing |
+| `Subject33-240324-174256_evening` | #33 | 24 Mar 2024 | saline | | evening start 17:42 (folder stamp) | missing |
+| `FiberPhot4_260324_morning` | #4 (RZ10-1) | 26 Mar 2024 | glucose | 0.56 | 09:59 / +60.6 min | ✅ |
+| `FiberPhot4_260324_evening` | #4 | 26 Mar 2024 | glucose | | starts 6.99 h after | ✅ |
+| `Subject5-240326-090337_morning` | #5 (RZ10-2) | 26 Mar 2024 | glucose | 0.60 | 10:03 / ~+59.4 min (folder stamp) | missing |
+| `Subject5-240326-170315_evening` | #5 | 26 Mar 2024 | glucose | | evening start 17:03 (folder stamp) | missing |
+| `FP1_glucose_13hours_090424` | "#2.1" | 9 Apr 2024 | glucose | 0.52 | 10:27 / +66.5 min | ✅ |
+| `FP2_glucose_13hours_100424` | "#2" (which #2? A1) | 10 Apr 2024 | glucose | 0.60 | 10:04 / +59.9 min | ✅ |
 
-| Folder | Mouse ID | Date | Glucose / saline | Dose | Injection time (clock or min into recording) | Fasted? | Notes |
-|---|---|---|---|---|---|---|---|
-| `FiberPhot22_240324_morning` | 22? (block says 2) | 24 Mar 2024 | glucose? | | ~? | | |
-| `FiberPhot22_240324_evening` | 22? | 24 Mar 2024 | same as morning | | | | |
-| `FiberPhot4_260324_morning` | 4 | 26 Mar 2024 | glucose? | | | | |
-| `FiberPhot4_260324_evening` | 4 | 26 Mar 2024 | same as morning | | | | |
-| `FP1_glucose_13hours_090424` | FP1 | 9 Apr 2024 | glucose | | | | |
-| `FP2_glucose_13hours_100424` | FP2 | 10 Apr 2024 | glucose | | | | |
-| `Subject1-240323-091543_morning` | 1 | 23 Mar 2024 | glucose | | | | |
-| `Subject1-240323-171604_evening` | 1 | 23 Mar 2024 | same as morning | | | | raw data missing |
-| `Subject2-240321-093251_210324` | 2 | 21 Mar 2024 | ? | | | | raw data missing |
-| `Subject3-240322-092543_morning` | 3? (block says 1) | 22 Mar 2024 | glucose | | | | |
-| `Subject3-240322-172818_evening` | 3 | 22 Mar 2024 | same as morning | | | | raw data missing |
-| `Subject33-240324-093611_morning` | 33 | 24 Mar 2024 | ? | | | | raw data missing |
-| `Subject33-240324-174256_evening` | 33 | 24 Mar 2024 | same as morning | | | | raw data missing |
-| `Subject5-240326-090337_morning` | 5 | 26 Mar 2024 | glucose? | | | | raw data missing |
-| `Subject5-240326-170315_evening` | 5 | 26 Mar 2024 | same as morning | | | | raw data missing |
-
-"glucose?" means the old morning glucose script includes the session but nothing in the recording confirms it. Plain "glucose" is confirmed by a folder or file name.
+Filled from Rebeka's table (2026-10-26). "Into recording" is measured from the `.tsq` start time; injection clock times have 1-min precision. Evening rows give the evening start's offset after the morning injection.

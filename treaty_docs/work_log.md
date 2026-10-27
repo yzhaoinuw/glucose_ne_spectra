@@ -8,6 +8,30 @@ If today's date already has a `## YYYY-MM-DD` header at the top, add a new `###`
 
 Update this log at the end of any substantive work session unless the user explicitly asks not to document it. **The log records decisions about the project, not the content of the work produced** — the diff already says what changed. See [Work Log Discipline](treaty_conventions.md#work-log-discipline) for what counts as substantive and what to skip.
 
+## 2026-10-26
+
+### Experimenter's answers on light cycle, handling, acquisition (claude-opus-5-5, effort high)
+
+- Recorded Rebeka's answers to Q11–Q14 (light cycle 07–19, EEG only in the 48-h study, ≤ 1 min handling, LED powers; modulation frequencies and demodulator filter still pending, Verena to check).
+- Lights-off at 19:00 weakens v2's fit assumption for the 13-h sessions: the fitted last hour (21–22 h) is dark phase, the baseline is light phase. Checked whether the data can settle it: per-30-min fit-free 465/405 ratio and 0.01–0.1 Hz power by clock time for FP1, FP2, both evenings and two mornings. The ratio rises 10–15% over 4 h even in the saline Subject1 morning, so drift and NE can't be separated; FP2 shows a ~5% ratio step at 19:00, the others little. Conclusion: the assumption is unverifiable either way, so hour-scale NE level in the 13-h sessions should be treated as unidentifiable and analysis should rest on within-window (detrended) spectral measures.
+- Analysis windows: baseline and early post (from injection + 20 min, per the experimenter) are all lights-on. Evening / late windows must be split at 19:00 and compared with saline at matched clock time, not with the morning baseline.
+- Noted (not a result): in this quick look, 0.01–0.1 Hz ΔF/F power dropped for ~3 h after glucose in FP1/FP2. But the 405 power dropped too, and FiberPhot22 morning didn't show it.
+- Verification:
+  - MATLAB R2022b run on this interactive compute node (srun could not reach the controller); script kept in the session scratchpad, not the repo
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
+### Experimenter's lab-journal table: groups and injection times (claude-opus-5-5, effort high)
+
+- Read `glucose_study_digitized.xlsx` (Rebeka's digitized journal) with stdlib zip/XML; no Python on the cluster has openpyxl. It answers the blocking questions: glucose = #3, #4, #5, #22, FP1, FP2; saline = #1, #2, #33.
+- Trusted it after cross-checking against the recordings. Every start/stop matches the `.tsq` clock to the minute once read as Copenhagen time (UTC+1 March, UTC+2 April; the `.tsq` epoch is true UTC). The glucose IDs match the legacy morning glucose script's 6 mice exactly. The legacy out-of-cage times sit 0–2 min before the recorded injections.
+- Correction: mouse #1 (`Subject1-..._morning`, files `5H_GLU_*`) is **saline**. `GLU`/`glucose` in names is the study name. README and project_overview had it as glucose; fixed.
+- Consequence: of the 8 usable sessions, only Subject1 morning is saline. A treatment comparison needs the missing `.tev` files (#2 13-h, #33 morning+evening, #1 evening), so the CTN transfer is now on the critical path.
+- 48-h study is a within-subject crossover (8 mice, glucose then saline 2–3 weeks later), not 16 mice. Fiber/rig per session is recorded, so extraction must read the channel per session.
+- Gitignored `*.xls`/`*.xlsx` alongside the decks (lab metadata stays local).
+- Verification:
+  - `.tsq` start/end timestamps for all 12 sessions with a `.tsq` (scratch script, read-only)
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ## 2026-10-23
 
 ### Treaty update v0.9.0 -> v0.10.0 (claude-opus-5-5)

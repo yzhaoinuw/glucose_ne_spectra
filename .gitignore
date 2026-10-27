@@ -36,6 +36,8 @@ __pycache__/
 *.egg-info/
 .ipynb_checkpoints/
 
-# Lab presentations shared by the experimenters (kept locally, not versioned)
+# Lab presentations and metadata sheets shared by the experimenters (kept locally, not versioned)
 *.ppt
 *.pptx
+*.xls
+*.xlsx

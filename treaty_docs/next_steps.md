@@ -6,8 +6,8 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz, robust baseline+end fit for the 13-h sessions) is the recommended output in `outputs/ne_pfc_ds20/`. Open: the user confirms v2's fit-window assumption.
-- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Next: agree on method, bands and baseline/post windows with the user.
+- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz, robust baseline+end fit for the 13-h sessions) is the recommended output in `outputs/ne_pfc_ds20/`. Open: v2's fit-window assumption, now doubtful because lights go off at 19:00 (2026-10-26).
+- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Groups and injection times are now known (2026-10-26). But only 1 usable session is saline, so the comparison waits on the missing-file transfer. Next: agree on method, bands and windows with the user.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
@@ -24,9 +24,10 @@ Outputs (format in `README.md`):
 
 Remaining work:
 
-- **The user confirms v2's assumption** that NE is back to baseline in the last hour of the 13-h sessions (~12 h post-injection). The experimenter's glucose group mean is near baseline at 9–12 h, which loosely supports it, but 1 of her 5 mice is still elevated at 11–12 h. If not, the alternatives are a baseline-only fit (poorly constrained over 13 h) or treating hour-scale levels as unidentifiable and analysing only oscillations.
+- **Lights-off at 19:00 (2026-10-26) puts v2's fitted last hour in the dark phase** while the baseline is in the light. The data can't test the assumption (the fit-free ratio drifts even in saline). Leaning: treat hour-scale levels in the 13-h sessions as unidentifiable and analyse oscillations within windows. Needs the user's call.
+- Original question: **the user confirms v2's assumption** that NE is back to baseline in the last hour of the 13-h sessions (~12 h post-injection). The experimenter's glucose group mean is near baseline at 9–12 h, which loosely supports it, but 1 of her 5 mice is still elevated at 11–12 h. If not, the alternatives are a baseline-only fit (poorly constrained over 13 h) or treating hour-scale levels as unidentifiable and analysing only oscillations.
 - For the 5-h sessions, v2 still uses the whole-recording fit, so a sustained NE change over the session is partly absorbed. It's small in practice: baseline offsets were 0.5–3%.
-- Missing `.tev`/`.tsq`: `transfer/fetch_missing_tev.sh` is ready for the CTN-side run (2026-10-23). After it runs, check its log and `recovered_raw/*/SHA256SUMS`, then add the 7 sessions to the extraction.
+- Missing `.tev`/`.tsq`: `transfer/fetch_missing_tev.sh` is ready for the CTN-side run (2026-10-23). Now high priority: these files hold 3 of the 4 saline sessions. After it runs, check its log and `recovered_raw/*/SHA256SUMS`, then add the 7 sessions to the extraction.
 - Optional later: OC fiber (`465C`/`405C`, 4 full tanks only); check the TDT demodulator filter setting to confirm the ~6 Hz roll-off.
 
 ## Spectral analysis of NE oscillations (claude-opus-5-5)
@@ -44,9 +45,11 @@ Constraints found during extraction:
 Open questions for the user:
 
 - Method (Welch / multitaper / time-frequency), bands of interest, and the analysis windows (baseline vs. post-injection hours; the legacy injection times are hand-entered per mouse in the batch script).
-- Design is now known (experimenter's deck, 2026-10-21): one injection per mouse at ~10:00 (~60 min into the morning / 13-h recording); the evening session is the same experiment at ~7–12 h post-injection. So analysis windows can be baseline (0–60 min), early post (1–4 h, morning) and late post (7–12 h, evening).
-- **Still blocked:** which mouse is glucose vs. saline, and exact injection times. Both are in the experimenter's paper lab journal at CTN. Our usable data is at most 6 mice. See "Answered so far" and A1–A3 in [`questions_for_experimenters.md`](../questions_for_experimenters.md).
-- **Possible new data:** a 48-h glucose/saline study (16 mice, PFC NE + unscored EEG/EMG) on the J: drive, not on the cluster. Larger n and EEG for sleep-state control; worth asking for a copy.
+- Design is now known (experimenter's deck, 2026-10-21): one injection per mouse at ~10:00 (~60 min into the morning / 13-h recording); the evening session is the same experiment at ~7–12 h post-injection. So analysis windows can be baseline (0–60 min), early post (injection + 20 min to 4 h, morning) and late post (7–12 h, evening).
+- **Lights off at 19:00** (experimenter, 2026-10-26): baseline and early post are all light phase. Split late windows at 19:00 (lights off ~1–2 h into each evening) and compare them with saline at matched clock time, not with the morning baseline. Sleep state is a confound: no EEG here; the experimenter suggests scoring from video + NE.
+- **Groups and injection times: answered 2026-10-26** (experimenter's table; session table in [`questions_for_experimenters.md`](../questions_for_experimenters.md)). Glucose = #3, #4, #5, #22, FP1, FP2; saline = #1, #2, #33. Injection at 59–62 min into each morning recording (FP1 66.5 min); evenings start ~7.0–7.2 h after the injection.
+- **New blocker: saline n.** With raw data we have glucose from 5 mice (#3, #4, #22, FP1, FP2; 7 sessions) but saline from 1 (Subject1 morning). Saline #2 (13-h), #33 (morning+evening) and #1 evening need the missing `.tev` files. Open: is FP2 ("#2") a repeat mouse (A1)?
+- **Possible new data:** a 48-h glucose/saline study on the J: drive, not on the cluster. It is a within-subject crossover of 8 mice (4M, 4F; glucose first, then saline 2–3 weeks later) with PFC NE + unscored EEG/EMG. Same mice in both arms, plus EEG for sleep state, so it may be the stronger dataset for the treatment comparison. Worth asking for a copy.
 
 ## Background / Paused
 
