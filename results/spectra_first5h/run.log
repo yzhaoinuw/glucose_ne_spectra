@@ -1,0 +1,63 @@
+  #3 glucose baseline fit slope  1.35; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200 min-end
+  #4 glucose baseline fit slope  2.43; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200 min-end
+  #5 glucose baseline fit slope -0.16; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200 min-end
+ #22 glucose baseline fit slope  0.77; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200 min-end
+ FP1 glucose baseline fit slope  2.61; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200 min-end
+ FP2 glucose baseline fit slope  1.21; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200 min-end
+  #1 saline  baseline fit slope  1.51; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200 min-end
+  #2 saline  baseline fit slope  1.36; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200 min-end
+ #33 saline  baseline fit slope  0.68; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200 min-end
+
+Mean log2 change vs. baseline (glucose, saline):
+group                                       glucose  saline
+measure          band         window                       
+465              0.01-0.05 Hz +20-80 min      -1.10    0.17
+                              +80-140 min     -1.20    0.17
+                              +140-200 min    -0.57    0.24
+                              +200 min-end     0.04    0.30
+                 0.05-0.2 Hz  +20-80 min       0.23   -0.01
+                              +80-140 min     -0.39   -0.13
+                              +140-200 min    -0.24   -0.29
+                              +200 min-end    -0.13   -0.34
+                 0.2-1 Hz     +20-80 min      -0.60   -0.10
+                              +80-140 min     -0.62   -0.27
+                              +140-200 min    -0.46   -0.40
+                              +200 min-end    -0.37   -0.47
+405              0.01-0.05 Hz +20-80 min      -0.48    0.02
+                              +80-140 min     -1.25   -0.30
+                              +140-200 min    -1.32   -0.43
+                              +200 min-end    -1.37   -0.57
+                 0.05-0.2 Hz  +20-80 min       0.15   -0.20
+                              +80-140 min     -0.70   -0.49
+                              +140-200 min    -0.80   -0.81
+                              +200 min-end    -1.11   -0.89
+                 0.2-1 Hz     +20-80 min      -0.87   -0.16
+                              +80-140 min     -0.92   -0.42
+                              +140-200 min    -0.90   -0.66
+                              +200 min-end    -0.87   -0.83
+465_indep_405    0.01-0.05 Hz +20-80 min      -1.21    0.27
+                              +80-140 min     -1.05    0.37
+                              +140-200 min    -0.38    0.55
+                              +200 min-end     0.20    0.50
+                 0.05-0.2 Hz  +20-80 min      -0.60    0.14
+                              +80-140 min     -0.57    0.11
+                              +140-200 min    -0.27    0.09
+                              +200 min-end     0.11    0.18
+                 0.2-1 Hz     +20-80 min      -0.16    0.02
+                              +80-140 min     -0.14    0.07
+                              +140-200 min     0.00    0.01
+                              +200 min-end     0.16   -0.04
+dff_baseline_fit 0.01-0.05 Hz +20-80 min      -0.63    0.28
+                              +80-140 min     -0.62    0.49
+                              +140-200 min    -0.00    0.72
+                              +200 min-end     0.66    0.80
+                 0.05-0.2 Hz  +20-80 min       0.21    0.01
+                              +80-140 min     -0.22   -0.14
+                              +140-200 min    -0.31   -0.17
+                              +200 min-end    -0.16   -0.14
+                 0.2-1 Hz     +20-80 min      -0.59   -0.09
+                              +80-140 min     -0.41   -0.31
+                              +140-200 min    -0.32   -0.41
+                              +200 min-end    -0.28   -0.52
+
+Wrote results/spectra_first5h

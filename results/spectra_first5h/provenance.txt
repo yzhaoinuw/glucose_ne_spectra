@@ -1,0 +1,4 @@
+code commit: e3030e1
+created: 2026-10-27 15:26:49
+input: outputs/ne_pfc_ds20_first5h
+script: python -m spectra.run_first5h

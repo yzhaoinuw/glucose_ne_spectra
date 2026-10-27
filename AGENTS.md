@@ -60,7 +60,7 @@ Pre-flight checklist before committing:
 
 - Formatter is clean: `black -l 110 --check spectra tests`.
 - Verification is green (matches the CI check job): `~/.local/venvs/treaty/bin/treaty validate .`
-- `git status` shows no data files staged. Raw recordings and `.mat`/`.npy` outputs must stay out of git (see `.gitignore`).
+- `git status` shows no data files staged. Raw recordings and `.mat`/`.npy` outputs must stay out of git (see `.gitignore`). `results/` (small CSVs/PNGs) is tracked on purpose. The GitHub remote is public, so pushing publishes it.
 - A new `treaty_docs/work_log.md` entry records the decisions made and the verification commands actually run — see [When To Update Treaty Docs](#when-to-update-treaty-docs).
 
 If the change touches `spectra/`, run the tests above and re-run `python -m spectra.run_first5h`.
