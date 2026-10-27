@@ -29,7 +29,7 @@ There are two versions. **Use v2 for analysis**; v1 is kept for comparison and f
 | Size | 1.8 GB | 52 MB |
 | Run | `sbatch extraction/run_extract_ne_pfc.sbatch` (~8 min) | `sbatch extraction/run_extract_ne_pfc_ds.sbatch` (~4 min) |
 
-**Analysis input: `outputs/ne_pfc_ds20_first5h/`.** The v2 method run on the first 5 h of the 9 cohort sessions (6 glucose, 3 saline; mornings plus the first 5 h of the 13-h sessions). Every session is fitted over its whole 5-h window, so all mice are treated the same way. Run with `sbatch extraction/run_extract_ne_pfc_first5h.sbatch`. Each file also stores `max_h = 5`.
+**Planned analysis input: `outputs/ne_pfc_ds20_first5h/` — provisional, don't use for spectra yet.** Its whole-window fit is pulled by the post-injection NE rise: FP2 (−1.26), #5 (−0.23) and FP1 (−0.01) get negative 405 slopes, so 405 noise is added rather than removed. The fit method is being revisited (see `treaty_docs/next_steps.md`). The v2 method run on the first 5 h of the 9 cohort sessions (6 glucose, 3 saline; mornings plus the first 5 h of the 13-h sessions). Every session is fitted over its whole 5-h window, so all mice are treated the same way. Run with `sbatch extraction/run_extract_ne_pfc_first5h.sbatch`. Each file also stores `max_h = 5`.
 
 Run them all from the repo root after `mkdir -p outputs/logs`. Each writes one `.mat` per usable recording (gitignored), a QC figure per recording to `qc/`, and a `summary.csv`. The files are MATLAB v7, so `scipy.io.loadmat` reads them. Both versions share these variables:
 

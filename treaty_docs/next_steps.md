@@ -6,8 +6,8 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). The 3 missing tanks are recovered and verified (2026-10-27). Next: add them to the extraction, re-extract everyone on their first 5 h, then build the spectral pipeline.
-- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. Needs a first-5-h variant for the 13-h sessions plus the 3 recovered sessions (tanks verified, not yet in `pfc_recordings.m`).
+- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). First-5-h extraction ran 2026-10-27 (`outputs/ne_pfc_ds20_first5h/`), but its 405 fit is unreliable. **Blocking: the user picks the 405 correction** (see the extraction thread), then re-extract and build the spectral pipeline.
+- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; the 405 fit needs replacing before the spectra.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
@@ -38,14 +38,15 @@ Open for the user: method (Welch / multitaper / time-frequency), bands, block le
 
 ## NE extraction to .mat (claude-opus-5-5)
 
-Status: v1/v2 done 2026-10-20; 3 tanks recovered and verified 2026-10-27; first-5-h variant to do
+Status: v1/v2 done 2026-10-20; first-5-h run for all 9 done 2026-10-27, fit method open
 
 Decisions (user, 2026-10-20): **PFC only**; reader = **`TDTbin2mat`** from the user's `preprocess_sleep_data` repo (vendored in `extraction/tdt/`). v1 = full rate, whole-recording fit; v2 = ×50 → ~20.35 Hz, robust bisquare 405→465 fit (format in `README.md`).
 
 Remaining work:
 
-- **Recovered tanks** (done 2026-10-27): `Subject2-240321-093251_210324`, `Subject33-240324-093611_morning` and `Subject5-240326-090337_morning` are now complete tanks in their original folders (the user placed them there, not in `recovered_raw/`). Add them to `pfc_recordings.m` as `'tank'` sources. #33's PFC signal is weak (465 ≈ 69, 405 ≈ 56 a.u.) and its 405 dips track the 465 dips, so lean on the 405 control spectrum for that mouse.
-- **First-5-h extraction:** fit FP1/FP2 (and #2) on their first 5 h with the same whole-window fit as the 5-h mornings, so every mouse is processed the same way. v2's 13-h baseline + last-hour fit (doubtful since lights go off at 19:00) is then no longer used.
+- **Recovered tanks** (done 2026-10-27): #2, #33 and #5 are in `pfc_recordings.m` as `'tank'` sources. #33's PFC signal is weak (465 ≈ 69, 405 ≈ 56 a.u.) and its 405 dips track the 465 dips.
+- **First-5-h extraction** (ran 2026-10-27, `extract_ne_pfc_first5h.m`, job 2223801): all 9 ok, but the whole-window robust fit is biased by the post-injection 465 rise against a bleaching 405. Slopes: FP2 −1.26, #5 −0.23, FP1 −0.01, others 0.29–0.82. FP2's ΔF/F has ~10× v1's power at 0.05–1 Hz.
+- **Open decision (user): the 405 correction.** In 0.01–1 Hz, 465 and 405 correlate at r = 0.57–0.86 in every session, with slopes ~0.9–2.1 (baseline-only band-passed: 0.8–1.8). Whole-window slopes are below that everywhere. Which slope is right depends on whether that shared component is artifact (motion/blood flow → remove it) or partly NE (→ a slope of ~1–2 would remove real NE dips). Options: (a) fit on the pre-injection baseline only; (b) slope from band-passed signals; (c) report 465 and 405 spectra separately plus 465–405 coherence, and treat the fit as a sensitivity check. Recommended: (c) for the spectral claims, with (a) as the ΔF/F product.
 - Optional later: OC fiber (`465C`/`405C`).
 
 ## Background / Paused

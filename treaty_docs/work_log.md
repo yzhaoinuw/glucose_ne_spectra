@@ -10,6 +10,17 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-27
 
+### First-5-h extraction run; 405 fit found unreliable (claude-opus-5-5, effort low)
+
+- Added the 3 recovered tanks to `pfc_recordings.m` and a `max_h` crop to `extract_ne_pfc_ds.m`. `extract_ne_pfc_first5h.m` runs the 9 cohort sessions cropped to 5 h, with a whole-window fit for all, as decided earlier. Commit 1fc9e1c, job 2223801, ~1 min, all 9 ok.
+- That shared whole-window fit doesn't hold up. The post-injection 465 rise against a bleaching 405 drives the slope negative in FP2 (−1.26) and #5 (−0.23), and to ~0 in FP1. The control then adds flipped 405 noise (FP2: ~10× v1 power at 0.05–1 Hz). Marked the output provisional in the README.
+- Band-passed (0.01–1 Hz) 465 vs. 405: r = 0.57–0.86 and slope ~0.9–2.1 in every session, so whole-window slopes under-correct everywhere. Left the choice of correction to the user (options in next steps): it decides whether the infraslow NE dips survive in ΔF/F.
+- Batch scripts now load `git/2.50.1` (RHEL 9 nodes have no `git/2.30.1`), with a fallback. AGENTS.md updated.
+- Verification:
+  - `sbatch extraction/run_extract_ne_pfc_first5h.sbatch` (log `outputs/logs/extract_ne_pfc_first5h_2223801.log`), QC PNGs for FP2 and #5 inspected
+  - scratch `slope_alts.m` on the 9 output files: whole / baseline / band-passed slopes
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### Recovered tanks verified: #2, #33, #5 (claude-opus-5-5, effort low)
 
 - The user downloaded the 3 missing tanks from the experimenter's OneDrive into their original data folders rather than `recovered_raw/` (Subject5's folder was replaced whole, `.tsq` and video included). README table and next steps updated.
