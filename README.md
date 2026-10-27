@@ -29,7 +29,9 @@ There are two versions. **Use v2 for analysis**; v1 is kept for comparison and f
 | Size | 1.8 GB | 52 MB |
 | Run | `sbatch extraction/run_extract_ne_pfc.sbatch` (~8 min) | `sbatch extraction/run_extract_ne_pfc_ds.sbatch` (~4 min) |
 
-Run both from the repo root after `mkdir -p outputs/logs`. Each writes one `.mat` per usable recording (gitignored), a QC figure per recording to `qc/`, and a `summary.csv`. The files are MATLAB v7, so `scipy.io.loadmat` reads them. Both versions share these variables:
+**Analysis input: `outputs/ne_pfc_ds20_first5h/`.** The v2 method run on the first 5 h of the 9 cohort sessions (6 glucose, 3 saline; mornings plus the first 5 h of the 13-h sessions). Every session is fitted over its whole 5-h window, so all mice are treated the same way. Run with `sbatch extraction/run_extract_ne_pfc_first5h.sbatch`. Each file also stores `max_h = 5`.
+
+Run them all from the repo root after `mkdir -p outputs/logs`. Each writes one `.mat` per usable recording (gitignored), a QC figure per recording to `qc/`, and a `summary.csv`. The files are MATLAB v7, so `scipy.io.loadmat` reads them. Both versions share these variables:
 
 | Variable | Meaning |
 |---|---|
@@ -75,12 +77,12 @@ Each top-level `FiberPhot*/`, `FP*/` or `Subject*/` folder is one TDT recording 
 | `FP2_glucose_13hours_100424` | "#2", 13-h (glucose) | ✅ `.mat` arrays, 1 fiber |
 | `Subject1-240323-091543_morning` | 1, morning (**saline**) | ✅ `.mat` arrays, 1 fiber |
 | `Subject3-240322-092543_morning` | 3, morning (glucose) | ✅ `.mat` arrays, 1 fiber |
+| `Subject2-240321-093251_210324` | 2, 13-h (saline) | ✅ full tank, PFC + OC (`.tev` recovered 2026-10-27) |
+| `Subject33-240324-093611_morning` | 33, morning (saline) | ✅ full tank, PFC + OC (`.tev` recovered 2026-10-27; weak PFC signal, 465 ≈ 69 a.u.) |
+| `Subject5-240326-090337_morning` | 5, morning (glucose) | ✅ full tank, PFC + OC (whole folder recovered 2026-10-27) |
 | `Subject1-240323-171604_evening` | 1, evening (saline) | ❌ `.tev` missing |
-| `Subject2-240321-093251_210324` | 2, 13-h (saline) | ❌ `.tev` missing |
 | `Subject3-240322-172818_evening` | 3, evening (glucose) | ❌ `.tev` missing |
-| `Subject33-240324-093611_morning` | 33, morning (saline) | ❌ `.tev` missing |
 | `Subject33-240324-174256_evening` | 33, evening (saline) | ❌ `.tev` and `.tsq` missing |
-| `Subject5-240326-090337_morning` | 5, morning (glucose) | ❌ `.tev` and `.tsq` missing |
 | `Subject5-240326-170315_evening` | 5, evening (glucose) | ❌ `.tev` and `.tsq` missing |
 
-The missing files may still exist on the original acquisition drive (`H:\Fiber photometry\Glucose\`). Groups and injection times come from the experimenter's lab journal (`glucose_study_digitized.xlsx`, kept locally). Folder and file names don't encode treatment: `GLU`/`glucose` names the study, and mouse 1's `5H_GLU_*` files are saline. Per-session injection times are in the session table of [`questions_for_experimenters.md`](questions_for_experimenters.md).
+The three recovered tanks came from the experimenter's OneDrive and were placed in their original folders; each `.tev` is exactly the size its `.tsq` index expects and reads in full with `TDTbin2mat`. The remaining missing files (evening sessions only, outside the analysis scope) may still exist on the original acquisition drive (`H:\Fiber photometry\Glucose\`). Groups and injection times come from the experimenter's lab journal (`glucose_study_digitized.xlsx`, kept locally). Folder and file names don't encode treatment: `GLU`/`glucose` names the study, and mouse 1's `5H_GLU_*` files are saline. Per-session injection times are in the session table of [`questions_for_experimenters.md`](questions_for_experimenters.md).

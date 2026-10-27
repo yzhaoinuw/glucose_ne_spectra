@@ -10,6 +10,16 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-27
 
+### Recovered tanks verified: #2, #33, #5 (claude-opus-5-5, effort low)
+
+- The user downloaded the 3 missing tanks from the experimenter's OneDrive into their original data folders rather than `recovered_raw/` (Subject5's folder was replaced whole, `.tsq` and video included). README table and next steps updated.
+- All 3 are usable: each `.tev` is exactly the size its `.tsq` expects (+40 B, like the intact FiberPhot4 tank), `load_pfc_raw` reads 465A/405A in full with no NaN, zero or flat runs, and the tank start times match the folder stamps (UTC+1). Durations: #2 13.29 h, #33 5.04 h, #5 5.00 h.
+- #33's raw trace matches the experimenter's `raw+normalized_PFC_mouse33_morning.jpg` dip for dip, so its low amplitude (465 ≈ 69 a.u. vs 260–340 elsewhere) is the recording itself. Flagged for the spectral step: its 405 shares the 465 dips.
+- Verification:
+  - `tsqcheck.py` (scratch): `.tev` size vs. `.tsq` stream offsets for the 3 tanks + FiberPhot4 reference
+  - MATLAB R2022b `load_pfc_raw` + `TDTbin2mat` HEADERS on the 3 tanks (run directly on the interactive compute node; `srun` inside the existing job fails with "Memory required by task is not available")
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### Analysis scope: first 5 h, spectra only; last questions for the experimenter (claude-opus-5-5, effort high)
 
 - User decisions: analyse the **first 5 h of each recording** (baseline + ~4 h after the injection, all light phase), focus on **spectra** rather than NE level, and put the 48-h study aside. This drops the evening sessions and makes the 13-h end-of-session fit moot.

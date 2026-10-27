@@ -1,8 +1,13 @@
-function summary = extract_ne_pfc_ds(data_root, out_dir, only, v1_dir)
+function summary = extract_ne_pfc_ds(data_root, out_dir, only, v1_dir, max_h)
 %EXTRACT_NE_PFC_DS  Downsampled (~20 Hz) PFC NE dF/F with a robust, segment-anchored 405 fit (v2).
 %
 %   summary = extract_ne_pfc_ds()                      % all recordings, default paths
-%   summary = extract_ne_pfc_ds(data_root, out_dir, only, v1_dir)
+%   summary = extract_ne_pfc_ds(data_root, out_dir, only, v1_dir, max_h)
+%
+%   max_h (default Inf): keep only the first max_h hours from recording
+%   start, then process that window as a short session (whole-window fit).
+%   max_h = 5 gives every mouse the same baseline + ~4 h post-injection
+%   window, fitted the same way (see extract_ne_pfc_first5h).
 %
 %   Differences from extract_ne_pfc (v1):
 %     * Downsampled x50 (~1017 -> ~20.3 Hz) with an anti-aliasing filter
@@ -47,6 +52,7 @@ if nargin < 1 || isempty(data_root), data_root = repo_root; end
 if nargin < 2 || isempty(out_dir),   out_dir = fullfile(repo_root, 'outputs', 'ne_pfc_ds20'); end
 if nargin < 3, only = {}; end
 if nargin < 4 || isempty(v1_dir),    v1_dir = fullfile(repo_root, 'outputs', 'ne_pfc_fullrate'); end
+if nargin < 5 || isempty(max_h),     max_h = Inf; end
 
 recs = pfc_recordings(only);
 if ~exist(fullfile(out_dir, 'qc'), 'dir'), mkdir(fullfile(out_dir, 'qc')); end
@@ -65,6 +71,11 @@ for k = 1:n_rec
     fprintf('\n[%s] %s\n', datestr(now, 'HH:MM:SS'), name);
     try
         R = load_pfc_raw(data_root, recs(k,:), TRIM_S);
+        if isfinite(max_h)
+            % crop at max_h from recording start (t0_s is already elapsed)
+            n_keep = min(numel(R.s465), floor((max_h * 3600 - R.t0_s) * R.fs));
+            R.s465 = R.s465(1:n_keep); R.s405 = R.s405(1:n_keep);
+        end
 
         % 1. anti-aliased downsampling
         fs = R.fs / DS_FACTOR;
@@ -82,7 +93,11 @@ for k = 1:n_rec
             fit_window_min = [t_min(1) BASELINE_MIN; t_min(end) - END_MIN t_min(end)];
         else
             in_fit = true(1, n);
-            fit_window = 'whole recording';
+            if isfinite(max_h)
+                fit_window = sprintf('whole window (first %g h)', max_h);
+            else
+                fit_window = 'whole recording';
+            end
             fit_window_min = t_min([1 end]);
         end
         b = robustfit(x(in_fit)', y(in_fit)', 'bisquare');      % [intercept; slope]
@@ -115,6 +130,7 @@ for k = 1:n_rec
         S.source = recs{k,2};
         S.source_files = R.source_files;
         S.fs_original = R.fs;
+        S.max_h = max_h;
         S.ds_factor = DS_FACTOR;
         S.created = datestr(now, 'yyyy-mm-dd HH:MM:SS');
         S.script = 'extraction/extract_ne_pfc_ds.m';

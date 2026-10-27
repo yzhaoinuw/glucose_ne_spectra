@@ -11,7 +11,7 @@
 #SBATCH --output=outputs/logs/extract_ne_pfc_%j.log
 
 set -euo pipefail
-module load git/2.30.1
+module load git/2.50.1 2>/dev/null || module load git/2.30.1
 module load matlab
 cd "$SLURM_SUBMIT_DIR"
 matlab -nodisplay -batch "addpath('extraction'); extract_ne_pfc"

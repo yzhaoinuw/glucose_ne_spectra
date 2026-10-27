@@ -18,6 +18,9 @@ recs = {
     'FP2_glucose_13hours_100424',      'mat',  '13H_GLU_FP2'
     'Subject1-240323-091543_morning',  'mat',  '5H_GLU_FP1'
     'Subject3-240322-092543_morning',  'mat',  '5H_GLU_FP3'
+    'Subject2-240321-093251_210324',   'tank', ''    % .tev recovered 2026-10-27
+    'Subject33-240324-093611_morning', 'tank', ''    % .tev recovered 2026-10-27
+    'Subject5-240326-090337_morning',  'tank', ''    % tank recovered 2026-10-27
     };
 if nargin >= 1 && ~isempty(only)
     recs = recs(ismember(recs(:,1), only), :);

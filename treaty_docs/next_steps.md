@@ -6,8 +6,8 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). Next: pull the 3 missing tanks from Rebeka's OneDrive, re-extract FP1/FP2 on their first 5 h, then build the spectral pipeline.
-- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. Needs a first-5-h variant for the 13-h sessions plus the 3 recovered sessions.
+- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). The 3 missing tanks are recovered and verified (2026-10-27). Next: add them to the extraction, re-extract everyone on their first 5 h, then build the spectral pipeline.
+- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. Needs a first-5-h variant for the 13-h sessions plus the 3 recovered sessions (tanks verified, not yet in `pfc_recordings.m`).
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
@@ -23,7 +23,7 @@ Decisions (user, 2026-10-27):
 - **Spectra are the focus**; hour-scale NE level is secondary.
 - **48-h study is out of scope** for now.
 
-Cohort (session table in [`questions_for_experimenters.md`](../questions_for_experimenters.md)): glucose #3, #4, #5, #22, FP1, FP2; saline #1, #2, #33. Have raw data for all but #2, #33 and #5. Pending the experimenter: whether FP2 ("#2") is a repeat mouse, plus exclusions, fasting/dose and fiber A = PFC (the 4 questions at the top of that file).
+Cohort (session table in [`questions_for_experimenters.md`](../questions_for_experimenters.md)): glucose #3, #4, #5, #22, FP1, FP2; saline #1, #2, #33. Raw data now exists for all 9 (#2, #33, #5 recovered 2026-10-27). Pending the experimenter: whether FP2 ("#2") is a repeat mouse, plus exclusions, fasting/dose and fiber A = PFC (the 4 questions at the top of that file).
 
 Windows: baseline = recording start → out-of-cage / injection; skip 20 min after the injection (handling spike, confirmed by the experimenter); then post-injection blocks to ~4 h. Compare post with the mouse's own baseline, then glucose vs. saline on that change.
 
@@ -38,13 +38,13 @@ Open for the user: method (Welch / multitaper / time-frequency), bands, block le
 
 ## NE extraction to .mat (claude-opus-5-5)
 
-Status: v1/v2 done 2026-10-20; first-5-h variant and 3 recovered sessions to do
+Status: v1/v2 done 2026-10-20; 3 tanks recovered and verified 2026-10-27; first-5-h variant to do
 
 Decisions (user, 2026-10-20): **PFC only**; reader = **`TDTbin2mat`** from the user's `preprocess_sleep_data` repo (vendored in `extraction/tdt/`). v1 = full rate, whole-recording fit; v2 = ×50 → ~20.35 Hz, robust bisquare 405→465 fit (format in `README.md`).
 
 Remaining work:
 
-- **Missing tanks from OneDrive** (all confirmed present there, 2026-10-27): `.tev` for `Subject2-240321-093251_210324` (13-h, ~6–7 GB), `Subject33-240324-093611_morning`, `Subject5-240326-090337_morning` (+ its `.tsq`). Search by stamp (`240321-093251`, `240324-093611`, `240326-090337`); blocks are all named `Subject1-<stamp>` in tank `EliseFiber1-240321-092235`. Put them in `recovered_raw/<our folder>/`, keep filenames, and check that OneDrive's `.Tdx` matches ours. A plain SharePoint `download.aspx?UniqueId=…` link returns 403 without login cookies; the user plans to download via a browser on the cluster. The CTN script `transfer/fetch_missing_tev.sh` is superseded.
+- **Recovered tanks** (done 2026-10-27): `Subject2-240321-093251_210324`, `Subject33-240324-093611_morning` and `Subject5-240326-090337_morning` are now complete tanks in their original folders (the user placed them there, not in `recovered_raw/`). Add them to `pfc_recordings.m` as `'tank'` sources. #33's PFC signal is weak (465 ≈ 69, 405 ≈ 56 a.u.) and its 405 dips track the 465 dips, so lean on the 405 control spectrum for that mouse.
 - **First-5-h extraction:** fit FP1/FP2 (and #2) on their first 5 h with the same whole-window fit as the 5-h mornings, so every mouse is processed the same way. v2's 13-h baseline + last-hour fit (doubtful since lights go off at 19:00) is then no longer used.
 - Optional later: OC fiber (`465C`/`405C`).
 
@@ -54,4 +54,4 @@ Sections below this line are older threads kept for context. They're not the cur
 
 ### GitHub remote (claude-opus-5-5)
 
-Done 2026-10-20. `origin` = `git@github.com:yzhaoinuw/glucose_ne_spectra.git` (private), `main` tracks `origin/main`. Push over SSH; there's no `gh` CLI on the cluster.
+Done 2026-10-20. `origin` = `git@github.com:yzhaoinuw/glucose_ne_spectra.git` (**public**; anything committed is world-readable), `main` tracks `origin/main`. Push over SSH; there's no `gh` CLI on the cluster.

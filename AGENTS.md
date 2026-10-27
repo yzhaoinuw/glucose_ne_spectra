@@ -13,7 +13,7 @@ At the beginning of a new chat or agent session for this project, read this file
 When running code, tests, or the application for this repository, use:
 
 - **Python analysis env:** not created yet. When the first Python code lands, create a conda env (planned name `glucose_ne_spectra`, Python ≥ 3.10) and record the activation command here. Do not use the cluster's base Python, which is 3.7.
-- **Git:** the system git is 1.8. Load a newer one first with `module load git/2.30.1`.
+- **Git:** RHEL 9 nodes have no system git; `module load git/2.50.1` (older nodes: system git 1.8, `module load git/2.30.1`).
 - **Treaty CLI:** installed in its own venv at `~/.local/venvs/treaty/`, run as `~/.local/venvs/treaty/bin/treaty`.
 - **MATLAB** (extraction + reference scripts): `module load matlab` loads R2022b, the only enabled version. Don't pipe `module load` (e.g. `| tail`); that runs it in a subshell and `matlab` won't be on `PATH`. MATLAB needs a compute node: quick checks use `srun -p debug -A dkell12_lab -t 00:15:00 --mem=8G bash -lc 'module load matlab; matlab -nodisplay -batch "..."'`.
 - **Heavy jobs** (reading the ~3.5 GB TDT tanks, spectral analysis over all recordings) go through SLURM (`sbatch`/`srun`), not the login node.
@@ -21,7 +21,7 @@ When running code, tests, or the application for this repository, use:
 Typical startup:
 
 ```
-module load git/2.30.1
+module load git/2.50.1   # or git/2.30.1 on older nodes
 # conda activate glucose_ne_spectra   # once the env exists
 ```
 
@@ -31,12 +31,13 @@ After activation, use that environment for commands such as the verification com
 
 Short recipes for the things you'll usually do in a session.
 
-Re-run the NE extraction for all 8 usable recordings. v2 (~20 Hz, recommended) goes to `outputs/ne_pfc_ds20/`; v1 (full rate) goes to `outputs/ne_pfc_fullrate/`:
+Re-run the NE extraction for all 11 usable recordings. v2 (~20 Hz, recommended) goes to `outputs/ne_pfc_ds20/`; v1 (full rate) goes to `outputs/ne_pfc_fullrate/`:
 
 ```
 mkdir -p outputs/logs
 sbatch extraction/run_extract_ne_pfc_ds.sbatch   # v2
 sbatch extraction/run_extract_ne_pfc.sbatch      # v1
+sbatch extraction/run_extract_ne_pfc_first5h.sbatch   # analysis input: 9 cohort sessions, first 5 h -> outputs/ne_pfc_ds20_first5h/
 ```
 
 Commit before an extraction run: the outputs record `git rev-parse HEAD`.
