@@ -12,7 +12,7 @@ At the beginning of a new chat or agent session for this project, read this file
 
 When running code, tests, or the application for this repository, use:
 
-- **Python analysis env:** not created yet. When the first Python code lands, create a conda env (planned name `glucose_ne_spectra`, Python ≥ 3.10) and record the activation command here. Do not use the cluster's base Python, which is 3.7.
+- **Python analysis env:** `module load miniforge3/25.11.0-1; conda activate glucose_ne_spectra` (Python 3.11, conda-forge: numpy, scipy, pandas, matplotlib, statsmodels, pytest, black). Or call `~/.conda/envs/glucose_ne_spectra/bin/python` directly. Don't use the cluster's base Python (3.7, no numpy).
 - **Git:** RHEL 9 nodes have no system git; `module load git/2.50.1` (older nodes: system git 1.8, `module load git/2.30.1`).
 - **Treaty CLI:** installed in its own venv at `~/.local/venvs/treaty/`, run as `~/.local/venvs/treaty/bin/treaty`.
 - **MATLAB** (extraction + reference scripts): `module load matlab` loads R2022b, the only enabled version. Don't pipe `module load` (e.g. `| tail`); that runs it in a subshell and `matlab` won't be on `PATH`. MATLAB needs a compute node: quick checks use `srun -p debug -A dkell12_lab -t 00:15:00 --mem=8G bash -lc 'module load matlab; matlab -nodisplay -batch "..."'`.
@@ -22,7 +22,7 @@ Typical startup:
 
 ```
 module load git/2.50.1   # or git/2.30.1 on older nodes
-# conda activate glucose_ne_spectra   # once the env exists
+module load miniforge3/25.11.0-1 && conda activate glucose_ne_spectra
 ```
 
 After activation, use that environment for commands such as the verification command below, the app launch, import checks, and one-off scripts.
@@ -53,17 +53,17 @@ Verify the repo is in good shape — the CI-equivalent check:
 Run the fuller / slower checks, if this repo has a longer pass:
 
 ```
-# None yet. Add `pytest` here once Python code and tests exist.
+python -m pytest -q tests
 ```
 
 Pre-flight checklist before committing:
 
-- Formatter / linter is clean (matches the CI format job): none configured yet. Use `black` once Python code exists.
+- Formatter is clean: `black -l 110 --check spectra tests`.
 - Verification is green (matches the CI check job): `~/.local/venvs/treaty/bin/treaty validate .`
 - `git status` shows no data files staged. Raw recordings and `.mat`/`.npy` outputs must stay out of git (see `.gitignore`).
 - A new `treaty_docs/work_log.md` entry records the decisions made and the verification commands actually run — see [When To Update Treaty Docs](#when-to-update-treaty-docs).
 
-If the change touches active modules, confirm imports still work. There are no smoke tests yet; add them with the first Python module.
+If the change touches `spectra/`, run the tests above and re-run `python -m spectra.run_first5h`.
 
 ## When To Update Treaty Docs
 

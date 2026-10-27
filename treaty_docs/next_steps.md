@@ -6,14 +6,23 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). First-5-h extraction ran 2026-10-27 (`outputs/ne_pfc_ds20_first5h/`), but its 405 fit is unreliable. **Blocking: the user picks the 405 correction** (see the extraction thread), then re-extract and build the spectral pipeline.
-- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; the 405 fit needs replacing before the spectra.
+- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). First pass done 2026-10-27 (`spectra/`, option (c): 465 and 405 side by side, no single fit). Next: the user reviews the figures; decide on stats, the sleep-state confound and FP1/FP2 identity before any claim.
+- [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; `spectra/` uses its raw traces, not its `dff`.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
 ## Spectral analysis of NE oscillations (claude-opus-5-5)
 
-Status: scope decided 2026-10-27, not started (claude-opus-5-5, effort high)
+Status: first pass 2026-10-27 (claude-opus-5-5, effort low). Method and outputs in README "Spectral analysis".
+
+First-pass observations (descriptive, n = 6 vs. 3, not a result yet):
+
+- **0.01–0.05 Hz:** the 405-independent 465 power drops about 3–9× in 3 of 6 glucose mice (#5, FP1, FP2) for ~2–3 h, and briefly in #3 (+20–80 min). #4 and #22 don't drop (#22 rises). All 3 saline mice stay at 0 to +0.7 log2. The responders are the mice whose 465 level rose most, and 2 of the 3 are the FP sessions whose identity is unresolved.
+- **Above 0.05 Hz**, the 405-independent change is near 0 in both groups. The early glucose peak at ~0.15 Hz (+20–80 min) is coherent with 405 (artifact or hemodynamic) and drops out.
+- 465–405 baseline coherence is 0.4–0.9 at 0.05–1 Hz in most mice (low in #22 and #33), so most of the 465 power there is shared with 405.
+- Infraslow NE oscillations are a NREM-sleep feature, so a drop may mean less sleep rather than a direct glucose effect on NE dynamics. No EEG; video scoring is the experimenter's suggestion.
+
+Open: stats approach (per-mouse change, permutation or mixed model; n is small), whether to narrow the bands (e.g. around ~0.02 Hz), sleep scoring.
 
 Compare the PFC NE power spectrum after the IP injection with each mouse's own baseline, glucose vs. saline.
 
@@ -34,7 +43,7 @@ Constraints found during extraction:
 - The baseline is only ~1 h: 2-min Welch windows (≈0.008 Hz resolution, ~60 half-overlapping segments) reach ~0.01 Hz, nothing slower. Detrend within windows; slow drift leaks into the lowest bins.
 - Quick look (2026-10-26, not a result): 0.01–0.1 Hz ΔF/F power fell for ~3 h after glucose in FP1/FP2, but 405 fell too and FiberPhot22 morning didn't show it.
 
-Open for the user: method (Welch / multitaper / time-frequency), bands, block length. Sleep state is a confound with no EEG here; the experimenter suggests scoring from video + NE.
+Defaults chosen for the first pass (user can revise): Welch 2-min segments, bands 0.01–0.05 / 0.05–0.2 / 0.2–1 Hz, 60-min blocks. Sleep state is a confound with no EEG here; the experimenter suggests scoring from video + NE.
 
 ## NE extraction to .mat (claude-opus-5-5)
 
@@ -46,7 +55,7 @@ Remaining work:
 
 - **Recovered tanks** (done 2026-10-27): #2, #33 and #5 are in `pfc_recordings.m` as `'tank'` sources. #33's PFC signal is weak (465 ≈ 69, 405 ≈ 56 a.u.) and its 405 dips track the 465 dips.
 - **First-5-h extraction** (ran 2026-10-27, `extract_ne_pfc_first5h.m`, job 2223801): all 9 ok, but the whole-window robust fit is biased by the post-injection 465 rise against a bleaching 405. Slopes: FP2 −1.26, #5 −0.23, FP1 −0.01, others 0.29–0.82. FP2's ΔF/F has ~10× v1's power at 0.05–1 Hz.
-- **Open decision (user): the 405 correction.** In 0.01–1 Hz, 465 and 405 correlate at r = 0.57–0.86 in every session, with slopes ~0.9–2.1 (baseline-only band-passed: 0.8–1.8). Whole-window slopes are below that everywhere. Which slope is right depends on whether that shared component is artifact (motion/blood flow → remove it) or partly NE (→ a slope of ~1–2 would remove real NE dips). Options: (a) fit on the pre-injection baseline only; (b) slope from band-passed signals; (c) report 465 and 405 spectra separately plus 465–405 coherence, and treat the fit as a sensitivity check. Recommended: (c) for the spectral claims, with (a) as the ΔF/F product.
+- **405 correction decided (user, 2026-10-27): option (c).** 465 and 405 are analysed side by side (coherence, the 405-independent part of 465), with a baseline-only-fit ΔF/F as a cross-check. That cross-check is also unreliable for #5 (baseline slope −0.16). Background: in 0.01–1 Hz, 465 and 405 correlate at r = 0.57–0.86 with slopes ~0.9–2.1, and whole-window slopes are below that everywhere.
 - Optional later: OC fiber (`465C`/`405C`).
 
 ## Background / Paused

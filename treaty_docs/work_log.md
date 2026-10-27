@@ -10,6 +10,17 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-27
 
+### Spectral pipeline, first pass (option c) (claude-opus-5-5, effort low)
+
+- User chose option (c): no single 405 fit. 465 and 405 spectra, their coherence, and the 465 power 405 can't predict, P465 × (1 − coherence), with a baseline-only-fit ΔF/F as a cross-check. The baseline-only fit is also negative for #5 (−0.16), which confirms that (a) alone wouldn't have been enough.
+- First Python code: `spectra/` + `tests/`, conda env `glucose_ne_spectra` (miniforge3/25.11.0-1, Python 3.11). Default windows and bands chosen for a first look and listed in README; open to revision.
+- First pass, descriptive only: 0.01–0.05 Hz 405-independent 465 power falls 3–9× for ~2–3 h in 3 of 6 glucose mice (#5, FP1, FP2), briefly in #3; not in #4, #22 or any saline mouse. No 405-independent change above 0.05 Hz. Caveats recorded in next steps (sleep state, FP identity, n).
+- Verification:
+  - `python -m pytest -q tests` (5 passed); `black -l 110` on `spectra/`, `tests/`
+  - `python -m spectra.run_first5h` (log `outputs/spectra_first5h/run.log`); inspected `band_change.png`, `spectral_change.png`, `per_mouse/5_glucose.png`
+  - `validate_palette.js` (dataviz skill): group pair and ordinal block ramp pass
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### First-5-h extraction run; 405 fit found unreliable (claude-opus-5-5, effort low)
 
 - Added the 3 recovered tanks to `pfc_recordings.m` and a `max_h` crop to `extract_ne_pfc_ds.m`. `extract_ne_pfc_first5h.m` runs the 9 cohort sessions cropped to 5 h, with a whole-window fit for all, as decided earlier. Commit 1fc9e1c, job 2223801, ~1 min, all 9 ok.

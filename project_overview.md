@@ -73,6 +73,8 @@ Many repos accumulate parallel implementations during refactors; without an expl
 
 - [`extraction/extract_ne_pfc_ds.m`](extraction/extract_ne_pfc_ds.m): v2 NE extraction, the one to use. [`extraction/extract_ne_pfc.m`](extraction/extract_ne_pfc.m) (v1, full rate) is kept for comparison.
 - [`extraction/load_pfc_raw.m`](extraction/load_pfc_raw.m), [`extraction/pfc_recordings.m`](extraction/pfc_recordings.m), [`extraction/get_git_commit.m`](extraction/get_git_commit.m): shared helpers.
+- [`spectra/`](spectra/): the first-5-h spectral analysis (`run_first5h.py` entry point, `core.py` measures, `sessions.py` cohort + windows, `plots.py`). Tests in [`tests/`](tests/).
+- [`extraction/extract_ne_pfc_first5h.m`](extraction/extract_ne_pfc_first5h.m): crops the 9 cohort sessions to 5 h; its raw traces feed `spectra/`.
 - [`extraction/tdt/`](extraction/tdt/): the TDT reader, vendored unmodified from the TDT SDK via the user's `preprocess_sleep_data` repo. Don't edit it; replace it with a newer SDK copy if needed.
 
 ### Likely older or secondary
@@ -105,7 +107,7 @@ Applies to any repo with codegen, migrations, lockfiles, compiled assets, extrac
 
 ## Tests And Fixtures
 
-No tests yet. A cheap fixture for future smoke tests is `Subject1-240323-091543_morning/5H_GLU_FP1_signal_{465,405}.mat`, a pre-extracted raw signal of about 640 MB that loads without the TDT reader.
+`tests/test_core.py` checks the spectral measures on synthetic signals (no data needed): `python -m pytest -q tests`. A cheap real-data fixture for future smoke tests is `Subject1-240323-091543_morning/5H_GLU_FP1_signal_{465,405}.mat`, a pre-extracted raw signal of about 640 MB that loads without the TDT reader.
 
 ## User Data Expectations
 

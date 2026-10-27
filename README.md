@@ -15,7 +15,7 @@ This repo analyzes fiber-photometry recordings of norepinephrine (NE) in the mou
 | `matlab_scripts/` | The lab's original MATLAB pipeline: ΔF/F preprocessing, hourly-bin stats and NE-"dip" detection. **Reference only.** The new analysis is written in Python. See `project_overview.md` for what each script does and its known bugs. |
 | `AGENTS.md`, `project_overview.md`, `treaty_docs/` | Project documentation and work log ([Agent Collab Treaty](https://github.com/yzhaoinuw/agent_collab_treaty)). Start at `AGENTS.md`. |
 | `extraction/` | MATLAB extraction of PFC NE ΔF/F from the raw recordings: v1 full-rate (`extract_ne_pfc.m`) and v2 ~20 Hz (`extract_ne_pfc_ds.m`), shared loader, SLURM wrappers, and the vendored TDT reader (`tdt/`) |
-| *(coming)* Python package | Spectral analysis |
+| `spectra/` (Python) | Spectral analysis, first 5 h; tests in `tests/` |
 
 ## Extracted NE traces
 
@@ -29,7 +29,7 @@ There are two versions. **Use v2 for analysis**; v1 is kept for comparison and f
 | Size | 1.8 GB | 52 MB |
 | Run | `sbatch extraction/run_extract_ne_pfc.sbatch` (~8 min) | `sbatch extraction/run_extract_ne_pfc_ds.sbatch` (~4 min) |
 
-**Planned analysis input: `outputs/ne_pfc_ds20_first5h/` — provisional, don't use for spectra yet.** Its whole-window fit is pulled by the post-injection NE rise: FP2 (−1.26), #5 (−0.23) and FP1 (−0.01) get negative 405 slopes, so 405 noise is added rather than removed. The fit method is being revisited (see `treaty_docs/next_steps.md`). The v2 method run on the first 5 h of the 9 cohort sessions (6 glucose, 3 saline; mornings plus the first 5 h of the 13-h sessions). Every session is fitted over its whole 5-h window, so all mice are treated the same way. Run with `sbatch extraction/run_extract_ne_pfc_first5h.sbatch`. Each file also stores `max_h = 5`.
+**`outputs/ne_pfc_ds20_first5h/`: use its raw `signal_465` / `signal_405` only, not its `dff`.** The spectral analysis reads the raw traces from it. Its whole-window fit is pulled by the post-injection NE rise: FP2 (−1.26), #5 (−0.23) and FP1 (−0.01) get negative 405 slopes, so 405 noise is added rather than removed. The v2 method run on the first 5 h of the 9 cohort sessions (6 glucose, 3 saline; mornings plus the first 5 h of the 13-h sessions). Every session is fitted over its whole 5-h window, so all mice are treated the same way. Run with `sbatch extraction/run_extract_ne_pfc_first5h.sbatch`. Each file also stores `max_h = 5`.
 
 Run them all from the repo root after `mkdir -p outputs/logs`. Each writes one `.mat` per usable recording (gitignored), a QC figure per recording to `qc/`, and a `summary.csv`. The files are MATLAB v7, so `scipy.io.loadmat` reads them. Both versions share these variables:
 
@@ -48,6 +48,21 @@ Run them all from the repo root after `mkdir -p outputs/logs`. Each writes one `
 **v2's long-session fit makes an assumption:** by fitting only the baseline and the last hour, it assumes NE is back to baseline ~12 h after the injection. That puts the 13-h baselines at 0, and their post-injection NE rise (about +11% FP1, +21% FP2 at 2–4 h) becomes visible. The 5-h sessions keep the whole-recording fit, because their end is only ~4 h post-injection. Caveat (2026-10-26): lights go off at 19:00, so the fitted last hour is in the dark (active) phase while the baseline is in the light. The data can't test the assumption: the fit-free 465/405 ratio drifts upward even in a saline session.
 
 **Bandwidth:** every recording's spectrum rolls off steeply between about 6 and 10 Hz, in both 465 and 405. That's almost certainly the TDT demodulator's low-pass filter (Synapse's usual default is 6 Hz), though the actual setting hasn't been checked. Above about 1–2 Hz, the ΔF/F spectrum matches the 405 control spectrum, so the NE-specific content is below about 1 Hz.
+
+## Spectral analysis (first 5 h)
+
+`spectra/` compares each mouse's post-injection spectra with its own baseline. It doesn't depend on one 405→465 fit: 465 and 405 are analysed side by side.
+
+```
+conda activate glucose_ne_spectra
+python -m spectra.run_first5h      # ~1 min; reads outputs/ne_pfc_ds20_first5h/, writes outputs/spectra_first5h/
+```
+
+- **Windows** (`spectra/sessions.py`): baseline = 5 min → injection − 3 min; skip 20 min after the injection; then 60-min blocks (+20–80, +80–140, +140–200, +200–end ≈ 35–40 min).
+- **Spectra:** Welch, 2-min Hann segments, 50% overlap, linear detrend per segment (~0.008 Hz resolution). Each channel is expressed as % of its own window mean.
+- **Measures:** the 465 and 405 spectra; the 465–405 coherence; **the part of 465 not predicted by 405**, P465 × (1 − coherence), which is a per-frequency regression on 405; and, as a cross-check, ΔF/F with a robust fit on the baseline only.
+- **Bands:** 0.01–0.05, 0.05–0.2, 0.2–1 Hz. Band power is reported as log2 change vs. baseline (coherence as a difference).
+- **Outputs:** `band_power.csv`, `spectra_logbinned.csv`, `baseline_fits.csv`, `band_change.png`, `spectral_change.png`, `coherence.png`, `per_mouse/*.png`.
 
 ## Data
 
