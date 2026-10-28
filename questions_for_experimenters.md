@@ -11,7 +11,7 @@ Rebeka: thank you, your deck, notebook table and answers covered almost everythi
 1. **Which mice are FP1 and FP2?** The notebook lists FP2 as "#2" and FP1 as "#2.1". Is FP2 the original #2 (saline, 21 Mar), the "new #2" (#22, glucose, 24 Mar), or a different mouse? Is FP1 a new mouse? Your PFC figures use 5 glucose mice, but the notebook lists 6 glucose IDs (#3, #4, #5, #22, FP1, FP2), so we want to know whether one is a repeat.
 2. **Exclusions:** should any mouse or session be left out, for example a misplaced fiber on histology, a cable disconnect or a tangled mouse?
 3. **Fasting and dose:** were the mice fasted before the injection, and for how long? Was blood glucose measured? If so, what were the values and when were they taken? What was the glucose concentration? We have the volume (20 µL/g) but need the concentration to give the dose in g/kg.
-4. **Fiber A = PFC?** In the 5-h and 13-h mice, is fiber A (`465A`/`405A`) always PFC? Are the pre-extracted `*_signal_465.mat` / `*_signal_405.mat` files (Subject1 and Subject3 mornings, FP1, FP2) from fiber A?
+4. **Fiber A = PFC?** In the 5-h and 13-h mice, is fiber A (`465A`/`405A`) always PFC? (We checked the pre-extracted `*_signal_465.mat` / `*_signal_405.mat` files against the recovered tanks: they are fiber A. The tanks name fiber A `FibPho1_PFC`.)
 
 **Not needed anymore:** the LED modulation frequencies and demodulator filter (the earlier question for Verena). We only analyze frequencies below ~1 Hz, well under the ~6 Hz cutoff we see.
 

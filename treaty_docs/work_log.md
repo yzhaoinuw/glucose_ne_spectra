@@ -10,6 +10,18 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-28
 
+### OC fiber added; all 9 sessions read from tanks (claude-opus-5-5, effort low)
+
+- User asked to proceed with steps 3–5 after a commit and push. The 4 recovered sessions now read from their tanks. PFC band power moved < 0.0001 log2, so the report's PFC numbers stand.
+- Added OC as a `fiber` option on the existing extraction and a `--fiber` flag on `run_first5h`, rather than a parallel pipeline. OC goes to its own output and results folders, so PFC paths are unchanged.
+- OC result, reported as a side check: the same 3 responders (#5, FP1, FP2) drop ÷2–8 in the slow band; #3's brief PFC drop is absent; no saline drop. The OC 405 control falls less after glucose than saline, so the drop isn't carried by 405. Framed in the report as pointing to a brain-wide or state change, which strengthens the sleep caveat.
+- Verification:
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests` (7 passed)
+  - `sbatch extraction/run_extract_ne_pfc_first5h.sbatch` (job 2236729, 18/18 ok, commit `ee516dd`)
+  - old vs new PFC first-5-h traces for the 4 sessions: r = 1.0000
+  - `python -m spectra.run_first5h` and `--fiber oc`; inspected OC `band_change.png`, `per_mouse/5_glucose.png`
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### 4 recovered `.tev` files verified (claude-opus-5-5, effort low)
 
 - The user pulled the 4 `.tev` files (#1, #3, FP1, FP2). All 4 are complete and clean, so OC raw data now covers all 9 mice.

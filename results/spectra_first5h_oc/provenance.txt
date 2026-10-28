@@ -1,0 +1,5 @@
+code commit: ee516dd
+created: 2026-10-28 13:42:23
+fiber: oc
+input: outputs/ne_oc_ds20_first5h
+script: python -m spectra.run_first5h --fiber oc

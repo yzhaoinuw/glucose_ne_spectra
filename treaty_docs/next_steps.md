@@ -7,14 +7,14 @@ Use this checklist alongside `work_log.md`.
 Active threads — read these first to know what work is in flight:
 
 - [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). First pass done 2026-10-27 (`spectra/`, option (c)); report in `reports/2026-10-27_first5h_ne_spectra.md`. Next: the user reviews the figures; decide on stats, the sleep-state confound and FP1/FP2 identity before any claim.
-- [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5): files in and verified 2026-10-28; the old `.mat` arrays are fiber A. Next: steps 3–5 (tank source, add OC, re-run).
+- [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5): done 2026-10-28. All 9 sessions read from tanks; OC side check in the report (same 3 responders as PFC). Open only: the experimenter confirming fiber A = PFC (question 4).
 - [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; `spectra/` uses its raw traces, not its `dff`.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
 ## Pull the 4 missing .tev files (claude-opus-5-5)
 
-Status: files pulled by the user and steps 1–2 done 2026-10-28 (claude-opus-5-5, effort low). Steps 3–5 open.
+Status: done 2026-10-28 (claude-opus-5-5, effort low). Kept here for the record until the next rotation.
 
 #1, #3, FP1 and FP2 have no raw signal file (`.tev`), only single-fiber `.mat` arrays. Their tanks recorded both fibers (`465A/405A` = `FibPho1_PFC`, `465C/405C` = `FibPho2`, per `StoresListing.txt`), and the rest of each tank (`.tsq`, `.Tbk`, `.Tdx`, …) is present.
 
@@ -35,9 +35,9 @@ Total ~15 GB. Each expected size is the `.tsq`'s last stream offset plus 40 B; t
 
 1. ~~Check each size against the table, then read it in full with `TDTbin2mat`.~~ Done: sizes exact; all 4 stores match the `.tsq` count, no NaN or zeros, longest flat run ≤ 33 samples; starts match `StoresListing.txt`.
 2. ~~Compare the old `.mat` arrays with `465A`/`465C`.~~ Done: identical to `465A`/`405A` (max diff 0, offset 1016 samples), so fiber A. Not `465C` (r 0.91–0.98).
-3. Switch the 4 sessions to the tank source in `extraction/pfc_recordings.m` and re-run the first-5-h extraction (commit first: outputs record the commit).
-4. Add OC (`465C`/`405C`) to the extraction and to `spectra/`, then re-run. Report OC as a side check next to PFC, not as a second result.
-5. Update the README data table, and the report's caveats on fiber assignment and OC coverage.
+3. ~~Switch the 4 sessions to the tank source.~~ Done; PFC results unchanged (< 0.0001 log2).
+4. ~~Add OC to the extraction and `spectra/`.~~ Done: `outputs/ne_oc_ds20_first5h/`, `run_first5h --fiber oc` -> `results/spectra_first5h_oc/`.
+5. ~~Update README and report.~~ Done: report section "Side check: the OC fiber".
 
 ## Spectral analysis of NE oscillations (claude-opus-5-5)
 
@@ -86,7 +86,7 @@ Remaining work:
 - **Recovered tanks** (done 2026-10-27): #2, #33 and #5 are in `pfc_recordings.m` as `'tank'` sources. #33's PFC signal is weak (465 ≈ 69, 405 ≈ 56 a.u.) and its 405 dips track the 465 dips.
 - **First-5-h extraction** (ran 2026-10-27, `extract_ne_pfc_first5h.m`, job 2223801): all 9 ok, but the whole-window robust fit is biased by the post-injection 465 rise against a bleaching 405. Slopes: FP2 −1.26, #5 −0.23, FP1 −0.01, others 0.29–0.82. FP2's ΔF/F has ~10× v1's power at 0.05–1 Hz.
 - **405 correction decided (user, 2026-10-27): option (c).** 465 and 405 are analysed side by side (coherence, the 405-independent part of 465), with a baseline-only-fit ΔF/F as a cross-check. That cross-check is also unreliable for #5 (baseline slope −0.16). Background: in 0.01–1 Hz, 465 and 405 correlate at r = 0.57–0.86 with slopes ~0.9–2.1, and whole-window slopes are below that everywhere.
-- OC fiber (`465C`/`405C`): see [Pull the 4 missing .tev files](#pull-the-4-missing-tev-files-claude-opus-5-5).
+- OC fiber (`465C`/`405C`): extracted for the first-5-h cohort only (2026-10-28); the full-recording v1/v2 runs are still PFC only.
 
 ## Background / Paused
 

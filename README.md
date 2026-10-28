@@ -29,7 +29,9 @@ There are two versions. **Use v2 for analysis**; v1 is kept for comparison and f
 | Size | 1.8 GB | 52 MB |
 | Run | `sbatch extraction/run_extract_ne_pfc.sbatch` (~8 min) | `sbatch extraction/run_extract_ne_pfc_ds.sbatch` (~4 min) |
 
-**`outputs/ne_pfc_ds20_first5h/`: use its raw `signal_465` / `signal_405` only, not its `dff`.** The spectral analysis reads the raw traces from it. Its whole-window fit is pulled by the post-injection NE rise: FP2 (−1.26), #5 (−0.23) and FP1 (−0.01) get negative 405 slopes, so 405 noise is added rather than removed. The v2 method run on the first 5 h of the 9 cohort sessions (6 glucose, 3 saline; mornings plus the first 5 h of the 13-h sessions). Every session is fitted over its whole 5-h window, so all mice are treated the same way. Run with `sbatch extraction/run_extract_ne_pfc_first5h.sbatch`. Each file also stores `max_h = 5`.
+**`outputs/ne_pfc_ds20_first5h/`: use its raw `signal_465` / `signal_405` only, not its `dff`.** The spectral analysis reads the raw traces from it. Its whole-window fit is pulled by the post-injection NE rise: FP2 (−1.26), #5 (−0.23) and FP1 (−0.01) get negative 405 slopes, so 405 noise is added rather than removed. The v2 method run on the first 5 h of the 9 cohort sessions (6 glucose, 3 saline; mornings plus the first 5 h of the 13-h sessions). Every session is fitted over its whole 5-h window, so all mice are treated the same way. Run with `sbatch extraction/run_extract_ne_pfc_first5h.sbatch`. Each file also stores `max_h = 5` and `fiber`.
+
+**`outputs/ne_oc_ds20_first5h/`:** the same run on the OC fiber (`465C`/`405C`), same format. Its whole-window fit is also negative for FP2, FP1 and #22; use the raw traces here too.
 
 Run them all from the repo root after `mkdir -p outputs/logs`. Each writes one `.mat` per usable recording (gitignored), a QC figure per recording to `qc/`, and a `summary.csv`. The files are MATLAB v7, so `scipy.io.loadmat` reads them. Both versions share these variables:
 
@@ -55,14 +57,15 @@ Run them all from the repo root after `mkdir -p outputs/logs`. Each writes one `
 
 ```
 conda activate glucose_ne_spectra
-python -m spectra.run_first5h      # ~1 min; reads outputs/ne_pfc_ds20_first5h/, writes results/spectra_first5h/ (tracked)
+python -m spectra.run_first5h              # ~1 min; reads outputs/ne_pfc_ds20_first5h/, writes results/spectra_first5h/ (tracked)
+python -m spectra.run_first5h --fiber oc   # OC side check: outputs/ne_oc_ds20_first5h/ -> results/spectra_first5h_oc/
 ```
 
 - **Windows** (`spectra/sessions.py`): baseline = 5 min → injection − 3 min; skip 20 min after the injection; then 60-min blocks (+20–80, +80–140, +140–200, +200–end ≈ 35–40 min).
 - **Spectra:** Welch, 2-min Hann segments, 50% overlap, linear detrend per segment (~0.008 Hz resolution). Each channel is expressed as % of its own window mean.
 - **Measures:** the 465 and 405 spectra; the 465–405 coherence; **the part of 465 not shared with 405**, P465 × (1 − coherence): the 465 power left after removing what moves in step with 405 at each frequency (no 405 trace is subtracted); and, as a cross-check, ΔF/F with a robust fit on the baseline only.
 - **Bands:** 0.01–0.05, 0.05–0.2, 0.2–1 Hz. Band power is reported as log2 change vs. baseline (coherence as a difference).
-- **Outputs** (in `results/spectra_first5h/`, committed; `provenance.txt` names the code commit): `band_power.csv`, `spectra_logbinned.csv`, `baseline_fits.csv`, `raw_traces.png` (raw 465 and 405 of all mice with the fitted 405 scaling), `band_change.png`, `spectral_change.png`, `coherence.png`, `per_mouse/*.png`; full band to ~10 Hz: `full_band_baseline.png` / `.csv` (baseline spectra and coherence, all mice) and `full_band/*.png` (spectrograms of 465 and 405 and sliding coherence per recording).
+- **Outputs** (in `results/spectra_first5h/`, or `results/spectra_first5h_oc/` for OC, whose figures are labelled in the corner; committed; `provenance.txt` names the code commit): `band_power.csv`, `spectra_logbinned.csv`, `baseline_fits.csv`, `raw_traces.png` (raw 465 and 405 of all mice with the fitted 405 scaling), `band_change.png`, `spectral_change.png`, `coherence.png`, `per_mouse/*.png`; full band to ~10 Hz: `full_band_baseline.png` / `.csv` (baseline spectra and coherence, all mice) and `full_band/*.png` (spectrograms of 465 and 405 and sliding coherence per recording).
 
 ## Data
 
@@ -76,7 +79,7 @@ Each top-level `FiberPhot*/`, `FP*/` or `Subject*/` folder is one TDT recording 
 | `*.tsq`, `*.Tbk`, `*.Tdx`, `*.tin`, `*.tnt` | TDT tank index and metadata |
 | `StoresListing.txt` | Channel (store) names and sampling rates |
 | `*_Cam1.avi` | Behavior video |
-| `*_signal_465.mat`, `*_signal_405.mat` | Raw 465/405 traces pre-extracted to MATLAB, single fiber, presumably PFC |
+| `*_signal_465.mat`, `*_signal_405.mat` | Raw 465/405 traces pre-extracted to MATLAB, single fiber. Identical to `465A`/`405A` (checked 2026-10-28); no longer used |
 | `*_BL+end_fitting_*.mat`, `*.jpg`, `*.fig` | Outputs from earlier MATLAB runs: normalized traces and figures |
 | `Thumbs.db`, `desktop.ini` | Windows cruft |
 
@@ -88,10 +91,10 @@ Each top-level `FiberPhot*/`, `FP*/` or `Subject*/` folder is one TDT recording 
 | `FiberPhot22_240324_evening` | 22, evening (glucose) | ✅ full tank, PFC + OC |
 | `FiberPhot4_260324_morning` | 4, morning (glucose) | ✅ full tank, PFC + OC |
 | `FiberPhot4_260324_evening` | 4, evening (glucose) | ✅ full tank, PFC + OC |
-| `FP1_glucose_13hours_090424` | "#2.1", 13-h (glucose) | ✅ `.mat` arrays, 1 fiber |
-| `FP2_glucose_13hours_100424` | "#2", 13-h (glucose) | ✅ `.mat` arrays, 1 fiber |
-| `Subject1-240323-091543_morning` | 1, morning (**saline**) | ✅ `.mat` arrays, 1 fiber |
-| `Subject3-240322-092543_morning` | 3, morning (glucose) | ✅ `.mat` arrays, 1 fiber |
+| `FP1_glucose_13hours_090424` | "#2.1", 13-h (glucose) | ✅ full tank, PFC + OC (`.tev` recovered 2026-10-28) |
+| `FP2_glucose_13hours_100424` | "#2", 13-h (glucose) | ✅ full tank, PFC + OC (`.tev` recovered 2026-10-28) |
+| `Subject1-240323-091543_morning` | 1, morning (**saline**) | ✅ full tank, PFC + OC (`.tev` recovered 2026-10-28) |
+| `Subject3-240322-092543_morning` | 3, morning (glucose) | ✅ full tank, PFC + OC (`.tev` recovered 2026-10-28) |
 | `Subject2-240321-093251_210324` | 2, 13-h (saline) | ✅ full tank, PFC + OC (`.tev` recovered 2026-10-27) |
 | `Subject33-240324-093611_morning` | 33, morning (saline) | ✅ full tank, PFC + OC (`.tev` recovered 2026-10-27; weak PFC signal, 465 ≈ 69 a.u.) |
 | `Subject5-240326-090337_morning` | 5, morning (glucose) | ✅ full tank, PFC + OC (whole folder recovered 2026-10-27) |
@@ -100,4 +103,4 @@ Each top-level `FiberPhot*/`, `FP*/` or `Subject*/` folder is one TDT recording 
 | `Subject33-240324-174256_evening` | 33, evening (saline) | ❌ `.tev` and `.tsq` missing |
 | `Subject5-240326-170315_evening` | 5, evening (glucose) | ❌ `.tev` and `.tsq` missing |
 
-The three recovered tanks came from the experimenter's OneDrive and were placed in their original folders; each `.tev` is exactly the size its `.tsq` index expects and reads in full with `TDTbin2mat`. The remaining missing files (evening sessions only, outside the analysis scope) may still exist on the original acquisition drive (`H:\Fiber photometry\Glucose\`). Groups and injection times come from the experimenter's lab journal (`glucose_study_digitized.xlsx`, kept locally). Folder and file names don't encode treatment: `GLU`/`glucose` names the study, and mouse 1's `5H_GLU_*` files are saline. Per-session injection times are in the session table of [`questions_for_experimenters.md`](questions_for_experimenters.md).
+The seven recovered tanks (3 on 2026-10-27, 4 on 2026-10-28) came from the experimenter's OneDrive and were placed in their original folders; each `.tev` is exactly the size its `.tsq` index expects and reads in full with `TDTbin2mat`. The remaining missing files (evening sessions only, outside the analysis scope) may still exist on the original acquisition drive (`H:\Fiber photometry\Glucose\`). Groups and injection times come from the experimenter's lab journal (`glucose_study_digitized.xlsx`, kept locally). Folder and file names don't encode treatment: `GLU`/`glucose` names the study, and mouse 1's `5H_GLU_*` files are saline. Per-session injection times are in the session table of [`questions_for_experimenters.md`](questions_for_experimenters.md).

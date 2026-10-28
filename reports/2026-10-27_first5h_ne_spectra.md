@@ -14,25 +14,26 @@
 - On average over the first 2 h after the injection, glucose mice lost about half their slow-band power (÷2.2). Saline mice gained slightly (×1.2).
 - **The effect is limited to slow frequencies.** It reaches about 0.1 Hz. From 0.2 to 1 Hz neither group changes.
 - **Between 0.05 and 1 Hz, much of the NE channel (465 nm) rises and falls in step with the control channel (405 nm).** The control is the same sensor lit with a colour that doesn't respond to NE. It only picks up things like movement and blood flow. In most mice, 40–90% of the 465 power in this range moves in lockstep with 405 (coherence 0.4–0.9). We therefore suspect that much of the 465 signal there comes from movement or blood flow rather than NE. One case is clearer: right after the glucose injection, a peak near 0.15 Hz appears in both channels, in step, so we strongly suspect it is an artifact rather than an NE response.
+- **The second fiber (OC) shows the same drop in the same three mice** (#5, FP1, FP2; ÷2–8), and no saline drop. See [Side check: the OC fiber](#side-check-the-oc-fiber).
 - This is a descriptive first pass with 6 vs. 3 mice and no statistics. The drop may reflect less sleep after glucose rather than a direct change in NE dynamics (see [Caveats](#caveats)).
 
 ## Dataset
 
-The 9 mice of the glucose study have raw PFC signal. Fiber A (465A / 405A) is treated as PFC. The 465 nm channel is GRAB-NE (`hSyn-NE2m`); the 405 nm channel is the isosbestic control. The sampling rate is ~1017 Hz, and the extraction downsampled it to ~20.3 Hz with anti-aliasing. All 9 recordings start ~09:00 in the light phase (lights 07–19). Only **the first 5 h** of each are used: ~1 h of baseline, the injection, and ~4 h after.
+The 9 mice of the glucose study have raw PFC signal. Fiber A (465A / 405A, named `FibPho1_PFC` in the tanks) is PFC. Fiber C (465C / 405C, the OC fiber) is used only as a side check. The 465 nm channel is GRAB-NE (`hSyn-NE2m`); the 405 nm channel is the isosbestic control. The sampling rate is ~1017 Hz, and the extraction downsampled it to ~20.3 Hz with anti-aliasing. All 9 recordings start ~09:00 in the light phase (lights 07–19). Only **the first 5 h** of each are used: ~1 h of baseline, the injection, and ~4 h after.
 
 | Mouse | Group | Dose (mL) | Injection (min into recording) | Recording | Raw source |
 |---|---|---|---|---|---|
-| #3 | glucose | 0.54 | 62.2 | 5 h | `.mat` arrays (pre-extracted) |
+| #3 | glucose | 0.54 | 62.2 | 5 h | TDT tank (recovered 2026-10-28) |
 | #4 | glucose | 0.56 | 60.6 | 5 h | TDT tank |
 | #5 | glucose | 0.60 | 59.4 | 5 h | TDT tank (recovered from OneDrive) |
 | #22 | glucose | 0.58 | 58.9 | 5 h | TDT tank |
-| FP1 | glucose | 0.52 | 66.5 | 13 h, first 5 h used | `.mat` arrays |
-| FP2 | glucose | 0.60 | 59.9 | 13 h, first 5 h used | `.mat` arrays |
-| #1 | saline | 0.52 | 60.2 | 5 h | `.mat` arrays |
+| FP1 | glucose | 0.52 | 66.5 | 13 h, first 5 h used | TDT tank (recovered 2026-10-28) |
+| FP2 | glucose | 0.60 | 59.9 | 13 h, first 5 h used | TDT tank (recovered 2026-10-28) |
+| #1 | saline | 0.52 | 60.2 | 5 h | TDT tank (recovered 2026-10-28) |
 | #2 | saline | 0.49 | 60.1 | 13 h, first 5 h used | TDT tank (recovered) |
 | #33 | saline | 0.54 | 60.8 | 5 h | TDT tank (recovered) |
 
-Groups, doses and injection times come from the experimenter's notebook. The three recovered tanks were checked against their index files and the experimenter's own plots. #33's PFC signal is weak: raw 465 ≈ 69 a.u., against ≈ 260–340 in the other two recovered tanks (#2, #5).
+Groups, doses and injection times come from the experimenter's notebook. The seven recovered tanks were checked against their index files, and the first three also against the experimenter's own plots. Until 2026-10-28, #1, #3, FP1 and FP2 were read from pre-extracted `.mat` arrays; these turned out to be identical to the tanks' 465A/405A, and switching to the tanks changed no number in this report by more than 0.0001 log2. #33's PFC signal is weak: raw 465 ≈ 69 a.u., against ≈ 260–340 in the other two recovered tanks (#2, #5).
 
 ## Methodology
 
@@ -143,6 +144,30 @@ What Table 2 adds:
 
 *Figure 6. Mouse #5 (glucose), the clearest responder. Top left: raw traces with the analysis windows shaded. Then each measure's spectrum per window (grey: baseline; blue, light to dark: post-injection blocks). In raw 465 and 405, the first post-injection block has a peak near 0.15 Hz. The 465 not shared with 405 has no such peak, only the drop below ~0.1 Hz.*
 
+### Side check: the OC fiber
+
+The same analysis on the second fiber (465C / 405C), output in [`results/spectra_first5h_oc/`](../results/spectra_first5h_oc/).
+
+**Table 3. OC fiber, slow NE fluctuations (0.01–0.05 Hz), 465 power not shared with 405: change vs. the mouse's own baseline.** Bold: a drop of 3× or more.
+
+| Group | Mouse | +20–80 min | +80–140 min | +140–200 min | +200 min–end |
+|---|---|---|---|---|---|
+| glucose | #3 | ÷1.2 | ×1.1 | ×2.4 | ×2.1 |
+| glucose | #4 | ÷1.4 | ×1.5 | ×1.4 | ×1.3 |
+| glucose | #5 | **÷5.3** | **÷7.8** | ÷2.3 | ×1.4 |
+| glucose | #22 | ÷1.0 | ÷1.1 | ×1.5 | ×3.3 |
+| glucose | FP1 | **÷5.8** | **÷7.9** | ÷2.2 | ÷1.3 |
+| glucose | FP2 | **÷3.4** | ÷2.4 | ÷2.9 | ÷1.4 |
+| saline | #1 | ×1.7 | ×1.3 | ×1.7 | ×1.9 |
+| saline | #2 | ×1.4 | ×1.5 | ×1.5 | ×1.7 |
+| saline | #33 | ×1.2 | ÷1.0 | ÷1.2 | ÷1.3 |
+
+- **Same responders as PFC.** #5, FP1 and FP2 drop ÷2–8 in the first 2–3 h, as in PFC (Table 1). #3's brief first-hour PFC drop is not seen in OC (÷1.2). No saline mouse drops.
+- **First 2 h, group means:** the part not shared with 405 falls ÷2.3 in glucose vs. ×1.3 in saline (PFC: ÷2.2 vs. ×1.2). Raw 465: ÷1.8 vs. ×1.1. The OC 405 control drops *less* after glucose than after saline (÷1.3 vs. ÷1.8), so the drop isn't carried by 405.
+- The 0.15 Hz peak right after the glucose injection appears in OC too, again in step with 405 (e.g. #5).
+- #5's OC signal is weak (raw 465 ≈ 57 a.u., against 261 in its PFC fiber), yet its drop matches PFC.
+- **What this adds:** the slow-band drop is not specific to the PFC fiber. A change seen at two sites in the same mice fits a brain-wide change in NE release or in behavioural state (e.g. less sleep), which strengthens the sleep caveat below.
+
 Other outputs: per-mouse figures for all 9 mice in [`per_mouse/`](../results/spectra_first5h/per_mouse/), and the tables [`band_power.csv`](../results/spectra_first5h/band_power.csv), [`spectra_logbinned.csv`](../results/spectra_first5h/spectra_logbinned.csv) and [`baseline_fits.csv`](../results/spectra_first5h/baseline_fits.csv).
 
 ## Caveats
@@ -151,7 +176,7 @@ Other outputs: per-mouse figures for all 9 mice in [`per_mouse/`](../results/spe
 - **Sleep state.** Infraslow (~0.02 Hz) NE oscillations are a feature of NREM sleep. Less slow power after glucose may mean the mice slept less, not that glucose changes NE dynamics directly. There is no EEG. The injection itself wakes the mouse, but saline mice don't show the drop.
 - **Mouse identity.** FP1 and FP2 (2 of the 3 strong responders) are 13-h sessions recorded in April. Whether FP2 is a repeat of an earlier mouse is still an open question for the experimenter.
 - **"Not shared with 405" assumes 405 is a pure control.** If 405 partly picks up NE, which GRAB sensors can do near their isosbestic point, that measure removes some real NE signal. The raw 465 spectrum gives the same direction of effect, which limits this concern.
-- **Fiber assignment.** Fiber A = PFC is assumed. For the `.mat`-only sessions (#1, #3, FP1, FP2), the store isn't recorded in the files.
+- **Fiber assignment.** Fiber A = PFC follows the tanks' store name (`FibPho1_PFC`); the experimenter hasn't yet confirmed it for every mouse. The pre-extracted `.mat` arrays used earlier for #1, #3, FP1 and FP2 are identical to fiber A.
 - **Short baseline.** ~1 h limits the slowest reliable frequency to ~0.01 Hz and makes the baseline spectrum itself noisy.
 
 ## Next steps
@@ -161,7 +186,7 @@ Other outputs: per-mouse figures for all 9 mice in [`per_mouse/`](../results/spe
 3. **Narrow the band:** look at the ~0.02 Hz NREM NE oscillation peak directly (peak frequency and power), not just band power.
 4. **Resolve FP1/FP2 identity and exclusions** with the experimenter (open questions in `questions_for_experimenters.md`).
 5. **Relate level to spectrum:** test whether the size of the post-glucose NE level rise predicts the slow-band drop across mice.
-6. Optional: repeat on the second fiber (OC) and check sensitivity to block length and segment length.
+6. Optional: check sensitivity to block length and segment length. (The OC repeat is done: see [Side check: the OC fiber](#side-check-the-oc-fiber).)
 
 ## Appendix A: full-band view of each recording
 

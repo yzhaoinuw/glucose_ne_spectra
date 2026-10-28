@@ -37,7 +37,7 @@ Re-run the NE extraction for all 11 usable recordings. v2 (~20 Hz, recommended) 
 mkdir -p outputs/logs
 sbatch extraction/run_extract_ne_pfc_ds.sbatch   # v2
 sbatch extraction/run_extract_ne_pfc.sbatch      # v1
-sbatch extraction/run_extract_ne_pfc_first5h.sbatch   # analysis input: 9 cohort sessions, first 5 h -> outputs/ne_pfc_ds20_first5h/
+sbatch extraction/run_extract_ne_pfc_first5h.sbatch   # analysis input: 9 cohort sessions, first 5 h -> outputs/ne_{pfc,oc}_ds20_first5h/
 ```
 
 Commit before an extraction run: the outputs record `git rev-parse HEAD`.
@@ -63,7 +63,7 @@ Pre-flight checklist before committing:
 - `git status` shows no data files staged. Raw recordings and `.mat`/`.npy` outputs must stay out of git (see `.gitignore`). `results/` (small CSVs/PNGs) is tracked on purpose. The GitHub remote is public, so pushing publishes it.
 - A new `treaty_docs/work_log.md` entry records the decisions made and the verification commands actually run — see [When To Update Treaty Docs](#when-to-update-treaty-docs).
 
-If the change touches `spectra/`, run the tests above and re-run `python -m spectra.run_first5h`.
+If the change touches `spectra/`, run the tests above and re-run `python -m spectra.run_first5h` (and `--fiber oc`).
 
 ## When To Update Treaty Docs
 
