@@ -5,7 +5,7 @@
 This repo analyzes fiber-photometry recordings of norepinephrine (NE) in the mouse prefrontal cortex after an intraperitoneal (IP) injection of glucose vs. saline. It looks for **shifts in the frequency of NE oscillations across the power spectrum** after the dose, relative to the pre-injection baseline.
 
 - **Sensor:** GRAB-NE `hSyn-NE2m`. 465 nm excitation is the NE signal; 405 nm is the isosbestic (motion/bleaching) control.
-- **Acquisition:** TDT Synapse, about 1017.3 Hz, with two fibers: **PFC** (`465A`/`405A`) and **OC** (`465C`/`405C`).
+- **Acquisition:** TDT Synapse, about 1017.3 Hz, with two fibers: **PFC** (`465A`/`405A`) and **OC** (`465C`/`405C`; occipital cortex, from memory of a meeting, to be confirmed with the experimenter).
 - **Protocol:** one IP injection per mouse. Baseline from 09:00, injection at ~10:00, recording to 14:00 (the "morning" session), a 3-h break, then 17:00–22:00 (the "evening" session, ~7–12 h post-injection). The two 13-h sessions run the same protocol without the break. Lights are on 07:00–19:00, so each evening session and the last ~3 h of each 13-h session are in the dark. Source: the experimenter's summary deck (see [`questions_for_experimenters.md`](questions_for_experimenters.md)).
 
 ## Repo layout

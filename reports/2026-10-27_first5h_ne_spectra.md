@@ -19,7 +19,7 @@
 
 ## Dataset
 
-The 9 mice of the glucose study have raw PFC signal. Fiber A (465A / 405A, named `FibPho1_PFC` in the tanks) is PFC. Fiber C (465C / 405C, the OC fiber) is used only as a side check. The 465 nm channel is GRAB-NE (`hSyn-NE2m`); the 405 nm channel is the isosbestic control. The sampling rate is ~1017 Hz, and the extraction downsampled it to ~20.3 Hz with anti-aliasing. All 9 recordings start ~09:00 in the light phase (lights 07–19). Only **the first 5 h** of each are used: ~1 h of baseline, the injection, and ~4 h after.
+The 9 mice of the glucose study have raw PFC signal. Fiber A (465A / 405A, named `FibPho1_PFC` in the tanks) is PFC. Fiber C (465C / 405C, the OC fiber) is used only as a side check. OC is most likely the occipital cortex; the experimenter has yet to confirm this. The 465 nm channel is GRAB-NE (`hSyn-NE2m`); the 405 nm channel is the isosbestic control. The sampling rate is ~1017 Hz, and the extraction downsampled it to ~20.3 Hz with anti-aliasing. All 9 recordings start ~09:00 in the light phase (lights 07–19). Only **the first 5 h** of each are used: ~1 h of baseline, the injection, and ~4 h after.
 
 | Mouse | Group | Dose (mL) | Injection (min into recording) | Recording | Raw source |
 |---|---|---|---|---|---|
@@ -166,7 +166,7 @@ The same analysis on the second fiber (465C / 405C), output in [`results/spectra
 - **First 2 h, group means:** the part not shared with 405 falls ÷2.3 in glucose vs. ×1.3 in saline (PFC: ÷2.2 vs. ×1.2). Raw 465: ÷1.8 vs. ×1.1. The OC 405 control drops *less* after glucose than after saline (÷1.3 vs. ÷1.8), so the drop isn't carried by 405.
 - The 0.15 Hz peak right after the glucose injection appears in OC too, again in step with 405 (e.g. #5).
 - #5's OC signal is weak (raw 465 ≈ 57 a.u., against 261 in its PFC fiber), yet its drop matches PFC.
-- **What this adds:** the slow-band drop is not specific to the PFC fiber. A change seen at two sites in the same mice fits a brain-wide change in NE release or in behavioural state (e.g. less sleep), which strengthens the sleep caveat below.
+- **What this adds:** the slow-band drop is not specific to the PFC fiber. If OC is the occipital cortex, as we believe, the two fibers sit at opposite ends of the cortex. A change seen at both sites in the same mice fits a brain-wide change in NE release or in behavioural state (e.g. less sleep), which strengthens the sleep caveat below.
 
 Other outputs: per-mouse figures for all 9 mice in [`per_mouse/`](../results/spectra_first5h/per_mouse/), and the tables [`band_power.csv`](../results/spectra_first5h/band_power.csv), [`spectra_logbinned.csv`](../results/spectra_first5h/spectra_logbinned.csv) and [`baseline_fits.csv`](../results/spectra_first5h/baseline_fits.csv).
 

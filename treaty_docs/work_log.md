@@ -10,6 +10,13 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-28
 
+### OC = occipital cortex, provisionally (claude-opus-5-5, effort low)
+
+- No file names the OC site (deck says only "PFC and OC"; no coordinates). The user recalls the experimenter saying occipital cortex. Docs and report now say so, marked unconfirmed; question 4 for the experimenter now asks too.
+- Why it matters: the report's "brain-wide" reading of the OC replication relies on OC being far from PFC. If OC turned out to be orbitofrontal, that reading would weaken.
+- Verification:
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### OC fiber added; all 9 sessions read from tanks (claude-opus-5-5, effort low)
 
 - User asked to proceed with steps 3–5 after a commit and push. The 4 recovered sessions now read from their tanks. PFC band power moved < 0.0001 log2, so the report's PFC numbers stand.
