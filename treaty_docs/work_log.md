@@ -15,6 +15,7 @@ Update this log at the end of any substantive work session unless the user expli
 - User asked for the raw signals of every mouse, so readers see why the 405 fit was dropped. `raw_traces.png` is the report's new Figure 1 (others renumbered). Each panel shows the whole-5-h and the baseline-only fitted 405 scaling.
 - Corrected my earlier chat claim that #3/#4/#22 "fit normally". The whole-5-h scaling is too small in every mouse, saline included (0.29–0.82 vs 0.68–2.61 baseline-only), and ≤ 0 only in FP1, #5, FP2.
 - The figure shows the slow-band finding directly: the ~1-min dips vanish for 2–3 h after glucose in #5, FP1, FP2 and continue in saline. Many dips are also visible in 405.
+- From the user's proofreading questions, Methodology gained short plain answers: why spectra avoid the fit problem, why 2-min segments, why both 465 and 405 are used (coherence, not shared power, marks artifact), and that >1 Hz is dropped because it has no signal, not because it is contaminated.
 - Verification:
   - `python -m pytest -q tests` (7 passed); `black -l 110 --check spectra tests`
   - `python -m spectra.run_first5h`; inspected `raw_traces.png`; `~/.local/venvs/treaty/bin/treaty validate .`
