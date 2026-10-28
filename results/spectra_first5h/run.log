@@ -60,4 +60,4 @@ dff_baseline_fit 0.01-0.05 Hz +20-80 min      -0.63    0.28
                               +140-200 min    -0.32   -0.41
                               +200 min-end    -0.28   -0.52
 
-Wrote results/spectra_first5h
+Wrote /gpfs/fs3/archive/dkell12_lab/BrainFlowZZZ/Yue/GlucoseProjectFiberNE/results/spectra_first5h

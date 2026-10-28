@@ -10,6 +10,18 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-27
 
+### Full-band (to ~10 Hz) justification of the 0.01–1 Hz range; report figures embedded (claude-opus-5-5, effort low)
+
+- User asked for the frequency range and band choices in the report's Methodology, backed by a full spectrogram of every recording up to 10 Hz, with the key Results figures embedded rather than linked. Added `full_band/*.png` (465 and 405 spectrograms, sliding coherence, baseline spectra) and `full_band_baseline.png`/`.csv`; Appendix A holds the per-recording figures and Table A1.
+- Corrected the 1 Hz rationale. Above ~1 Hz, 465 doesn't "match" 405: it is a flat noise floor *uncorrelated* with 405 (coherence 0.02–0.04, the chance level for ~54 segments). The 6–10 Hz roll-off is also present at full rate (~1017 Hz), so it is the acquisition filter, not the v2 resample.
+- Shared artifacts above 1 Hz: a ~2–4 Hz trace in #5 at +30–90 min (likely breathing or movement) and a steady ~8 Hz band in #2 (likely heartbeat). 0.01–0.05 Hz is the only range where 465 power exceeds 405 (8/9 mice), which supports it as the NE band. The 0.05/0.2 Hz edges stay labelled as untuned. In #22 and #33, 0.2–1 Hz is close to noise.
+- Existing results were byte-identical after the change.
+- Verification:
+  - `python -m pytest -q tests` (7 passed); `black -l 110 --check spectra tests`
+  - `python -m spectra.run_first5h` (log `results/spectra_first5h/run.log`); inspected `full_band_baseline.png` and `full_band/{5_glucose,2_saline,33_saline}.png`
+  - scratch full-rate Welch on `outputs/ne_pfc_fullrate/` (#4, #1): roll-off from ~6 Hz in both channels
+  - all 21 relative links/images in the report resolve; `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### Spectral pipeline, first pass (option c) (claude-opus-5-5, effort low)
 
 - User chose option (c): no single 405 fit. 465 and 405 spectra, their coherence, and the 465 power 405 can't predict, P465 × (1 − coherence), with a baseline-only-fit ΔF/F as a cross-check. The baseline-only fit is also negative for #5 (−0.16), which confirms that (a) alone wouldn't have been enough.

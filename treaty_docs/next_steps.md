@@ -24,6 +24,8 @@ First-pass observations (descriptive, n = 6 vs. 3, not a result yet):
 
 Open: stats approach (per-mouse change, permutation or mixed model; n is small), whether to narrow the bands (e.g. around ~0.02 Hz), sleep scoring.
 
+Frequency range 0.01–1 Hz now justified from the full band (report Methodology + Appendix A, 2026-10-27). Not yet decided: whether to drop or flag the 0.2–1 Hz band for #22 and #33, where it is close to noise.
+
 Compare the PFC NE power spectrum after the IP injection with each mouse's own baseline, glucose vs. saline.
 
 Decisions (user, 2026-10-27):
