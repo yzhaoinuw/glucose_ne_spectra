@@ -10,6 +10,14 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-28
 
+### OC coverage: 4 tanks to pull (claude-opus-5-5, effort low)
+
+- The user hadn't been told clearly that OC raw data exists for only 5 of 9 mice. #1, #3, FP1 and FP2 lack their `.tev`; their `StoresListing.txt` shows both fibers were recorded, with fiber A named `FibPho1_PFC`.
+- The user will pull the 4 `.tev` files from Rebeka's OneDrive on 2026-10-29. Plan, expected byte sizes and the follow-up steps are in next steps.
+- Verification:
+  - `.tsq` stream-offset arithmetic, checked against #5's recovered `.tev` (exact match)
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### Rebeka's prior findings recorded (claude-opus-5-5, effort low)
 
 - User asked to record the experimenter's findings. Re-read the deck (slides 4–10) instead of relying on the old one-line note. Added "Prior Findings" to `project_overview.md` and a 2-sentence Background to the report's Summary.
