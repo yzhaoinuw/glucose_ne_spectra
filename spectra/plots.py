@@ -370,3 +370,39 @@ def full_band_summary(full, path):
     )
     fig.savefig(path, dpi=110)
     plt.close(fig)
+
+
+def raw_traces(per_mouse, path, bin_s=10.0):
+    """Raw 465 and 405 for every mouse's first 5 h, as % of the baseline mean,
+    with the analysis windows shaded and the fitted 405 scaling in each title."""
+    fig, axs = plt.subplots(3, 3, figsize=(14, 9.5), sharex=True, constrained_layout=True)
+    for ax, d in zip(axs.flat, per_mouse.values()):
+        s, wins, t, y, x = d["session"], d["wins"], d["t_min"], d["y"], d["x"]
+        base = (t >= wins[0][1]) & (t < wins[0][2])
+        n = max(1, int(round(bin_s / np.median(np.diff(t * 60)))))
+        k = (t.size // n) * n
+        tb = t[:k].reshape(-1, n).mean(axis=1)
+        for i, (_, a, b) in enumerate(wins):
+            ax.axvspan(a, b, color=_window_color(i), alpha=0.12, lw=0)
+        for sig, col, lab in [(y, INK, "465 (NE sensor)"), (x, MUTED, "405 (control)")]:
+            yb = sig[:k].reshape(-1, n).mean(axis=1)
+            ax.plot(tb, 100 * yb / sig[base].mean(), color=col, lw=0.8, label=lab)
+        ax.axhline(100, color=INK2, lw=0.6)
+        ax.axvline(s.injection_min, color=INK2, ls=":", lw=1.2)
+        ax.set_title(
+            f"{s.mouse} ({s.group})\nfitted 405 scaling: whole 5 h {d['whole_slope']:.2f}, "
+            f"baseline only {d['slope']:.2f}",
+            loc="left",
+            fontsize=9,
+        )
+    for ax in axs[:, 0]:
+        ax.set_ylabel("% of baseline mean")
+    for ax in axs[-1]:
+        ax.set_xlabel("time from recording start (min)")
+    axs[0, 0].legend(loc="lower left")
+    fig.suptitle(
+        "Raw signals, first 5 h (10-s means). Dotted: injection; shaded: baseline (grey) and post-injection blocks (blue)",
+        color=INK,
+    )
+    fig.savefig(path, dpi=110)
+    plt.close(fig)

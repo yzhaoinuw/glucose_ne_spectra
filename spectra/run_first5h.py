@@ -44,7 +44,8 @@ def load(path):
     x = np.asarray(m["signal_405"], dtype=float)
     fs = float(m["fs"])
     t_min = (float(m["t0_s"]) + np.arange(y.size) / fs) / 60.0
-    return y, x, fs, t_min
+    whole_slope = float(np.atleast_1d(m["fit_coef"])[0])  # the extraction's whole-5-h 405 fit
+    return y, x, fs, t_min, whole_slope
 
 
 def full_band(y, x, fs, t_min):
@@ -69,7 +70,7 @@ def analyse(in_dir):
     edges = log_bins()
     band_rows, bin_rows, fit_rows, full_rows, per_mouse = [], [], [], [], {}
     for s in SESSIONS:
-        y, x, fs, t_min = load(in_dir / f"{s.folder}.mat")
+        y, x, fs, t_min, whole_slope = load(in_dir / f"{s.folder}.mat")
         wins = windows(s, t_min[-1])
         base = (t_min >= wins[0][1]) & (t_min < wins[0][2])
         dff, slope, intercept = core.baseline_fit_dff(y, x, fs, base)
@@ -102,6 +103,7 @@ def analyse(in_dir):
             y=y,
             x=x,
             slope=slope,
+            whole_slope=whole_slope,
             full_band=full_band(y, x, fs, t_min),
         )
         base_sp = spectra["baseline"]
@@ -165,6 +167,7 @@ def main(argv=None):
         plots.per_mouse(d, args.out_dir / "per_mouse" / name)
         plots.full_band(d, args.out_dir / "full_band" / name)
     plots.full_band_summary(full, args.out_dir / "full_band_baseline.png")
+    plots.raw_traces(per_mouse, args.out_dir / "raw_traces.png")
     plots.spectral_change(bins, MEASURES, args.out_dir / "spectral_change.png")
     plots.band_change(bands, MEASURES, args.out_dir / "band_change.png")
     plots.coherence_summary(bins, args.out_dir / "coherence.png")
