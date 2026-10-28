@@ -8,7 +8,21 @@ This document orients a new agent (or human collaborator) to the codebase. It's 
 
 The signal is recorded with the GRAB-NE sensor `hSyn-NE2m` on a TDT Synapse system: 465 nm excitation is the NE signal and 405 nm is the isosbestic control. Each recording is about 5 h (morning or evening), and two are about 13 h.
 
-Current state: the lab's original **MATLAB pipeline is kept as reference** (`matlab_scripts/`). **Extraction** of full-rate PFC NE ΔF/F per recording is done in MATLAB (`extraction/`), because it uses the TDT reader. The **spectral analysis** will be in Python and isn't written yet.
+Current state: the lab's original **MATLAB pipeline is kept as reference** (`matlab_scripts/`). **Extraction** of PFC NE per recording is done in MATLAB (`extraction/`), because it uses the TDT reader. The **spectral analysis** is in Python (`spectra/`), with a first-pass report in `reports/`.
+
+## Prior Findings (Rebeka's Analysis)
+
+What the experimenter (E. Rebeka Kovács) found in this study before the spectral work. Source: her deck `Summary_glucose_data_files.pptx`, slides 4–10 (repo root, gitignored). She used the legacy MATLAB pipeline, so read her numbers with its [known bugs](#likely-older-or-secondary) in mind.
+
+- **NE level, PFC:** after glucose (n = 5), ΔF/F rose above baseline at 1 h (marked p < 0.01) and 2 h (p < 0.05), by roughly 2–18 units per mouse. From 3 h on, nothing was significant. In the evening session (8–12 h), the group was back near baseline, with one mouse still raised. Saline (n = 3) showed no significant change at any hour.
+- **Mean traces, PFC:** in the morning, the glucose mean sits ~10 units above saline from ~1 h after the injection to the end of the session. The saline mean keeps its recurring dips; the glucose mean is smooth. In the evening, there is no group difference. OC (fiber 2) results are on slides 5, 7 and 9 and were not reviewed here.
+- **Literature she cites:** Levin 1991 (slide 10). Plasma NE rises after IP glucose (0.05 and 0.10 g/kg) compared with mannitol. That is blood, not brain.
+- **Caveats from the legacy code:**
+  - The y-axis says "dF/F (z score)" but plots ΔF/F %.
+  - The Bonferroni correction is applied twice, and stars can sit on the wrong pairs.
+  - Her "3 hours" panel is labelled "2 Hours After Injection".
+  - The 405 fit spans the whole recording, which this project found unreliable (report Methodology).
+- **How it relates to the spectral results:** consistent. Raw 465 rises 10–25% after glucose in #3, #5, FP1 and FP2 (report Figure 1). The slow-band (0.01–0.05 Hz) drop is strongest in #5, FP1 and FP2, the mice with the largest rise. Her smooth glucose mean vs. the dipping saline mean is the same effect seen in the raw trace.
 
 ## Active Runtime Path
 

@@ -45,5 +45,5 @@ Sources: Rebeka's summary deck (`Summary_glucose_data_files.pptx`, 2026-10-21), 
 - **Light cycle:** lights on 07:00–19:00. The first 5 hours are all in the light.
 - **Sleep:** no EEG/EMG in this study (only in the 48-h study). Sleep could be scored from the video plus the NE trace.
 - **Acquisition:** settings were the same for every session. LED power was 10–20 µW at 405 nm and 20–30 µW at 465 nm.
-- **Her result:** glucose raised the PFC NE level at 1 h, staying up ~3 h; saline was n.s.
+- **Her result:** glucose raised the PFC NE level at 1 h and 2 h (n.s. from 3 h); saline was n.s. Details in `project_overview.md` (Prior Findings).
 - **48-h study (not used now):** a crossover of 8 mice (4 male, 4 female), each given glucose and then saline 2–3 weeks later, with unscored EEG/EMG. It is on Rebeka's OneDrive / the CTN J: drive.

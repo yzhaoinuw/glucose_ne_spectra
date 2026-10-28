@@ -6,6 +6,8 @@
 
 **Goal.** Find out whether an IP glucose injection changes the frequency content of NE fluctuations in the prefrontal cortex (PFC), compared with saline and with each mouse's own pre-injection baseline. The data are fiber photometry with the GRAB-NE sensor.
 
+**Background.** The experimenter's earlier analysis of these recordings found that glucose raised the PFC NE level for ~1–2 h after the injection (5 glucose vs. 3 saline mice), with no change after saline. Our raw traces show the same rise (Figure 1). This report asks whether the NE oscillations change too.
+
 **Findings.**
 
 - **Slow NE fluctuations drop after glucose in about half the glucose mice.** Fluctuations in the 0.01–0.05 Hz band (swings lasting 20–100 s) became 3–9× weaker for ~2–3 h in 3 of 6 glucose mice (#5, FP1, FP2). They dropped briefly in a 4th (#3, first hour only). None of the 3 saline mice showed a drop.
