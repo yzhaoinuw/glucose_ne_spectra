@@ -208,10 +208,7 @@ def coherence_summary(bins, path):
     plt.close(fig)
 
 
-# Sequential blue ramp (steps 100-700) for spectrogram magnitude; light = low.
-SEQ_CMAP = matplotlib.colors.LinearSegmentedColormap.from_list(
-    "seq_blue", ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"]
-)
+SPECTROGRAM_CMAP = "viridis"  # user's choice for the time-frequency panels
 ANALYSIS_RANGE = (0.01, 1.0)  # Hz
 BAND_EDGES = (0.05, 0.2)  # Hz, inner edges of the three bands
 F_PLOT = (0.008, 10.2)
@@ -273,7 +270,7 @@ def full_band(d, path):
             title,
             s,
             wins,
-            cmap=SEQ_CMAP,
+            cmap=SPECTROGRAM_CMAP,
             vmin=vmin,
             vmax=vmax,
         )
@@ -288,7 +285,7 @@ def full_band(d, path):
         "465–405 coherence (20-min windows, 5-min steps)",
         s,
         wins,
-        cmap=SEQ_CMAP,
+        cmap=SPECTROGRAM_CMAP,
         vmin=0,
         vmax=1,
     )
