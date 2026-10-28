@@ -61,6 +61,49 @@ def baseline_fit_dff(y465, x405, fs, fit_mask, smooth_s=1.0):
     return 100.0 * (y465 - control) / control, slope, intercept
 
 
+def _pct_detrend(seg):
+    """Linear detrend of each segment, as % of that segment's mean."""
+    return 100.0 * signal.detrend(seg, type="linear", axis=-1) / np.mean(seg, axis=-1, keepdims=True)
+
+
+def spectrogram(x, fs, seg_s=SEG_S, step_s=60.0):
+    """Time-frequency PSD (%²/Hz): Welch-style Hann segments, each detrended and
+    scaled to % of its own mean. Returns f, segment-centre times (s), S[f, t]."""
+    n, hop = int(round(seg_s * fs)), int(round(step_s * fs))
+    return signal.spectrogram(
+        x, fs=fs, window="hann", nperseg=n, noverlap=n - hop, detrend=_pct_detrend, scaling="density"
+    )
+
+
+def sliding_coherence(y, x, fs, win_s=1200.0, step_s=300.0, seg_s=SEG_S):
+    """465-405 coherence in sliding windows. Returns f, window-centre times (s), C[f, t]."""
+    n, hop = int(round(win_s * fs)), int(round(step_s * fs))
+    starts = range(0, y.size - n + 1, hop)
+    f = None
+    cols = []
+    for s in starts:
+        f, c = coherence(y[s : s + n], x[s : s + n], fs, seg_s)
+        cols.append(c)
+    t = np.array([(s + n / 2) / fs for s in starts])
+    return f, t, np.array(cols).T
+
+
+def log_bin_edges(df, f_hi, per_decade=24):
+    """Contiguous log-spaced bin edges from df/2 to f_hi, each at least df wide,
+    so every bin holds at least one frequency of a grid with spacing df."""
+    ratio = 10 ** (1 / per_decade)
+    edges = [df / 2]
+    while edges[-1] < f_hi:
+        edges.append(min(max(edges[-1] * ratio, edges[-1] + df), f_hi))
+    return np.array(edges)
+
+
+def log_bin_rows(f, a, edges):
+    """Mean of a's rows (frequency axis 0) within each bin of edges."""
+    idx = np.digitize(f, edges) - 1
+    return np.array([a[idx == i].mean(axis=0) for i in range(len(edges) - 1)])
+
+
 def window_spectra(y465, x405, dff, fs, seg_s=SEG_S):
     """All spectral measures for one window. Returns f and a dict of arrays."""
     f, p465 = psd(pct_of_mean(y465), fs, seg_s)

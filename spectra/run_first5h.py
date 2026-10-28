@@ -47,9 +47,27 @@ def load(path):
     return y, x, fs, t_min
 
 
+def full_band(y, x, fs, t_min):
+    """Whole-recording spectrograms of 465 and 405 and their sliding coherence,
+    log-binned in frequency up to Nyquist (~10 Hz), for the full-band figures."""
+    f, t, s465 = core.spectrogram(y, fs)
+    _, _, s405 = core.spectrogram(x, fs)
+    fc, tc, coh = core.sliding_coherence(y, x, fs)
+    edges = core.log_bin_edges(f[1] - f[0], f[-1], per_decade=24)
+    t0 = t_min[0]  # spectrogram times are from the first sample
+    return dict(
+        edges=edges,
+        t_min=t0 + t / 60.0,
+        s465=core.log_bin_rows(f, s465, edges),
+        s405=core.log_bin_rows(f, s405, edges),
+        tc_min=t0 + tc / 60.0,
+        coh=core.log_bin_rows(fc, coh, edges),
+    )
+
+
 def analyse(in_dir):
     edges = log_bins()
-    band_rows, bin_rows, fit_rows, per_mouse = [], [], [], {}
+    band_rows, bin_rows, fit_rows, full_rows, per_mouse = [], [], [], [], {}
     for s in SESSIONS:
         y, x, fs, t_min = load(in_dir / f"{s.folder}.mat")
         wins = windows(s, t_min[-1])
@@ -76,8 +94,23 @@ def analyse(in_dir):
                 for fc, v in bin_spectrum(f, p, edges):
                     bin_rows.append(dict(common, measure=meas, f_hz=fc, value=v))
         per_mouse[s.mouse] = dict(
-            session=s, f=f, spectra=spectra, wins=wins, t_min=t_min, y=y, x=x, slope=slope
+            session=s,
+            f=f,
+            spectra=spectra,
+            wins=wins,
+            t_min=t_min,
+            y=y,
+            x=x,
+            slope=slope,
+            full_band=full_band(y, x, fs, t_min),
         )
+        base_sp = spectra["baseline"]
+        full_edges = core.log_bin_edges(f[1] - f[0], f[-1], per_decade=BINS_PER_DECADE)
+        for meas in ["465", "405", "465_indep_405", "coherence"]:
+            vals = core.log_bin_rows(f, base_sp[meas], full_edges)
+            fc = core.log_bin_rows(f, f, full_edges)
+            for c, v in zip(fc, vals):
+                full_rows.append(dict(mouse=s.mouse, group=s.group, measure=meas, f_hz=c, value=v))
         print(
             f"{s.mouse:>4} {s.group:<7} baseline fit slope {slope:5.2f}; windows: "
             + ", ".join(w[0] for w in wins)
@@ -92,7 +125,7 @@ def analyse(in_dir):
         is_coh = df.measure == "coherence"
         # power: log2 ratio to baseline; coherence: difference from baseline
         df["change_vs_baseline"] = np.where(is_coh, df.value - ref, np.log2(df.value / ref))
-    return bands, bins, pd.DataFrame(fit_rows), per_mouse
+    return bands, bins, pd.DataFrame(fit_rows), pd.DataFrame(full_rows), per_mouse
 
 
 def git_state():
@@ -113,9 +146,10 @@ def main(argv=None):
     ap.add_argument("--in-dir", type=Path, default=REPO / "outputs" / "ne_pfc_ds20_first5h")
     ap.add_argument("--out-dir", type=Path, default=REPO / "results" / "spectra_first5h")
     args = ap.parse_args(argv)
-    (args.out_dir / "per_mouse").mkdir(parents=True, exist_ok=True)
+    for sub in ("per_mouse", "full_band"):
+        (args.out_dir / sub).mkdir(parents=True, exist_ok=True)
 
-    bands, bins, fits, per_mouse = analyse(args.in_dir)
+    bands, bins, fits, full, per_mouse = analyse(args.in_dir)
     (args.out_dir / "provenance.txt").write_text(
         f"code commit: {git_state()}\ncreated: {datetime.now():%Y-%m-%d %H:%M:%S}\n"
         f"input: {args.in_dir.relative_to(REPO) if args.in_dir.is_relative_to(REPO) else args.in_dir}\n"
@@ -124,9 +158,13 @@ def main(argv=None):
     bands.to_csv(args.out_dir / "band_power.csv", index=False)
     bins.to_csv(args.out_dir / "spectra_logbinned.csv", index=False)
     fits.to_csv(args.out_dir / "baseline_fits.csv", index=False)
+    full.to_csv(args.out_dir / "full_band_baseline.csv", index=False)
 
     for mouse, d in per_mouse.items():
-        plots.per_mouse(d, args.out_dir / "per_mouse" / f"{mouse.lstrip('#')}_{d['session'].group}.png")
+        name = f"{mouse.lstrip('#')}_{d['session'].group}.png"
+        plots.per_mouse(d, args.out_dir / "per_mouse" / name)
+        plots.full_band(d, args.out_dir / "full_band" / name)
+    plots.full_band_summary(full, args.out_dir / "full_band_baseline.png")
     plots.spectral_change(bins, MEASURES, args.out_dir / "spectral_change.png")
     plots.band_change(bands, MEASURES, args.out_dir / "band_change.png")
     plots.coherence_summary(bins, args.out_dir / "coherence.png")

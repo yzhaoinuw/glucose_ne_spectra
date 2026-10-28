@@ -57,3 +57,21 @@ def test_windows_cover_baseline_and_four_post_blocks():
         assert wins[1][1] == pytest.approx(s.injection_min + 20)
         assert len(wins) == 5
         assert all(b - a >= 30 for _, a, b in wins)
+
+
+def test_spectrogram_finds_sine_in_its_half_of_the_recording():
+    t = np.arange(int(3600 * FS)) / FS
+    x = 100 + 0.1 * _noise(t.size, 3)
+    x[t >= 1800] += np.sin(2 * np.pi * 2.0 * t[t >= 1800])  # 2 Hz, second half only
+    f, ts, s = core.spectrogram(x, FS)
+    k = np.argmin(np.abs(f - 2.0))
+    assert f[np.argmax(s[:, ts > 1900].mean(axis=1))] == pytest.approx(2.0, abs=0.01)
+    assert s[k, ts > 1900].mean() > 100 * s[k, ts < 1700].mean()
+
+
+def test_log_bins_are_contiguous_and_never_empty():
+    f = np.arange(0, 10.2, 1 / 120)
+    edges = core.log_bin_edges(f[1], f[-1])
+    assert np.all(np.diff(edges) >= f[1] - 1e-12)
+    idx = np.digitize(f, edges) - 1
+    assert set(range(len(edges) - 1)) <= set(idx)

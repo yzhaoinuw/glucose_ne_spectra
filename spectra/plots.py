@@ -4,6 +4,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib import patheffects  # noqa: E402
 import numpy as np  # noqa: E402
 
 # Reference palette (dataviz skill, light mode).
@@ -203,5 +204,171 @@ def coherence_summary(bins, path):
     axs[0].set_ylabel("465–405 coherence (group mean)")
     axs[0].legend(loc="lower left", title="window (from injection)", title_fontsize=8)
     fig.suptitle("How much of the 465 signal moves with 405")
+    fig.savefig(path, dpi=110)
+    plt.close(fig)
+
+
+# Sequential blue ramp (steps 100-700) for spectrogram magnitude; light = low.
+SEQ_CMAP = matplotlib.colors.LinearSegmentedColormap.from_list(
+    "seq_blue", ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"]
+)
+ANALYSIS_RANGE = (0.01, 1.0)  # Hz
+BAND_EDGES = (0.05, 0.2)  # Hz, inner edges of the three bands
+F_PLOT = (0.008, 10.2)
+
+
+def _stroked():
+    """Light line with a dark outline, visible on both ends of the colour ramp."""
+    return [patheffects.withStroke(linewidth=2.6, foreground=INK)]
+
+
+def _mark_range(ax, vertical=False):
+    """Shade the analysed range and dot the band edges on a frequency axis."""
+    span, line = (ax.axhspan, ax.axhline) if vertical else (ax.axvspan, ax.axvline)
+    span(*ANALYSIS_RANGE, color=GRID, alpha=0.45, lw=0, zorder=0)
+    for e in BAND_EDGES:
+        line(e, color=MUTED, lw=0.8, ls=":", zorder=1)
+
+
+def _tf_panel(ax, t_min, edges, z, title, s, wins, **kw):
+    dt = np.diff(t_min)
+    t_edges = np.r_[t_min[0] - dt[0] / 2, t_min[:-1] + dt / 2, t_min[-1] + dt[-1] / 2]
+    mesh = ax.pcolormesh(t_edges, edges, z, shading="flat", rasterized=True, **kw)
+    ax.set_yscale("log")
+    ax.set_ylim(*F_PLOT)
+    ax.set_ylabel("frequency (Hz)")
+    ax.set_title(title, loc="left")
+    ax.grid(False)
+    eff = _stroked()
+    ax.axvline(s.injection_min, color=SURFACE, lw=1.2, path_effects=eff)
+    ax.axvline(wins[0][1], color=SURFACE, lw=0.8, ls="--", path_effects=eff)
+    ax.axvline(wins[0][2], color=SURFACE, lw=0.8, ls="--", path_effects=eff)
+    ax.axvline(wins[1][1], color=SURFACE, lw=0.8, ls="--", path_effects=eff)
+    for f0 in ANALYSIS_RANGE:
+        ax.axhline(f0, color=SURFACE, lw=0.9, ls=(0, (4, 3)), path_effects=eff)
+    return mesh
+
+
+def full_band(d, path):
+    """Whole-recording view up to ~10 Hz: 465 and 405 spectrograms, sliding
+    465-405 coherence, and the baseline spectra and coherence."""
+    s, wins, fb = d["session"], d["wins"], d["full_band"]
+    f, base = d["f"], d["spectra"]["baseline"]
+    fig = plt.figure(figsize=(14, 9.2), constrained_layout=True)
+    gs = fig.add_gridspec(3, 3, width_ratios=[3.2, 0.09, 1.5])
+    fig.suptitle(
+        f"{s.mouse} ({s.group}), {s.folder}: full band to ~10 Hz "
+        "(vertical: baseline, injection, end of 20-min skip; horizontal: 0.01 and 1 Hz)",
+        color=INK,
+    )
+    lp = np.log10(np.concatenate([fb["s465"].ravel(), fb["s405"].ravel()]))
+    vmin, vmax = np.percentile(lp, [1, 99.5])
+    axs = [fig.add_subplot(gs[i, 0]) for i in range(3)]
+    for ax, key, title in [(axs[0], "s465", "465 (NE sensor)"), (axs[1], "s405", "405 (isosbestic control)")]:
+        mesh = _tf_panel(
+            ax,
+            fb["t_min"],
+            fb["edges"],
+            np.log10(fb[key]),
+            title,
+            s,
+            wins,
+            cmap=SEQ_CMAP,
+            vmin=vmin,
+            vmax=vmax,
+        )
+    cb = fig.colorbar(mesh, cax=fig.add_subplot(gs[0:2, 1]))
+    cb.set_label("log10 PSD (%²/Hz)", color=INK2)
+    cb.outline.set_visible(False)
+    mesh = _tf_panel(
+        axs[2],
+        fb["tc_min"],
+        fb["edges"],
+        fb["coh"],
+        "465–405 coherence (20-min windows, 5-min steps)",
+        s,
+        wins,
+        cmap=SEQ_CMAP,
+        vmin=0,
+        vmax=1,
+    )
+    axs[2].set_xlabel("time from recording start (min)")
+    for ax in axs:
+        ax.set_xlim(fb["t_min"][0] - 1, fb["t_min"][-1] + 1)
+    cb = fig.colorbar(mesh, cax=fig.add_subplot(gs[2, 1]))
+    cb.set_label("coherence", color=INK2)
+    cb.outline.set_visible(False)
+
+    keep = (f >= F_PLOT[0]) & (f <= F_PLOT[1])
+    ax = fig.add_subplot(gs[0:2, 2])
+    _mark_range(ax)
+    ax.plot(f[keep], base["465"][keep], color=INK, lw=1.2, label="465")
+    ax.plot(f[keep], base["405"][keep], color=MUTED, lw=1.2, label="405")
+    ax.plot(
+        f[keep], base["465_indep_405"][keep], color=INK, lw=1.0, ls="--", label="465 not predicted by 405"
+    )
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim(*F_PLOT)
+    ax.set_ylabel("PSD (%²/Hz)")
+    ax.set_title("Baseline spectra (shaded: 0.01–1 Hz)", loc="left")
+    ax.legend(loc="lower left")
+    ax = fig.add_subplot(gs[2, 2], sharex=ax)
+    _mark_range(ax)
+    ax.plot(f[keep], base["coherence"][keep], color=INK, lw=1.2)
+    ax.set_ylim(0, 1)
+    ax.set_xlabel("frequency (Hz)")
+    ax.set_ylabel("coherence")
+    ax.set_title("Baseline 465–405 coherence", loc="left")
+    fig.savefig(path, dpi=110)
+    plt.close(fig)
+
+
+def full_band_summary(full, path):
+    """Baseline 465 and 405 spectra per mouse to ~10 Hz, and every mouse's coherence."""
+    mice = list(dict.fromkeys(full.mouse))
+    fig = plt.figure(figsize=(13, 12), constrained_layout=True)
+    gs = fig.add_gridspec(4, 3, height_ratios=[1, 1, 1, 1.15])
+    first = None
+    for i, mouse in enumerate(mice):
+        ax = fig.add_subplot(gs[i // 3, i % 3], sharex=first, sharey=first)
+        first = first or ax
+        m = full[full.mouse == mouse]
+        _mark_range(ax)
+        for meas, col, ls, lab in [
+            ("465", INK, "-", "465"),
+            ("405", MUTED, "-", "405"),
+            ("465_indep_405", INK, "--", "465 not predicted by 405"),
+        ]:
+            g = m[m.measure == meas]
+            ax.plot(g.f_hz, g.value, color=col, ls=ls, lw=1.2 if ls == "-" else 1.0, label=lab)
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlim(*F_PLOT)
+        ax.set_title(f"{mouse} ({m.group.iloc[0]})", loc="left")
+        if i % 3 == 0:
+            ax.set_ylabel("PSD (%²/Hz)")
+        if i == 0:
+            ax.legend(loc="lower left")
+    ax = fig.add_subplot(gs[3, :])
+    _mark_range(ax)
+    for group, col in GROUP_COLOR.items():
+        g = full[(full.measure == "coherence") & (full.group == group)]
+        for k, (_, m) in enumerate(g.groupby("mouse", sort=False)):
+            n = g.mouse.nunique()
+            ax.plot(
+                m.f_hz, m.value, color=col, lw=1.2, alpha=0.8, label=f"{group} (n={n})" if k == 0 else None
+            )
+    ax.set_xscale("log")
+    ax.set_xlim(*F_PLOT)
+    ax.set_ylim(0, 1)
+    ax.set_xlabel("frequency (Hz)")
+    ax.set_ylabel("465–405 coherence")
+    ax.set_title("Baseline 465–405 coherence, every mouse", loc="left")
+    ax.legend(loc="upper right")
+    fig.suptitle(
+        "Baseline spectra to ~10 Hz (shaded: analysed 0.01–1 Hz; dotted: band edges 0.05 and 0.2 Hz)",
+        color=INK,
+    )
     fig.savefig(path, dpi=110)
     plt.close(fig)
