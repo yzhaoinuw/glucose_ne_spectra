@@ -15,7 +15,7 @@ BASELINE_COLOR = INK2
 TITLES = {
     "465": "465 (NE sensor)",
     "405": "405 (isosbestic control)",
-    "465_indep_405": "465, part not predicted by 405",
+    "465_indep_405": "465, part not shared with 405",
     "dff_baseline_fit": "ΔF/F, baseline-only fit (cross-check)",
     "coherence": "465–405 coherence",
 }
@@ -304,9 +304,7 @@ def full_band(d, path):
     _mark_range(ax)
     ax.plot(f[keep], base["465"][keep], color=INK, lw=1.2, label="465")
     ax.plot(f[keep], base["405"][keep], color=MUTED, lw=1.2, label="405")
-    ax.plot(
-        f[keep], base["465_indep_405"][keep], color=INK, lw=1.0, ls="--", label="465 not predicted by 405"
-    )
+    ax.plot(f[keep], base["465_indep_405"][keep], color=INK, lw=1.0, ls="--", label="465 not shared with 405")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlim(*F_PLOT)
@@ -338,7 +336,7 @@ def full_band_summary(full, path):
         for meas, col, ls, lab in [
             ("465", INK, "-", "465"),
             ("405", MUTED, "-", "405"),
-            ("465_indep_405", INK, "--", "465 not predicted by 405"),
+            ("465_indep_405", INK, "--", "465 not shared with 405"),
         ]:
             g = m[m.measure == meas]
             ax.plot(g.f_hz, g.value, color=col, ls=ls, lw=1.2 if ls == "-" else 1.0, label=lab)
