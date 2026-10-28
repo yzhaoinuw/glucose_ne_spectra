@@ -34,7 +34,11 @@ Groups, doses and injection times come from the experimenter's notebook. The thr
 
 ## Methodology
 
-**No single 405 → 465 fit.** The usual correction fits 405 onto 465 and subtracts it. Here it fails. After the injection, 465 rises in several glucose mice while 405 slowly bleaches, and a fit over the whole window learns a slope that is too small or even negative (FP2 −1.26, #5 −0.23). Subtracting with a negative slope *adds* 405 noise. Fitting on the baseline alone is fragile too (#5: −0.16). So no 405 trace is subtracted. 465 and 405 are analysed side by side, and the NE measure uses their coherence instead (below).
+**No single 405 → 465 fit.** The usual correction fits 405 onto 465 and subtracts it. Here it fails (Figure 1). Over the 5 h, 405 bleaches down 15–20% in every mouse. After the injection, 465 instead rises 10–25% in #3, #5, FP1 and FP2. A fit over the whole recording learns a scaling that is too small in every mouse (0.29–0.82, against 0.68–2.61 when fitted on the baseline hour alone). In FP1, #5 and FP2 it comes out zero or negative (−0.01, −0.23, −1.26). Subtracting 405 with a negative scaling *adds* 405 noise. Fitting on the baseline alone is fragile too (#5: −0.16). So no 405 trace is subtracted. 465 and 405 are analysed side by side, and the NE measure uses their coherence instead (below).
+
+![Raw 465 and 405 for every mouse's first 5 h, with the fitted 405 scaling](../results/spectra_first5h/raw_traces.png)
+
+*Figure 1. Raw signals of all 9 mice, first 5 h, as % of each channel's baseline mean (10-s means; black 465, grey 405). Dotted: injection; shaded: the baseline and the four post-injection blocks. Each title gives the 405 → 465 scaling fitted over the whole 5 h and over the baseline only. Two things show directly. First, 405 drifts down while 465 drifts up after glucose. Second, the ~1-min dips (the slow NE oscillation) disappear for 2–3 h after glucose in #5, FP1 and FP2, but continue in the saline mice. Many dips also show in 405, which is why the analysis separates the part of 465 shared with 405.*
 
 **Windows.** The baseline runs from 5 min after the start to 3 min before the injection, ~51–59 min, which skips the start-up transient and the handling. The 20 min after the injection are skipped (handling spike). Four post-injection blocks follow: +20–80, +80–140, +140–200 and +200 min to the 5-h mark (~34–41 min).
 
@@ -50,16 +54,16 @@ Groups, doses and injection times come from the experimenter's notebook. The thr
 | **465 not shared with 405** | P465 × (1 − coherence): the 465 power left after removing the share that moves in step with 405 at that frequency | **main measure.** Not a fit: no 405 trace is subtracted. The shared share is measured separately at each frequency, so no single 405 slope is needed |
 | ΔF/F, baseline-only fit | conventional ΔF/F, robust fit on the baseline only | cross-check against the usual approach |
 
-**Frequency range: 0.01–1 Hz.** The ~20 Hz traces carry frequencies up to ~10 Hz. Figure 1 shows each mouse's baseline spectrum over that whole range. [Appendix A](#appendix-a-full-band-view-of-each-recording) shows the full spectrogram of every recording.
+**Frequency range: 0.01–1 Hz.** The ~20 Hz traces carry frequencies up to ~10 Hz. Figure 2 shows each mouse's baseline spectrum over that whole range. [Appendix A](#appendix-a-full-band-view-of-each-recording) shows the full spectrogram of every recording.
 
 ![Baseline 465 and 405 spectra to 10 Hz for each mouse, and every mouse's 465–405 coherence](../results/spectra_first5h/full_band_baseline.png)
 
-*Figure 1. Baseline spectra (top 3×3: 465 black, 405 grey, 465 not shared with 405 dashed) and 465–405 coherence (bottom; blue glucose, orange saline), 0.008–10 Hz. Shaded: the analysed 0.01–1 Hz; dotted: the band edges at 0.05 and 0.2 Hz. Data: [`full_band_baseline.csv`](../results/spectra_first5h/full_band_baseline.csv).*
+*Figure 2. Baseline spectra (top 3×3: 465 black, 405 grey, 465 not shared with 405 dashed) and 465–405 coherence (bottom; blue glucose, orange saline), 0.008–10 Hz. Shaded: the analysed 0.01–1 Hz; dotted: the band edges at 0.05 and 0.2 Hz. Data: [`full_band_baseline.csv`](../results/spectra_first5h/full_band_baseline.csv).*
 
 - **Why stop at 1 Hz.** From ~0.8–1.2 Hz upward, the 465 spectrum goes flat: it has hit the noise floor (Table A1). Coherence with 405 falls to 0.02–0.04 there, the level expected from pure chance with ~54 baseline segments. A flat spectrum that is uncorrelated between the two channels is what independent detector noise looks like. Nothing above ~1 Hz can be resolved in either channel. From ~6 Hz both channels roll off steeply. The full-rate (~1017 Hz) data show the same roll-off, so it comes from the acquisition's demodulator low-pass filter, not from our downsampling. The only shared structure above 1 Hz is artifact: a ~2–4 Hz trace in #5 from +30 to +90 min (likely breathing or movement) and a steady ~8 Hz band in #2 (likely heartbeat; a mouse's heart beats ~8–10 times a second). The GRAB-NE signal also takes seconds to decay after NE falls, which smooths out faster NE changes.
 - **Why stop at 0.01 Hz.** The 2-min Welch segment sets the frequency resolution to 1/120 s ≈ 0.008 Hz. The lowest bin, 0.008 Hz, is less than one cycle per segment. Longer segments would reach lower frequencies but give fewer segments: a ~55-min baseline yields ~54 two-min segments at 50% overlap, and fewer segments means noisier spectra. Below ~0.01 Hz, bleaching and slow drift dominate anyway, and the per-segment linear detrend removes them.
 
-**Bands.** The 0.01–1 Hz range is split into three bands. They were set before the analysis, at roughly even log spacing, and not tuned afterwards. The full change spectra (Figure 3) check that the band edges hide nothing.
+**Bands.** The 0.01–1 Hz range is split into three bands. They were set before the analysis, at roughly even log spacing, and not tuned afterwards. The full change spectra (Figure 4) check that the band edges hide nothing.
 
 - **0.01–0.05 Hz (periods of 20–100 s): the target band.** It contains the infraslow NE oscillation of NREM sleep, at ~0.02 Hz (~50-s cycles; Osorio-Forero et al. 2021, Kjaerby et al. 2022). It is also the most NE-specific part of these recordings. In 8 of 9 mice, it is the only range where 465 has more power than 405 (×1.4 to ×7.9; FP1 ÷1.3), and it has the lowest 465–405 coherence in most mice (0.45–0.79; Table A1).
 - **0.05–0.2 Hz: transition.** Coherence climbs from the slow band to its plateau.
@@ -94,7 +98,7 @@ Groups, doses and injection times come from the experimenter's notebook. The thr
 
 ![Band-power change per mouse and post-injection block, for each measure and band](../results/spectra_first5h/band_change.png)
 
-*Figure 2. Table 1 for every measure and band. Rows: measure; columns: band; dots: mice; lines: group means (blue glucose, orange saline). The y-axis is log2 change: −1 = half, −2 = a quarter, +1 = double. The glucose drop is in the 0.01–0.05 Hz column and fades by +200 min.*
+*Figure 3. Table 1 for every measure and band. Rows: measure; columns: band; dots: mice; lines: group means (blue glucose, orange saline). The y-axis is log2 change: −1 = half, −2 = a quarter, +1 = double. The glucose drop is in the 0.01–0.05 Hz column and fades by +200 min.*
 
 **Table 2. Average change over the first 2 h after the injection** (+20–140 min). Averaged on the log scale, i.e. a geometric mean.
 
@@ -118,19 +122,19 @@ What Table 2 adds:
 - **Removing the shared part neither creates nor erases the slow drop.** It is the same size in raw 465 and in the part not shared with 405 (÷2.2 in both), against ×1.1–1.2 in saline.
 - **The fast-band drop is not NE.** The 405 control loses power after glucose too (÷1.9 at 0.2–1 Hz). Raw 465 drops at 0.2–1 Hz (÷1.5), but the part not shared with 405 barely changes (÷1.1), so that drop is in the part 465 shares with 405.
 - The conventional ΔF/F (baseline-only fit) points the same way, more weakly (÷1.5 vs ×1.3).
-- The responders (#5, FP1, FP2) are also the mice whose NE *level* rose most after glucose.
+- The responders (#5, FP1, FP2) are also the mice whose NE *level* rose most after glucose. In their raw traces (Figure 1), the drop is visible as the ~1-min dips going away while the level is raised.
 
 ![log2 change spectrum per post-injection block, individual mice and group means](../results/spectra_first5h/spectral_change.png)
 
-*Figure 3. The change spectrum without bands: log2 change vs. baseline at each frequency, 0.01–2 Hz (−1 = half, +1 = double). Rows: measure; columns: post-injection block; thin lines: mice; thick: group means. Row 3 (465 not shared with 405) shows the glucose drop below ~0.1 Hz in the first two blocks. The +20–80 min peak near 0.15 Hz in rows 1, 2 and 4 is absent from row 3, because it is shared with 405.*
+*Figure 4. The change spectrum without bands: log2 change vs. baseline at each frequency, 0.01–2 Hz (−1 = half, +1 = double). Rows: measure; columns: post-injection block; thin lines: mice; thick: group means. Row 3 (465 not shared with 405) shows the glucose drop below ~0.1 Hz in the first two blocks. The +20–80 min peak near 0.15 Hz in rows 1, 2 and 4 is absent from row 3, because it is shared with 405.*
 
 ![Group-mean 465–405 coherence by window](../results/spectra_first5h/coherence.png)
 
-*Figure 4. Group-mean 465–405 coherence by window. Most of the 465 signal at 0.05–1 Hz moves with 405, before and after the injection.*
+*Figure 5. Group-mean 465–405 coherence by window. Most of the 465 signal at 0.05–1 Hz moves with 405, before and after the injection.*
 
 ![Mouse #5: raw traces with windows, and each spectral measure by window](../results/spectra_first5h/per_mouse/5_glucose.png)
 
-*Figure 5. Mouse #5 (glucose), the clearest responder. Top left: raw traces with the analysis windows shaded. Then each measure's spectrum per window (grey: baseline; blue, light to dark: post-injection blocks). In raw 465 and 405, the first post-injection block has a peak near 0.15 Hz. The 465 not shared with 405 has no such peak, only the drop below ~0.1 Hz.*
+*Figure 6. Mouse #5 (glucose), the clearest responder. Top left: raw traces with the analysis windows shaded. Then each measure's spectrum per window (grey: baseline; blue, light to dark: post-injection blocks). In raw 465 and 405, the first post-injection block has a peak near 0.15 Hz. The 465 not shared with 405 has no such peak, only the drop below ~0.1 Hz.*
 
 Other outputs: per-mouse figures for all 9 mice in [`per_mouse/`](../results/spectra_first5h/per_mouse/), and the tables [`band_power.csv`](../results/spectra_first5h/band_power.csv), [`spectra_logbinned.csv`](../results/spectra_first5h/spectra_logbinned.csv) and [`baseline_fits.csv`](../results/spectra_first5h/baseline_fits.csv).
 

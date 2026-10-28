@@ -1,4 +1,4 @@
-code commit: 5d0d5c4
-created: 2026-10-27 22:14:28
+code commit: cc20d92
+created: 2026-10-27 22:57:08
 input: outputs/ne_pfc_ds20_first5h
 script: python -m spectra.run_first5h
