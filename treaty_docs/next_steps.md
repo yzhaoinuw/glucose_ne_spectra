@@ -17,8 +17,8 @@ Status: first pass 2026-10-27 (claude-opus-5-5, effort low). Method and outputs 
 
 First-pass observations (descriptive, n = 6 vs. 3, not a result yet):
 
-- **0.01–0.05 Hz:** the 405-independent 465 power drops about 3–9× in 3 of 6 glucose mice (#5, FP1, FP2) for ~2–3 h, and briefly in #3 (+20–80 min). #4 and #22 don't drop (#22 rises). All 3 saline mice stay at 0 to +0.7 log2. The responders are the mice whose 465 level rose most, and 2 of the 3 are the FP sessions whose identity is unresolved.
-- **0.05–0.2 Hz:** the 405-independent glucose drop extends to ~0.1 Hz (mean −0.58 log2 over the first 2 h). **0.2–1 Hz:** near 0 in both groups. The early glucose peak at ~0.15 Hz (+20–80 min) is coherent with 405 (artifact or hemodynamic) and drops out.
+- **0.01–0.05 Hz:** the 465 power not shared with 405 drops about 3–9× in 3 of 6 glucose mice (#5, FP1, FP2) for ~2–3 h, and briefly in #3 (+20–80 min). #4 and #22 don't drop (#22 rises). All 3 saline mice stay between ÷1.0 and ×1.6. The responders are the mice whose 465 level rose most, and 2 of the 3 are the FP sessions whose identity is unresolved.
+- **0.05–0.2 Hz:** the glucose drop in the not-shared part extends to ~0.1 Hz (÷1.5 on average over the first 2 h). **0.2–1 Hz:** near 0 in both groups. The early glucose peak at ~0.15 Hz (+20–80 min) is coherent with 405 (artifact or hemodynamic) and drops out.
 - 465–405 baseline coherence is 0.4–0.9 at 0.05–1 Hz in most mice (low in #22 and #33), so most of the 465 power there is shared with 405.
 - Infraslow NE oscillations are a NREM-sleep feature, so a drop may mean less sleep rather than a direct glucose effect on NE dynamics. No EEG; video scoring is the experimenter's suggestion.
 

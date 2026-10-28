@@ -10,6 +10,15 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-27
 
+### Report Results rewritten in fold change; main measure renamed (claude-opus-5-5, effort low)
+
+- User found the Results table unreadable (log2 numbers, no stated point). Results now open with a one-line takeaway, and tables give fold change (÷3, ×1.5) generated from `band_power.csv`. Figures keep log2 axes, explained in each caption.
+- Renamed the main measure from "465 not predicted by 405" to **"465 not shared with 405"**. The user read "corrected"/"predicted" as implying a 405 fit, which option (c) deliberately avoids. Methodology now says no 405 trace is subtracted.
+- Corrected a claim: the slow-band glucose drop is *not* larger in the not-shared part than in raw 465 (÷2.2 in both, first 2 h). The finding is unchanged.
+- Verification:
+  - `python -m pytest -q tests` (7 passed); `black -l 110 --check spectra tests`
+  - `python -m spectra.run_first5h`: CSVs byte-identical, only figure labels changed; `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### Full-band (to ~10 Hz) justification of the 0.01–1 Hz range; report figures embedded (claude-opus-5-5, effort low)
 
 - User asked for the frequency range and band choices in the report's Methodology, backed by a full spectrogram of every recording up to 10 Hz, with the key Results figures embedded rather than linked. Added `full_band/*.png` (465 and 405 spectrograms, sliding coherence, baseline spectra) and `full_band_baseline.png`/`.csv`; Appendix A holds the per-recording figures and Table A1.
