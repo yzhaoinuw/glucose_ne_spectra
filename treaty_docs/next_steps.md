@@ -7,14 +7,14 @@ Use this checklist alongside `work_log.md`.
 Active threads — read these first to know what work is in flight:
 
 - [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). First pass done 2026-10-27 (`spectra/`, option (c)); report in `reports/2026-10-27_first5h_ne_spectra.md`. Next: the user reviews the figures; decide on stats, the sleep-state confound and FP1/FP2 identity before any claim.
-- [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5) **(user, planned 2026-10-29):** from Rebeka's OneDrive, to get OC for all 9 mice and confirm the fiber of the `.mat`-only sessions.
+- [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5): files in and verified 2026-10-28; the old `.mat` arrays are fiber A. Next: steps 3–5 (tank source, add OC, re-run).
 - [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; `spectra/` uses its raw traces, not its `dff`.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
 ## Pull the 4 missing .tev files (claude-opus-5-5)
 
-Status: planned 2026-10-28 (claude-opus-5-5, effort low); the user pulls the files on 2026-10-29.
+Status: files pulled by the user and steps 1–2 done 2026-10-28 (claude-opus-5-5, effort low). Steps 3–5 open.
 
 #1, #3, FP1 and FP2 have no raw signal file (`.tev`), only single-fiber `.mat` arrays. Their tanks recorded both fibers (`465A/405A` = `FibPho1_PFC`, `465C/405C` = `FibPho2`, per `StoresListing.txt`), and the rest of each tank (`.tsq`, `.Tbk`, `.Tdx`, …) is present.
 
@@ -33,8 +33,8 @@ Total ~15 GB. Each expected size is the `.tsq`'s last stream offset plus 40 B; t
 
 **Agent, once the files are in:**
 
-1. Check each size against the table, then read it in full with `TDTbin2mat` (no NaN, zero or flat runs; start time matches the folder stamp).
-2. Compare the old `.mat` arrays with `465A`/`465C` to settle which fiber they are.
+1. ~~Check each size against the table, then read it in full with `TDTbin2mat`.~~ Done: sizes exact; all 4 stores match the `.tsq` count, no NaN or zeros, longest flat run ≤ 33 samples; starts match `StoresListing.txt`.
+2. ~~Compare the old `.mat` arrays with `465A`/`465C`.~~ Done: identical to `465A`/`405A` (max diff 0, offset 1016 samples), so fiber A. Not `465C` (r 0.91–0.98).
 3. Switch the 4 sessions to the tank source in `extraction/pfc_recordings.m` and re-run the first-5-h extraction (commit first: outputs record the commit).
 4. Add OC (`465C`/`405C`) to the extraction and to `spectra/`, then re-run. Report OC as a side check next to PFC, not as a second result.
 5. Update the README data table, and the report's caveats on fiber assignment and OC coverage.

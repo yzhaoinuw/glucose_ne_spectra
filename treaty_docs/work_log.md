@@ -10,6 +10,14 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-28
 
+### 4 recovered `.tev` files verified (claude-opus-5-5, effort low)
+
+- The user pulled the 4 `.tev` files (#1, #3, FP1, FP2). All 4 are complete and clean, so OC raw data now covers all 9 mice.
+- Fiber assignment is settled: the old `.mat` arrays are exactly `465A`/`405A` (fiber A = `FibPho1_PFC`), starting 1016 samples in. The PFC results so far used the right fiber.
+- Verification:
+  - byte sizes vs the expected-size table (all exact)
+  - full `TDTbin2mat` read of `465A/405A/465C/405C`, script `outputs/checks/check_tev.m`, log `outputs/logs/check_tev_20261028.log`
+
 ### OC coverage: 4 tanks to pull (claude-opus-5-5, effort low)
 
 - The user hadn't been told clearly that OC raw data exists for only 5 of 9 mice. #1, #3, FP1 and FP2 lack their `.tev`; their `StoresListing.txt` shows both fibers were recorded, with fiber A named `FibPho1_PFC`.
