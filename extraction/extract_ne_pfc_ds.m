@@ -1,8 +1,10 @@
-function summary = extract_ne_pfc_ds(data_root, out_dir, only, v1_dir, max_h)
+function summary = extract_ne_pfc_ds(data_root, out_dir, only, v1_dir, max_h, fiber)
 %EXTRACT_NE_PFC_DS  Downsampled (~20 Hz) PFC NE dF/F with a robust, segment-anchored 405 fit (v2).
 %
 %   summary = extract_ne_pfc_ds()                      % all recordings, default paths
-%   summary = extract_ne_pfc_ds(data_root, out_dir, only, v1_dir, max_h)
+%   summary = extract_ne_pfc_ds(data_root, out_dir, only, v1_dir, max_h, fiber)
+%
+%   fiber: 'A' = PFC (default) or 'C' = OC; see load_pfc_raw.
 %
 %   max_h (default Inf): keep only the first max_h hours from recording
 %   start, then process that window as a short session (whole-window fit).
@@ -53,6 +55,7 @@ if nargin < 2 || isempty(out_dir),   out_dir = fullfile(repo_root, 'outputs', 'n
 if nargin < 3, only = {}; end
 if nargin < 4 || isempty(v1_dir),    v1_dir = fullfile(repo_root, 'outputs', 'ne_pfc_fullrate'); end
 if nargin < 5 || isempty(max_h),     max_h = Inf; end
+if nargin < 6 || isempty(fiber),     fiber = 'A'; end
 
 recs = pfc_recordings(only);
 if ~exist(fullfile(out_dir, 'qc'), 'dir'), mkdir(fullfile(out_dir, 'qc')); end
@@ -70,7 +73,7 @@ for k = 1:n_rec
     summary.recording(k) = name;
     fprintf('\n[%s] %s\n', datestr(now, 'HH:MM:SS'), name);
     try
-        R = load_pfc_raw(data_root, recs(k,:), TRIM_S);
+        R = load_pfc_raw(data_root, recs(k,:), TRIM_S, fiber);
         if isfinite(max_h)
             % crop at max_h from recording start (t0_s is already elapsed)
             n_keep = min(numel(R.s465), floor((max_h * 3600 - R.t0_s) * R.fs));
@@ -126,6 +129,7 @@ for k = 1:n_rec
             DS_FACTOR, fit_window, SMOOTH_S);
         S.units = 'dff: % dF/F; signal_465/405, control: raw TDT units';
         S.channel = R.channel;
+        S.fiber = fiber;
         S.recording = name;
         S.source = recs{k,2};
         S.source_files = R.source_files;

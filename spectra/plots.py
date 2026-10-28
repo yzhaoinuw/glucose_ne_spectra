@@ -19,6 +19,8 @@ TITLES = {
     "dff_baseline_fit": "ΔF/F, baseline-only fit (cross-check)",
     "coherence": "465–405 coherence",
 }
+# Set by the runner for non-PFC runs; stamped in the top-left corner of every figure.
+FIBER_LABEL = ""
 
 plt.rcParams.update(
     {
@@ -46,6 +48,12 @@ plt.rcParams.update(
         "font.size": 9,
     }
 )
+
+
+def _save(fig, path):
+    if FIBER_LABEL:
+        fig.text(0.005, 0.995, FIBER_LABEL, ha="left", va="top", fontsize=9, fontweight="bold", color=INK)
+    fig.savefig(path, dpi=110)
 
 
 def _window_color(i):
@@ -103,7 +111,7 @@ def per_mouse(d, path):
         ax.set_xlabel("frequency (Hz)")
         ax.set_title(TITLES[meas])
     axs[0, 1].legend(loc="lower left", title="window (from injection)", title_fontsize=8)
-    fig.savefig(path, dpi=110)
+    _save(fig, path)
     plt.close(fig)
 
 
@@ -143,7 +151,7 @@ def spectral_change(bins, measures, path):
     fig.suptitle(
         "Spectral change after injection (thin: individual mice; dotted: ~1 Hz upper limit of NE content)"
     )
-    fig.savefig(path, dpi=110)
+    _save(fig, path)
     plt.close(fig)
 
 
@@ -182,7 +190,7 @@ def band_change(bands, measures, path):
                 ax.set_xlabel("minutes after injection")
     axs[0, 0].legend(loc="lower left")
     fig.suptitle("Band power after injection vs. each mouse's baseline (dots: mice)")
-    fig.savefig(path, dpi=110)
+    _save(fig, path)
     plt.close(fig)
 
 
@@ -204,7 +212,7 @@ def coherence_summary(bins, path):
     axs[0].set_ylabel("465–405 coherence (group mean)")
     axs[0].legend(loc="lower left", title="window (from injection)", title_fontsize=8)
     fig.suptitle("How much of the 465 signal moves with 405")
-    fig.savefig(path, dpi=110)
+    _save(fig, path)
     plt.close(fig)
 
 
@@ -315,7 +323,7 @@ def full_band(d, path):
     ax.set_xlabel("frequency (Hz)")
     ax.set_ylabel("coherence")
     ax.set_title("Baseline 465–405 coherence", loc="left")
-    fig.savefig(path, dpi=110)
+    _save(fig, path)
     plt.close(fig)
 
 
@@ -365,7 +373,7 @@ def full_band_summary(full, path):
         "Baseline spectra to ~10 Hz (shaded: analysed 0.01–1 Hz; dotted: band edges 0.05 and 0.2 Hz)",
         color=INK,
     )
-    fig.savefig(path, dpi=110)
+    _save(fig, path)
     plt.close(fig)
 
 
@@ -401,5 +409,5 @@ def raw_traces(per_mouse, path, bin_s=10.0):
         "Raw signals, first 5 h (10-s means). Dotted: injection; shaded: baseline (grey) and post-injection blocks (blue)",
         color=INK,
     )
-    fig.savefig(path, dpi=110)
+    _save(fig, path)
     plt.close(fig)

@@ -2,10 +2,10 @@
 
 Reads the ~20 Hz raw 465/405 traces from the first-5-h extraction (the
 MATLAB fit stored there is not used) and writes CSVs and figures to
-results/spectra_first5h/ (tracked in git), with the code commit in
-provenance.txt.
+results/spectra_first5h/ (PFC) or results/spectra_first5h_oc/ (OC), tracked
+in git, with the code commit in provenance.txt.
 
-    python -m spectra.run_first5h [--in-dir ...] [--out-dir ...]
+    python -m spectra.run_first5h [--fiber pfc|oc] [--in-dir ...] [--out-dir ...]
 """
 
 import argparse
@@ -21,6 +21,10 @@ from . import core, plots
 from .sessions import SESSIONS, windows
 
 REPO = Path(__file__).resolve().parents[1]
+FIBERS = {  # extraction folder, results folder, figure label
+    "pfc": ("ne_pfc_ds20_first5h", "spectra_first5h", ""),
+    "oc": ("ne_oc_ds20_first5h", "spectra_first5h_oc", "OC fiber (465C/405C)"),
+}
 MEASURES = ["465", "405", "465_indep_405", "dff_baseline_fit"]  # power measures
 F_MIN, F_MAX, BINS_PER_DECADE = 0.01, 2.0, 16
 
@@ -145,17 +149,21 @@ def git_state():
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--in-dir", type=Path, default=REPO / "outputs" / "ne_pfc_ds20_first5h")
-    ap.add_argument("--out-dir", type=Path, default=REPO / "results" / "spectra_first5h")
+    ap.add_argument("--fiber", choices=sorted(FIBERS), default="pfc")
+    ap.add_argument("--in-dir", type=Path)
+    ap.add_argument("--out-dir", type=Path)
     args = ap.parse_args(argv)
+    in_name, out_name, plots.FIBER_LABEL = FIBERS[args.fiber]
+    args.in_dir = args.in_dir or REPO / "outputs" / in_name
+    args.out_dir = args.out_dir or REPO / "results" / out_name
     for sub in ("per_mouse", "full_band"):
         (args.out_dir / sub).mkdir(parents=True, exist_ok=True)
 
     bands, bins, fits, full, per_mouse = analyse(args.in_dir)
     (args.out_dir / "provenance.txt").write_text(
-        f"code commit: {git_state()}\ncreated: {datetime.now():%Y-%m-%d %H:%M:%S}\n"
+        f"code commit: {git_state()}\ncreated: {datetime.now():%Y-%m-%d %H:%M:%S}\nfiber: {args.fiber}\n"
         f"input: {args.in_dir.relative_to(REPO) if args.in_dir.is_relative_to(REPO) else args.in_dir}\n"
-        "script: python -m spectra.run_first5h\n"
+        f"script: python -m spectra.run_first5h --fiber {args.fiber}\n"
     )
     bands.to_csv(args.out_dir / "band_power.csv", index=False)
     bins.to_csv(args.out_dir / "spectra_logbinned.csv", index=False)

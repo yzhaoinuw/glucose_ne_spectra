@@ -1,4 +1,4 @@
-function summary = extract_ne_pfc_first5h(data_root, out_dir)
+function summary = extract_ne_pfc_first5h(data_root, out_dir, fiber)
 %EXTRACT_NE_PFC_FIRST5H  v2 dF/F on the first 5 h of each cohort session.
 %
 %   The analysis window for the spectral study: ~1 h baseline, the injection
@@ -6,12 +6,18 @@ function summary = extract_ne_pfc_first5h(data_root, out_dir)
 %   13-h, is cropped to 5 h and fitted over that whole window, so all 9 mice
 %   are processed the same way. Evening sessions are out of scope.
 %
-%   Writes to outputs/ne_pfc_ds20_first5h/ by default.
+%   fiber: 'A' = PFC (default) or 'C' = OC.
+%   Writes to outputs/ne_pfc_ds20_first5h/ (PFC) or outputs/ne_oc_ds20_first5h/ (OC) by default.
 
 here = fileparts(mfilename('fullpath'));
 repo_root = fileparts(here);
 if nargin < 1 || isempty(data_root), data_root = repo_root; end
-if nargin < 2 || isempty(out_dir),   out_dir = fullfile(repo_root, 'outputs', 'ne_pfc_ds20_first5h'); end
+if nargin < 3 || isempty(fiber),     fiber = 'A'; end
+region = struct('A', 'pfc', 'C', 'oc');
+region = region.(fiber);
+if nargin < 2 || isempty(out_dir),   out_dir = fullfile(repo_root, 'outputs', ['ne_' region '_ds20_first5h']); end
+% QC overlay of the full-rate v1 run exists for PFC only
+v1_dir = fullfile(repo_root, 'outputs', ['ne_' region '_fullrate']);
 
 cohort = {
     'Subject3-240322-092543_morning'   % #3  glucose
@@ -24,5 +30,5 @@ cohort = {
     'Subject2-240321-093251_210324'    % #2  saline
     'Subject33-240324-093611_morning'  % #33 saline
     };
-summary = extract_ne_pfc_ds(data_root, out_dir, cohort, [], 5);
+summary = extract_ne_pfc_ds(data_root, out_dir, cohort, v1_dir, 5, fiber);
 end

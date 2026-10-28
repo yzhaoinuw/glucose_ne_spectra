@@ -1,9 +1,11 @@
-function R = load_pfc_raw(data_root, rec, trim_s)
-%LOAD_PFC_RAW  Raw PFC 465/405 for one recording, start-trimmed, plus provenance.
+function R = load_pfc_raw(data_root, rec, trim_s, fiber)
+%LOAD_PFC_RAW  Raw 465/405 for one recording and fiber, start-trimmed, plus provenance.
 %
-%   R = load_pfc_raw(data_root, rec, trim_s)
+%   R = load_pfc_raw(data_root, rec, trim_s, fiber)
 %     rec     one row of pfc_recordings(): {folder, source, mat prefix}
 %     trim_s  start trim in seconds (legacy: 1)
+%     fiber   'A' = PFC (465A/405A, default) or 'C' = OC (465C/405C);
+%             'C' needs a full tank
 %
 %   R.s465, R.s405   single row vectors, same length, after the start trim
 %   R.fs             sampling rate from the recording's TSQ index
@@ -16,24 +18,28 @@ function R = load_pfc_raw(data_root, rec, trim_s)
 %   only what remains of trim_s is removed, so every recording starts at the
 %   same point.
 
+if nargin < 4 || isempty(fiber), fiber = 'A'; end
+assert(ismember(fiber, {'A', 'C'}), 'fiber must be ''A'' (PFC) or ''C'' (OC)');
 name = rec{1}; src = rec{2}; prefix = rec{3};
 rec_dir = fullfile(data_root, name);
+k465 = ['x465' fiber]; k405 = ['x405' fiber];
 
 % Sampling rate and expected length come from the TSQ index, which every
 % usable recording has (the .tev is not needed for headers).
 heads = TDTbin2mat([rec_dir filesep], 'HEADERS', 1);
-fs = heads.stores.x465A.fs;
-assert(abs(heads.stores.x405A.fs - fs) < 1e-6, '465A and 405A sampling rates differ');
-n_tsq = tsq_sample_count(heads.stores.x465A);
+fs = heads.stores.(k465).fs;
+assert(abs(heads.stores.(k405).fs - fs) < 1e-6, '465 and 405 sampling rates differ');
+n_tsq = tsq_sample_count(heads.stores.(k465));
 
 switch src
     case 'tank'
-        d = TDTbin2mat([rec_dir filesep], 'TYPE', {'streams'}, 'STORE', {'465A', '405A'});
-        s465 = d.streams.x465A.data;
-        s405 = d.streams.x405A.data;
-        assert(abs(d.streams.x465A.fs - fs) < 1e-6, 'stream fs differs from TSQ fs');
+        d = TDTbin2mat([rec_dir filesep], 'TYPE', {'streams'}, 'STORE', {k465(2:end), k405(2:end)});
+        s465 = d.streams.(k465).data;
+        s405 = d.streams.(k405).data;
+        assert(abs(d.streams.(k465).fs - fs) < 1e-6, 'stream fs differs from TSQ fs');
         source_files = {rec_dir};
     case 'mat'
+        assert(strcmp(fiber, 'A'), '%s: the pre-extracted .mat arrays hold fiber A only', name);
         f465 = fullfile(rec_dir, [prefix '_signal_465.mat']);
         f405 = fullfile(rec_dir, [prefix '_signal_405.mat']);
         s465 = getfield(load(f465, 'signal_465'), 'signal_465'); %#ok<GFLD>
@@ -65,9 +71,13 @@ R.n_source = n_source;
 R.n_tsq = n_tsq;
 R.n_missing = n_missing;
 R.source_files = source_files;
-R.channel = 'PFC fiber: 465A (GRAB-NE hSyn-NE2m) / 405A (isosbestic)';
+if strcmp(fiber, 'A')
+    R.channel = 'PFC fiber: 465A (GRAB-NE hSyn-NE2m) / 405A (isosbestic)';
+else
+    R.channel = 'OC fiber: 465C (GRAB-NE hSyn-NE2m) / 405C (isosbestic)';
+end
 if strcmp(src, 'mat')
-    R.channel = [R.channel ' -- presumed; source .mat files do not record the store'];
+    R.channel = [R.channel ' -- from pre-extracted .mat arrays, verified identical to 465A/405A on 2026-10-28'];
 end
 end
 
