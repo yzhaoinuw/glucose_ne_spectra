@@ -13,6 +13,14 @@ Rebeka: thank you, your deck, notebook table and answers covered almost everythi
 3. **Fasting and dose:** were the mice fasted before the injection, and for how long? Was blood glucose measured? If so, what were the values and when were they taken? What was the glucose concentration? We have the volume (20 µL/g) but need the concentration to give the dose in g/kg.
 4. **Fiber A = PFC?** In the 5-h and 13-h mice, is fiber A (`465A`/`405A`) always PFC? (We checked the pre-extracted `*_signal_465.mat` / `*_signal_405.mat` files against the recovered tanks: they are fiber A. The tanks name fiber A `FibPho1_PFC`.) And is "OC" (fiber C) the occipital cortex? Where exactly is that fiber?
 
+## 48-h study (asked 2026-10-29)
+
+We're collecting the 48-h crossover tanks. 7 of 8 are here and complete.
+
+5. **Missing raw files, May 8 RZ10-2 glucose (COM13/COM12):** the folder `48H_Glucose_RZ10-2_COM13(A)_COM12(C)` holds the tank `EliseFiber_EEG_timings-240430-184810`. Its block `Subject1-240508-090610_COM13(Fib1)_COM12(Fib2)` has only your MATLAB plots (`COM12_PFC_raw+normalized.jpg` is 0 bytes), with no `.tev/.tsq/.Tbk/.Tdx/.tin/.tnt`. The other two blocks are 2-min tests from 30 Apr. Do you have the raw files (~19.7 GB `.tev`), e.g. on the rig PC?
+6. **Saline sessions named "glucose":** `48H_RZ10_1_saline_females_COM18(A)_COM16(C)_170624` (block `..._48HGlucose_170624`) and `48H_saline_RZ10-1_290524_COM12(A)_COM13(C)` (block `..._48H_glucose_RZ10-1_290524`). We read "glucose" as the study name and these as saline. Correct?
+7. **COM = mouse?** We read COM# as the mouse ID, one mouse per fiber, both fibers in PFC. In May, mice switch fiber between sessions (e.g. COM10 on A for glucose, on C for saline). Correct? And where is the EEG/EMG? None of the tanks has EEG/EMG channels.
+
 **Not needed anymore:** the LED modulation frequencies and demodulator filter (the earlier question for Verena). We only analyze frequencies below ~1 Hz, well under the ~6 Hz cutoff we see.
 
 ## Sessions in the analysis

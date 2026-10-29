@@ -8,6 +8,19 @@ If today's date already has a `## YYYY-MM-DD` header at the top, add a new `###`
 
 Update this log at the end of any substantive work session unless the user explicitly asks not to document it. **The log records decisions about the project, not the content of the work produced** — the diff already says what changed. See [Work Log Discipline](treaty_conventions.md#work-log-discipline) for what counts as substantive and what to skip.
 
+## 2026-10-29
+
+### 48-h study tanks pulled and verified: 7 of 8 (claude-opus-5-5, effort low)
+
+- The user is pulling the 48-h crossover tanks into `Yue/48H_GLU_FP/` and `Yue/48H_SAL_FP/`, outside this repo. Still out of scope for analysis; this was a data-intake check only. Inventory and caveats are in next steps.
+- 7 tanks are complete and clean (4 saline, 3 glucose). The May 8 RZ10-2 glucose session (COM13/COM12) is missing its raw files: the download is a whole tank holding two 2-min test blocks from 2024-04-30 and, for the 48-h block, only her MATLAB plots (one 0 bytes). Not found anywhere under `BrainFlowZZZ/`. Asked Rebeka.
+- Design read from folder names and tank clocks: each fiber is a different mouse (COM# = mouse ID, both PFC), 2 mice per rig, 4 tanks per condition = 8 mice. Unlike the 5-h study, A/C is not PFC/OC. For the May mice, A and C swap between the glucose and saline sessions, so extraction must map mouse to channel by COM per session.
+- COM10's glucose fiber A is ~5× dimmer than other channels, but COM10 reads normally on fiber C in its saline session: likely the patch cord/rig, not the mouse.
+- Two saline tanks carry "glucose" in their block names. Treated as the study name (as with `GLU` in the 5-h study); folder names and the 2–3-week gaps say saline. Confirming with Rebeka.
+- Verification:
+  - `.tsq` index vs `.tev` size for all 7 (`outputs/checks/tsq_vs_tev.py`): every index ends 40 bytes before EOF
+  - full `TDTbin2mat` read of `465A/405A/465C/405C` (`outputs/checks/check_tank48.m`, debug-partition jobs; logs `outputs/logs/check_tank48_*.log`): sample counts match the index, no NaN/zeros/flat runs, 47.9–48.1 h
+
 ## 2026-10-28
 
 ### OC = occipital cortex, provisionally (claude-opus-5-5, effort low)

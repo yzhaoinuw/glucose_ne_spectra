@@ -10,7 +10,31 @@ Active threads — read these first to know what work is in flight:
 - [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5): done 2026-10-28. All 9 sessions read from tanks; OC side check in the report (same 3 responders as PFC). Open only: the experimenter confirming fiber A = PFC (question 4).
 - [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; `spectra/` uses its raw traces, not its `dff`.
 
+- [48-h study data intake](#48-h-study-data-intake-claude-opus-5-5): 7 of 8 tanks verified 2026-10-29. Missing: May 8 RZ10-2 glucose (COM13/COM12), asked Rebeka. Analysis still out of scope.
+
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
+
+## 48-h study data intake (claude-opus-5-5)
+
+Status: 7 of 8 tanks in and verified 2026-10-29 (claude-opus-5-5, effort low). Analysis of the 48-h study is still out of scope; this is data intake only.
+
+The user downloads the tanks into `Yue/48H_GLU_FP/` and `Yue/48H_SAL_FP/` (outside this repo, next to it). Check each new one with `outputs/checks/tsq_vs_tev.py <folder>` and `check_tank48('<folder>')` in a debug-partition `sbatch` job (32 GB); this session's own allocation was too small for `srun`.
+
+Each fiber is a different mouse (COM# = mouse ID, both PFC). Fiber per mouse changes between sessions, so map by COM, not by A/C.
+
+| Mouse (A / C) | Glucose session | Saline session |
+|---|---|---|
+| COM10 / COM9 → COM9 / COM10 | 2024-05-08, RZ10-1, `48H_GLU_FP/48H_Glucose_RZ10-1_COM10(A)_COM9(C)` ✅ (fiber A ~5× dim) | 2024-05-29, RZ10-2, `48H_SAL_FP/48H_saline_RZ10_2_COM9(A)_COM10(C)` ✅ |
+| COM13 / COM12 → COM12 / COM13 | 2024-05-08, RZ10-2, `Yue/48H_Glucose_RZ10-2_COM13(A)_COM12(C)` ❌ **raw files missing** (plots only) | 2024-05-29, RZ10-1, `48H_SAL_FP/48H_saline_RZ10-1_290524_COM12(A)_COM13(C)` ✅ |
+| COM14 / COM15 (female) | 2024-06-03, RZ10-1, `48H_GLU_FP/48H_glucose_females_RZ10-1_240603_COM14(A)_COM15(C)` ✅ | 2024-06-17, RZ10-2, `48H_SAL_FP/48H_sal_females_RZ10_2_COM14(A)_COM15(C)_170624` ✅ |
+| COM18 / COM16 (female) | 2024-06-03, RZ10-2, `48H_GLU_FP/48H_glucose_females_RZ10-2_050624_COM18(A)_COM16(C)` ✅ | 2024-06-17, RZ10-1, `48H_SAL_FP/48H_RZ10_1_saline_females_COM18(A)_COM16(C)_170624` ✅ |
+
+Open:
+
+- [ ] COM13/COM12 glucose block `Subject1-240508-090610` (tank `EliseFiber_EEG_timings-240430-184810`): `.tev` (~19.7 GB) and its `.tsq/.Tbk/.Tdx/.tin/.tnt/StoresListing.txt`. Asked Rebeka 2026-10-29 (questions file, 48-h section).
+- [ ] Confirm the two saline tanks whose block names say "glucose" are saline.
+- [ ] No tank has EEG/EMG stores, although the study had EEG/EMG. Find where it was recorded before planning sleep scoring.
+- Folder name `..._RZ10-2_050624_...` vs tank date 2024-06-03: likely the end date (day-first), not a mismatch.
 
 ## Pull the 4 missing .tev files (claude-opus-5-5)
 
