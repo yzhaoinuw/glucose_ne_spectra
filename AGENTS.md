@@ -38,6 +38,7 @@ mkdir -p outputs/logs
 sbatch extraction/run_extract_ne_pfc_ds.sbatch   # v2
 sbatch extraction/run_extract_ne_pfc.sbatch      # v1
 sbatch extraction/run_extract_ne_pfc_first5h.sbatch   # analysis input: 9 cohort sessions, first 5 h -> outputs/ne_{pfc,oc}_ds20_first5h/
+sbatch extraction/run_extract_ne_48h.sbatch           # 48-h study, 14 mouse-sessions -> outputs/ne_48h_ds20/
 ```
 
 Commit before an extraction run: the outputs record `git rev-parse HEAD`.

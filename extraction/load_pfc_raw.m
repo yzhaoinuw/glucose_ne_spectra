@@ -10,6 +10,7 @@ function R = load_pfc_raw(data_root, rec, trim_s, fiber)
 %   R.s465, R.s405   single row vectors, same length, after the start trim
 %   R.fs             sampling rate from the recording's TSQ index
 %   R.t0_s           time of the first returned sample from recording start
+%   R.start_time     recording start from the TSQ index, POSIX seconds as the rig clock wrote it
 %   R.n_source, R.n_tsq, R.n_missing, R.source_files, R.channel
 %
 %   The pre-extracted .mat arrays are exactly round(fs) samples shorter than
@@ -67,6 +68,7 @@ R.s465 = s465(n_trim+1:n);
 R.s405 = s405(n_trim+1:n);
 R.fs = fs;
 R.t0_s = (n_missing + n_trim) / fs;
+R.start_time = heads.startTime;
 R.n_source = n_source;
 R.n_tsq = n_tsq;
 R.n_missing = n_missing;

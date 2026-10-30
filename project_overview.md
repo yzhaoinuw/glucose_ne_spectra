@@ -30,7 +30,8 @@ What the experimenter (E. Rebeka Kovács) found in this study before the spectra
 
 Two versions share [`extraction/load_pfc_raw.m`](extraction/load_pfc_raw.m) (TSQ-based `fs`, start trim, provenance) and [`extraction/pfc_recordings.m`](extraction/pfc_recordings.m) (the 8 usable recordings):
 
-- **v2, recommended:** [`extraction/extract_ne_pfc_ds.m`](extraction/extract_ne_pfc_ds.m) via [`run_extract_ne_pfc_ds.sbatch`](extraction/run_extract_ne_pfc_ds.sbatch). ×50 anti-aliased downsampling (~20.35 Hz). Robust (bisquare) linear 405→465 fit, using baseline + last hour for sessions ≥ 10 h and the whole recording otherwise. Output goes to `outputs/ne_pfc_ds20/`.
+- **v2, recommended:** [`extraction/extract_ne_pfc_ds.m`](extraction/extract_ne_pfc_ds.m) via [`run_extract_ne_pfc_ds.sbatch`](extraction/run_extract_ne_pfc_ds.sbatch). ×50 anti-aliased downsampling (~20.35 Hz). Robust (bisquare) linear 405→465 fit, using baseline + last hour for sessions ≥ 10 h and the whole recording otherwise. Output goes to `outputs/ne_pfc_ds20/`. The processing itself is in [`extraction/process_ne_session.m`](extraction/process_ne_session.m), shared with the 48-h extraction.
+- **48-h study:** [`extraction/extract_ne_48h.m`](extraction/extract_ne_48h.m) via [`run_extract_ne_48h.sbatch`](extraction/run_extract_ne_48h.sbatch), with the session table in [`extraction/recordings48.m`](extraction/recordings48.m) (from the lab journal). Same v2 processing over the whole ~48 h, one file per mouse-session, to `outputs/ne_48h_ds20/`. Tanks live outside the repo in `../48H_GLU_FP/` and `../48H_SAL_FP/`. The rig PCs' clocks were 6 h off; the script converts tank start times to the rig wall clock that the journal's injection times use.
 - **v1:** [`extraction/extract_ne_pfc.m`](extraction/extract_ne_pfc.m) via [`run_extract_ne_pfc.sbatch`](extraction/run_extract_ne_pfc.sbatch). Full rate, least-squares fit over the whole recording. Output goes to `outputs/ne_pfc_fullrate/`.
 - Both read with the vendored [`extraction/tdt/TDTbin2mat.m`](extraction/tdt/TDTbin2mat.m), or load the pre-extracted `.mat` arrays where the `.tev` is gone (no cohort session needs them since 2026-10-28). The first-5-h run also extracts OC (fiber C). Both smooth the fitted control with a 1-s moving average and leave the ΔF/F unsmoothed. Output format is in `README.md`.
 
@@ -89,7 +90,8 @@ Many repos accumulate parallel implementations during refactors; without an expl
 ### Active / relevant now
 
 - [`extraction/extract_ne_pfc_ds.m`](extraction/extract_ne_pfc_ds.m): v2 NE extraction, the one to use. [`extraction/extract_ne_pfc.m`](extraction/extract_ne_pfc.m) (v1, full rate) is kept for comparison.
-- [`extraction/load_pfc_raw.m`](extraction/load_pfc_raw.m), [`extraction/pfc_recordings.m`](extraction/pfc_recordings.m), [`extraction/get_git_commit.m`](extraction/get_git_commit.m): shared helpers.
+- [`extraction/process_ne_session.m`](extraction/process_ne_session.m), [`extraction/load_pfc_raw.m`](extraction/load_pfc_raw.m), [`extraction/pfc_recordings.m`](extraction/pfc_recordings.m), [`extraction/get_git_commit.m`](extraction/get_git_commit.m): shared helpers.
+- [`extraction/extract_ne_48h.m`](extraction/extract_ne_48h.m), [`extraction/recordings48.m`](extraction/recordings48.m): 48-h study extraction and its session table.
 - [`spectra/`](spectra/): the first-5-h spectral analysis (`run_first5h.py` entry point, `core.py` measures, `sessions.py` cohort + windows, `plots.py`). Tests in [`tests/`](tests/).
 - [`extraction/extract_ne_pfc_first5h.m`](extraction/extract_ne_pfc_first5h.m): crops the 9 cohort sessions to 5 h; its raw traces feed `spectra/`.
 - [`extraction/tdt/`](extraction/tdt/): the TDT reader, vendored unmodified from the TDT SDK via the user's `preprocess_sleep_data` repo. Don't edit it; replace it with a newer SDK copy if needed.

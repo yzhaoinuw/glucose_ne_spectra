@@ -14,7 +14,7 @@ This repo analyzes fiber-photometry recordings of norepinephrine (NE) in the mou
 |---|---|
 | `matlab_scripts/` | The lab's original MATLAB pipeline: ΔF/F preprocessing, hourly-bin stats and NE-"dip" detection. **Reference only.** The new analysis is written in Python. See `project_overview.md` for what each script does and its known bugs. |
 | `AGENTS.md`, `project_overview.md`, `treaty_docs/` | Project documentation and work log ([Agent Collab Treaty](https://github.com/yzhaoinuw/agent_collab_treaty)). Start at `AGENTS.md`. |
-| `extraction/` | MATLAB extraction of PFC NE ΔF/F from the raw recordings: v1 full-rate (`extract_ne_pfc.m`) and v2 ~20 Hz (`extract_ne_pfc_ds.m`), shared loader, SLURM wrappers, and the vendored TDT reader (`tdt/`) |
+| `extraction/` | MATLAB extraction of PFC NE ΔF/F from the raw recordings: v1 full-rate (`extract_ne_pfc.m`), v2 ~20 Hz (`extract_ne_pfc_ds.m`, processing in `process_ne_session.m`), the 48-h study (`extract_ne_48h.m`), shared loader, SLURM wrappers, and the vendored TDT reader (`tdt/`) |
 | `spectra/` (Python) | Spectral analysis, first 5 h; tests in `tests/` |
 
 ## Extracted NE traces
@@ -32,6 +32,8 @@ There are two versions. **Use v2 for analysis**; v1 is kept for comparison and f
 **`outputs/ne_pfc_ds20_first5h/`: use its raw `signal_465` / `signal_405` only, not its `dff`.** The spectral analysis reads the raw traces from it. Its whole-window fit is pulled by the post-injection NE rise: FP2 (−1.26), #5 (−0.23) and FP1 (−0.01) get negative 405 slopes, so 405 noise is added rather than removed. The v2 method run on the first 5 h of the 9 cohort sessions (6 glucose, 3 saline; mornings plus the first 5 h of the 13-h sessions). Every session is fitted over its whole 5-h window, so all mice are treated the same way. Run with `sbatch extraction/run_extract_ne_pfc_first5h.sbatch`. Each file also stores `max_h = 5` and `fiber`.
 
 **`outputs/ne_oc_ds20_first5h/`:** the same run on the OC fiber (`465C`/`405C`), same format. Its whole-window fit is also negative for FP2, FP1 and #22; use the raw traces here too.
+
+**`outputs/ne_48h_ds20/`:** the 48-h study, v2 method over the whole ~48 h (fit on the first 50 min + last hour). One `<mouse>_<condition>.mat` per mouse-session (e.g. `COM10_glucose.mat`), 14 in all: 6 mice with both conditions, plus COM12 and COM13 saline only. Both fibers are PFC, one mouse each. Each file adds the journal metadata (`mouse`, `sex`, `condition`, `rig`, `weight_g`, `dose_ml`), `rig_start` and `inj_min`, the injection in minutes from recording start. Tanks are read from `../48H_GLU_FP/` and `../48H_SAL_FP/`. Run with `sbatch extraction/run_extract_ne_48h.sbatch`.
 
 Run them all from the repo root after `mkdir -p outputs/logs`. Each writes one `.mat` per usable recording (gitignored), a QC figure per recording to `qc/`, and a `summary.csv`. The files are MATLAB v7, so `scipy.io.loadmat` reads them. Both versions share these variables:
 
