@@ -70,12 +70,18 @@ def full_band(y, x, fs, t_min):
     )
 
 
-def analyse(in_dir):
+def analyse(in_dir, sessions=SESSIONS, windows_fn=windows, crop_min=None):
+    """Spectra per session and window. sessions: Session-like records (file
+    <in_dir>/<folder>.mat; mouse must be unique); windows_fn(session, end_min);
+    crop_min(session): drop samples from this time on (None: keep all)."""
     edges = log_bins()
     band_rows, bin_rows, fit_rows, full_rows, per_mouse = [], [], [], [], {}
-    for s in SESSIONS:
+    for s in sessions:
         y, x, fs, t_min, whole_slope = load(in_dir / f"{s.folder}.mat")
-        wins = windows(s, t_min[-1])
+        if crop_min is not None:
+            keep = t_min < crop_min(s)
+            y, x, t_min = y[keep], x[keep], t_min[keep]
+        wins = windows_fn(s, t_min[-1])
         base = (t_min >= wins[0][1]) & (t_min < wins[0][2])
         dff, slope, intercept = core.baseline_fit_dff(y, x, fs, base)
         fit_rows.append(

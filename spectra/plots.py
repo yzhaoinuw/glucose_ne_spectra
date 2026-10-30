@@ -56,6 +56,12 @@ def _save(fig, path):
     fig.savefig(path, dpi=110)
 
 
+def _grid(n):
+    """Columns and rows for n small panels: 3 wide up to 9, else 4 wide."""
+    ncols = 3 if n <= 9 else 4
+    return ncols, -(-n // ncols)
+
+
 def _window_color(i):
     return BASELINE_COLOR if i == 0 else BLOCK_RAMP[min(i - 1, len(BLOCK_RAMP) - 1)]
 
@@ -69,7 +75,7 @@ def per_mouse(d, path):
     s, f, sp, wins = d["session"], d["f"], d["spectra"], d["wins"]
     fig, axs = plt.subplots(2, 3, figsize=(14, 7.5), constrained_layout=True)
     fig.suptitle(
-        f"{s.mouse} ({s.group}), {s.folder}   injection +{s.injection_min:g} min, "
+        f"{s.mouse} ({s.group}), {s.folder}   injection +{s.injection_min:.1f} min, "
         f"baseline-only fit slope {d['slope']:.2f}",
         color=INK,
     )
@@ -330,11 +336,12 @@ def full_band(d, path):
 def full_band_summary(full, path):
     """Baseline 465 and 405 spectra per mouse to ~10 Hz, and every mouse's coherence."""
     mice = list(dict.fromkeys(full.mouse))
-    fig = plt.figure(figsize=(13, 12), constrained_layout=True)
-    gs = fig.add_gridspec(4, 3, height_ratios=[1, 1, 1, 1.15])
+    ncols, nrows = _grid(len(mice))
+    fig = plt.figure(figsize=(13 if ncols == 3 else 17, 3 * nrows + 3), constrained_layout=True)
+    gs = fig.add_gridspec(nrows + 1, ncols, height_ratios=[1] * nrows + [1.15])
     first = None
     for i, mouse in enumerate(mice):
-        ax = fig.add_subplot(gs[i // 3, i % 3], sharex=first, sharey=first)
+        ax = fig.add_subplot(gs[i // ncols, i % ncols], sharex=first, sharey=first)
         first = first or ax
         m = full[full.mouse == mouse]
         _mark_range(ax)
@@ -349,11 +356,11 @@ def full_band_summary(full, path):
         ax.set_yscale("log")
         ax.set_xlim(*F_PLOT)
         ax.set_title(f"{mouse} ({m.group.iloc[0]})", loc="left")
-        if i % 3 == 0:
+        if i % ncols == 0:
             ax.set_ylabel("PSD (%²/Hz)")
         if i == 0:
             ax.legend(loc="lower left")
-    ax = fig.add_subplot(gs[3, :])
+    ax = fig.add_subplot(gs[nrows, :])
     _mark_range(ax)
     for group, col in GROUP_COLOR.items():
         g = full[(full.measure == "coherence") & (full.group == group)]
@@ -377,10 +384,16 @@ def full_band_summary(full, path):
     plt.close(fig)
 
 
-def raw_traces(per_mouse, path, bin_s=10.0):
-    """Raw 465 and 405 for every mouse's first 5 h, as % of the baseline mean,
-    with the analysis windows shaded and the fitted 405 scaling in each title."""
-    fig, axs = plt.subplots(3, 3, figsize=(14, 9.5), sharex=True, constrained_layout=True)
+def raw_traces(per_mouse, path, bin_s=10.0, span="first 5 h", fit_label="whole 5 h"):
+    """Raw 465 and 405 for every mouse's analysed span, as % of the baseline mean,
+    with the analysis windows shaded and the fitted 405 scaling in each title.
+    fit_label names the extraction's own fit (fit_coef) in the titles."""
+    ncols, nrows = _grid(len(per_mouse))
+    fig, axs = plt.subplots(
+        nrows, ncols, figsize=(14 if ncols == 3 else 17, 3.17 * nrows), sharex=True, constrained_layout=True
+    )
+    for ax in axs.flat[len(per_mouse) :]:
+        ax.set_visible(False)
     for ax, d in zip(axs.flat, per_mouse.values()):
         s, wins, t, y, x = d["session"], d["wins"], d["t_min"], d["y"], d["x"]
         base = (t >= wins[0][1]) & (t < wins[0][2])
@@ -395,19 +408,59 @@ def raw_traces(per_mouse, path, bin_s=10.0):
         ax.axhline(100, color=INK2, lw=0.6)
         ax.axvline(s.injection_min, color=INK2, ls=":", lw=1.2)
         ax.set_title(
-            f"{s.mouse} ({s.group})\nfitted 405 scaling: whole 5 h {d['whole_slope']:.2f}, "
+            f"{s.mouse} ({s.group})\nfitted 405 scaling: {fit_label} {d['whole_slope']:.2f}, "
             f"baseline only {d['slope']:.2f}",
             loc="left",
             fontsize=9,
         )
     for ax in axs[:, 0]:
         ax.set_ylabel("% of baseline mean")
-    for ax in axs[-1]:
+    for ax in axs.flat[max(0, len(per_mouse) - ncols) : len(per_mouse)]:
         ax.set_xlabel("time from recording start (min)")
+        ax.xaxis.set_tick_params(labelbottom=True)
     axs[0, 0].legend(loc="lower left")
     fig.suptitle(
-        "Raw signals, first 5 h (10-s means). Dotted: injection; shaded: baseline (grey) and post-injection blocks (blue)",
+        f"Raw signals, {span} (10-s means). Dotted: injection; shaded: baseline (grey) and post-injection blocks (blue)",
         color=INK,
     )
+    _save(fig, path)
+    plt.close(fig)
+
+
+def paired_difference(diff, measures, path):
+    """Crossover: per mouse, (glucose change) - (saline change) in log2 band power,
+    by post-injection block. Below 0: power fell more (or rose less) after glucose."""
+    posts = list(dict.fromkeys(diff.window))
+    band_list = list(dict.fromkeys(diff.band))
+    fig, axs = plt.subplots(
+        len(measures),
+        len(band_list),
+        figsize=(4 * len(band_list), 2.6 * len(measures)),
+        sharex=True,
+        sharey=True,
+        constrained_layout=True,
+        squeeze=False,
+    )
+    xs = np.arange(len(posts))
+    for r, meas in enumerate(measures):
+        for c, band in enumerate(band_list):
+            ax = axs[r, c]
+            sub = diff[(diff.measure == meas) & (diff.band == band)]
+            for _, m in sub.groupby("animal", sort=False):
+                v = m.set_index("window").glucose_minus_saline.reindex(posts).values
+                ax.plot(xs, v, "o-", ms=4, lw=0.8, color=MUTED, mec=SURFACE, mew=0.6, alpha=0.9)
+            mean = sub.groupby("window").glucose_minus_saline.mean().reindex(posts).values
+            n = sub.animal.nunique()
+            ax.plot(xs, mean, "-", color=GROUP_COLOR["glucose"], lw=2.2, label=f"mean (n={n} mice)")
+            ax.axhline(0, color=INK2, lw=0.8)
+            ax.set_xticks(xs, [p.replace(" min", "") for p in posts])
+            if r == 0:
+                ax.set_title(band)
+            if c == 0:
+                ax.set_ylabel(f"{TITLES[meas]}\nglucose − saline, log2", fontsize=8)
+            if r == len(measures) - 1:
+                ax.set_xlabel("minutes after injection")
+    axs[0, 0].legend(loc="lower left")
+    fig.suptitle("Within mouse: glucose session minus saline session, each vs. its own baseline (grey: mice)")
     _save(fig, path)
     plt.close(fig)
