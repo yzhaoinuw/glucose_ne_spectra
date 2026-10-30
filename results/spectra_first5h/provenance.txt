@@ -1,5 +1,5 @@
-code commit: ee516dd
-created: 2026-10-28 13:41:46
+code commit: 8d086e6
+created: 2026-10-30 00:03:07
 fiber: pfc
 input: outputs/ne_pfc_ds20_first5h
 script: python -m spectra.run_first5h --fiber pfc

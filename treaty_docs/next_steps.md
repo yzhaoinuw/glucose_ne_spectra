@@ -10,7 +10,7 @@ Active threads — read these first to know what work is in flight:
 - [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5): done 2026-10-28. All 9 sessions read from tanks; OC side check in the report (same 3 responders as PFC). Open only: the experimenter confirming fiber A = PFC (question 4).
 - [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; `spectra/` uses its raw traces, not its `dff`.
 
-- [48-h study](#48-h-study-claude-opus-5-5): in scope since 2026-10-29. All 14 mouse-sessions extracted to `outputs/ne_48h_ds20/`. Next: spectra on the first ~6 h with the 5-h study's blocks, then the full 48 h. Missing: May 8 RZ10-2 glucose (COM13/COM12), asked Rebeka.
+- [48-h study](#48-h-study-claude-opus-5-5): in scope since 2026-10-29. All 14 mouse-sessions extracted; first-6-h spectra done 2026-10-30 (`reports/2026-10-30_48h_first6h_ne_spectra.md`): 1 of 6 glucose mice (COM9) responds strongly. Next: the user reviews; decide on the full 48 h. Missing: May 8 RZ10-2 glucose (COM13/COM12), asked Rebeka.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
@@ -22,9 +22,10 @@ Extraction: `sbatch extraction/run_extract_ne_48h.sbatch` -> `outputs/ne_48h_ds2
 
 Plan agreed with the user:
 
-- [ ] **First pass, spectra on the first ~6 h**, to compare block by block with the 5-h study: the same post-injection blocks (+20–80, +80–140, +140–200, +200–240 min) against the **last hour before the injection** (the first hour may still hold the settling-in after hookup). Same measures as `spectra/` (raw 465/405, coherence). Glucose vs saline within mouse is now possible (crossover).
-- [ ] **COM9 glucose baseline:** end it before 11:10, not at the journal's 11:30. Its signal shows an injection-like change at 11:10 and nothing at 11:30 (`qc/may8_injection_zoom.png`); asked Rebeka (question 8).
-- [ ] **Second pass, the full 48 h** in hourly bins. Spans 2 dark phases, so sleep/activity is a bigger confound than in the 5-h data, with no EEG to control for it.
+- [x] **First pass, spectra on the first ~6 h** (2026-10-30, `python -m spectra.run_48h_first6h`, report `reports/2026-10-30_48h_first6h_ne_spectra.md`), to compare block by block with the 5-h study: the same post-injection blocks (+20–80, +80–140, +140–200, +200–240 min) against the **last hour before the injection** (the first hour may still hold the settling-in after hookup). Same measures as `spectra/` (raw 465/405, coherence). Glucose vs saline within mouse is now possible (crossover).
+- [x] **COM9 glucose baseline:** ends at 11:07 (`spectra/sessions48.py`), before 11:10, not at the journal's 11:30. Its signal shows an injection-like change at 11:10 and nothing at 11:30 (`qc/may8_injection_zoom.png`); asked Rebeka (question 8).
+- [ ] **User to review the first-6-h report.** COM9 is the only strong responder, and it is the session with the doubtful injection time. Saline sessions drift down over the afternoon, so read effects within mouse.
+- [ ] **Second pass, the full 48 h** in hourly bins, glucose vs. saline at the same clock time. Spans 2 dark phases, so sleep/activity is a bigger confound than in the 5-h data, with no EEG to control for it.
 - [ ] dF/F in these files uses the long-session fit (first 50 min + last hour) and assumes NE is back to baseline at 48 h. Use the raw traces for spectra, as in the 5-h study.
 
 The user downloads the tanks into `Yue/48H_GLU_FP/` and `Yue/48H_SAL_FP/` (outside this repo, next to it). Check each new one with `outputs/checks/tsq_vs_tev.py <folder>` and `check_tank48('<folder>')` in a debug-partition `sbatch` job (32 GB); this session's own allocation was too small for `srun`.

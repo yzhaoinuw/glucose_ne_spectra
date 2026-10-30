@@ -1,0 +1,5 @@
+code commit: 8d086e6
+created: 2026-10-30 00:02:21
+fiber: pfc (A or C per mouse)
+input: outputs/ne_48h_ds20
+script: python -m spectra.run_48h_first6h

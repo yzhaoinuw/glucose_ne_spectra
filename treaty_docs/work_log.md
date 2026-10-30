@@ -8,6 +8,20 @@ If today's date already has a `## YYYY-MM-DD` header at the top, add a new `###`
 
 Update this log at the end of any substantive work session unless the user explicitly asks not to document it. **The log records decisions about the project, not the content of the work produced** — the diff already says what changed. See [Work Log Discipline](treaty_conventions.md#work-log-discipline) for what counts as substantive and what to skip.
 
+## 2026-10-30
+
+### First-6-h spectra for the 48-h study (claude-opus-5-5, effort low)
+
+- User asked to go ahead with the spectra and to push. Reused `run_first5h.analyse` (sessions, window function and crop are now arguments) instead of a parallel pipeline; added `sessions48.py` and `run_48h_first6h.py`, which read sessions and injection times from the extraction's `summary.csv`.
+- Windows as agreed: the hour before the injection (ending 3 min before), then the 5-h study's blocks +20–80 … +200–240 min. COM9 glucose baseline ends at 11:07. New figure: glucose minus saline within mouse.
+- Finding: 1 of 6 glucose mice (COM9) shows the 5-h study's strong slow-band drop (÷9, then ÷3–4); the rest drop ÷1.5–2.1 in the first hour. Saline sessions drift down over the afternoon (÷2.1 by +200–240), in 405 too, so the report reads effects within mouse, not vs. baseline. COM9 is also the session with the doubtful injection time; its trace from 11:10 matches 5-h mouse #3's post-injection shape.
+- Verification:
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests` (11 passed)
+  - `python -m spectra.run_48h_first6h` (commit `8d086e6`); inspected `raw_traces.png`, `band_change.png`, `paired_difference.png`, `per_mouse/COM9_glucose.png`
+  - `python -m spectra.run_first5h` and `--fiber oc`: all CSVs unchanged
+  - report numbers regenerated from `band_power.csv` / `paired_difference.csv`
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ## 2026-10-29
 
 ### 48-h study brought into scope; all 14 mouse-sessions extracted (claude-opus-5-5, effort low)

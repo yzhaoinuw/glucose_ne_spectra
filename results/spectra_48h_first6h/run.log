@@ -1,0 +1,97 @@
+COM9 glu: baseline ends at 121.0 min (injection 144.0)
+COM9 glu glucose baseline fit slope  1.64; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM9 sal saline  baseline fit slope  0.42; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM10 glu glucose baseline fit slope  0.90; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM10 sal saline  baseline fit slope  2.44; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM14 glu glucose baseline fit slope  2.15; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM14 sal saline  baseline fit slope  1.13; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM15 glu glucose baseline fit slope  1.05; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM15 sal saline  baseline fit slope  1.63; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM16 glu glucose baseline fit slope  1.95; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM16 sal saline  baseline fit slope  2.44; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM18 glu glucose baseline fit slope  0.99; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM18 sal saline  baseline fit slope  2.57; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM12 sal saline  baseline fit slope  2.13; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+COM13 sal saline  baseline fit slope  2.89; windows: baseline, +20-80 min, +80-140 min, +140-200 min, +200-240 min
+
+Mean log2 change vs. baseline (glucose, saline):
+group                                       glucose  saline
+measure          band         window                       
+465              0.01-0.05 Hz +20-80 min      -0.63   -0.34
+                              +80-140 min     -0.36   -0.74
+                              +140-200 min    -0.56   -0.83
+                              +200-240 min    -0.27   -1.13
+                 0.05-0.2 Hz  +20-80 min       0.09   -0.38
+                              +80-140 min     -0.23   -0.69
+                              +140-200 min    -0.27   -0.61
+                              +200-240 min    -0.25   -0.75
+                 0.2-1 Hz     +20-80 min      -0.21   -0.43
+                              +80-140 min     -0.22   -0.37
+                              +140-200 min    -0.34   -0.50
+                              +200-240 min    -0.40   -0.45
+405              0.01-0.05 Hz +20-80 min      -0.06   -0.62
+                              +80-140 min     -0.52   -1.13
+                              +140-200 min    -1.04   -1.28
+                              +200-240 min    -1.30   -1.33
+                 0.05-0.2 Hz  +20-80 min      -0.12   -0.37
+                              +80-140 min     -0.73   -1.16
+                              +140-200 min    -1.01   -1.23
+                              +200-240 min    -1.07   -1.35
+                 0.2-1 Hz     +20-80 min      -0.36   -0.29
+                              +80-140 min     -0.45   -0.68
+                              +140-200 min    -0.61   -0.85
+                              +200-240 min    -0.66   -0.84
+465_indep_405    0.01-0.05 Hz +20-80 min      -1.18   -0.29
+                              +80-140 min     -0.57   -0.55
+                              +140-200 min    -0.51   -0.59
+                              +200-240 min    -0.20   -1.04
+                 0.05-0.2 Hz  +20-80 min      -0.51   -0.50
+                              +80-140 min     -0.17   -0.64
+                              +140-200 min    -0.09   -0.50
+                              +200-240 min     0.01   -0.76
+                 0.2-1 Hz     +20-80 min      -0.07   -0.31
+                              +80-140 min      0.05   -0.11
+                              +140-200 min     0.15   -0.12
+                              +200-240 min     0.09   -0.10
+dff_baseline_fit 0.01-0.05 Hz +20-80 min      -0.61   -0.09
+                              +80-140 min     -0.13   -0.35
+                              +140-200 min    -0.23   -0.41
+                              +200-240 min     0.08   -0.75
+                 0.05-0.2 Hz  +20-80 min      -0.28   -0.42
+                              +80-140 min     -0.15   -0.69
+                              +140-200 min    -0.13   -0.61
+                              +200-240 min    -0.08   -0.68
+                 0.2-1 Hz     +20-80 min       0.09   -0.28
+                              +80-140 min      0.12   -0.10
+                              +140-200 min     0.16   -0.20
+                              +200-240 min    -0.01   -0.07
+
+Within mouse, glucose minus saline (log2):
+                                         mean  n_mice  n_below_0
+measure       band         window                               
+465           0.01-0.05 Hz +20-80 min   -0.31       6          4
+                           +80-140 min   0.39       6          1
+                           +140-200 min  0.10       6          3
+                           +200-240 min  0.98       6          1
+              0.05-0.2 Hz  +20-80 min    0.47       6          2
+                           +80-140 min   0.49       6          1
+                           +140-200 min  0.13       6          1
+                           +200-240 min  0.64       6          1
+              0.2-1 Hz     +20-80 min    0.15       6          2
+                           +80-140 min   0.22       6          0
+                           +140-200 min  0.07       6          3
+                           +200-240 min  0.14       6          3
+465_indep_405 0.01-0.05 Hz +20-80 min   -0.83       6          5
+                           +80-140 min   0.03       6          3
+                           +140-200 min  0.03       6          4
+                           +200-240 min  1.04       6          1
+              0.05-0.2 Hz  +20-80 min   -0.07       6          4
+                           +80-140 min   0.47       6          1
+                           +140-200 min  0.27       6          2
+                           +200-240 min  0.84       6          1
+              0.2-1 Hz     +20-80 min    0.17       6          3
+                           +80-140 min   0.19       6          3
+                           +140-200 min  0.19       6          1
+                           +200-240 min  0.23       6          3
+
+Wrote /gpfs/fs3/archive/dkell12_lab/BrainFlowZZZ/Yue/GlucoseProjectFiberNE/results/spectra_48h_first6h

@@ -15,7 +15,7 @@ This repo analyzes fiber-photometry recordings of norepinephrine (NE) in the mou
 | `matlab_scripts/` | The lab's original MATLAB pipeline: ΔF/F preprocessing, hourly-bin stats and NE-"dip" detection. **Reference only.** The new analysis is written in Python. See `project_overview.md` for what each script does and its known bugs. |
 | `AGENTS.md`, `project_overview.md`, `treaty_docs/` | Project documentation and work log ([Agent Collab Treaty](https://github.com/yzhaoinuw/agent_collab_treaty)). Start at `AGENTS.md`. |
 | `extraction/` | MATLAB extraction of PFC NE ΔF/F from the raw recordings: v1 full-rate (`extract_ne_pfc.m`), v2 ~20 Hz (`extract_ne_pfc_ds.m`, processing in `process_ne_session.m`), the 48-h study (`extract_ne_48h.m`), shared loader, SLURM wrappers, and the vendored TDT reader (`tdt/`) |
-| `spectra/` (Python) | Spectral analysis, first 5 h; tests in `tests/` |
+| `spectra/` (Python) | Spectral analysis: 5-h study (`run_first5h`) and 48-h study, first 6 h (`run_48h_first6h`); tests in `tests/` |
 
 ## Extracted NE traces
 

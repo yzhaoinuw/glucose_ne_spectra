@@ -92,7 +92,7 @@ Many repos accumulate parallel implementations during refactors; without an expl
 - [`extraction/extract_ne_pfc_ds.m`](extraction/extract_ne_pfc_ds.m): v2 NE extraction, the one to use. [`extraction/extract_ne_pfc.m`](extraction/extract_ne_pfc.m) (v1, full rate) is kept for comparison.
 - [`extraction/process_ne_session.m`](extraction/process_ne_session.m), [`extraction/load_pfc_raw.m`](extraction/load_pfc_raw.m), [`extraction/pfc_recordings.m`](extraction/pfc_recordings.m), [`extraction/get_git_commit.m`](extraction/get_git_commit.m): shared helpers.
 - [`extraction/extract_ne_48h.m`](extraction/extract_ne_48h.m), [`extraction/recordings48.m`](extraction/recordings48.m): 48-h study extraction and its session table.
-- [`spectra/`](spectra/): the first-5-h spectral analysis (`run_first5h.py` entry point, `core.py` measures, `sessions.py` cohort + windows, `plots.py`). Tests in [`tests/`](tests/).
+- [`spectra/`](spectra/): the first-5-h spectral analysis (`run_first5h.py` entry point, `core.py` measures, `sessions.py` cohort + windows, `plots.py`). The 48-h study's first 6 h reuse it: `run_48h_first6h.py` and `sessions48.py`. Tests in [`tests/`](tests/).
 - [`extraction/extract_ne_pfc_first5h.m`](extraction/extract_ne_pfc_first5h.m): crops the 9 cohort sessions to 5 h; its raw traces feed `spectra/`.
 - [`extraction/tdt/`](extraction/tdt/): the TDT reader, vendored unmodified from the TDT SDK via the user's `preprocess_sleep_data` repo. Don't edit it; replace it with a newer SDK copy if needed.
 
