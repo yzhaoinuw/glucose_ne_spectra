@@ -2,7 +2,7 @@
 
 For the people who ran the glucose fiber-photometry recordings (Rebeka and Elise), March–April 2024.
 
-**What we're doing:** comparing the frequency and power of NE oscillations in PFC (GRAB-NE, `hSyn-NE2m`) before and after an IP glucose injection, against saline. We use the **first 5 hours of each recording**: ~1 h baseline, the injection, then ~4 h after. All of that is in the light phase. The 48-h study is out of scope for now.
+**What we're doing:** comparing the frequency and power of NE oscillations in PFC (GRAB-NE, `hSyn-NE2m`) before and after an IP glucose injection, against saline. We use the **first 5 hours of each recording**: ~1 h baseline, the injection, then ~4 h after. All of that is in the light phase. The 48-h study is now being analysed the same way: its first ~6 h first (2 h baseline, the injection at ~11:00, ~4 h after), then the full 48 h.
 
 ## Last open questions
 
@@ -18,8 +18,10 @@ Rebeka: thank you, your deck, notebook table and answers covered almost everythi
 We're collecting the 48-h crossover tanks. 7 of 8 are here and complete.
 
 5. **Missing raw files, May 8 RZ10-2 glucose (COM13/COM12):** the folder `48H_Glucose_RZ10-2_COM13(A)_COM12(C)` holds the tank `EliseFiber_EEG_timings-240430-184810`. Its block `Subject1-240508-090610_COM13(Fib1)_COM12(Fib2)` has only your MATLAB plots (`COM12_PFC_raw+normalized.jpg` is 0 bytes), with no `.tev/.tsq/.Tbk/.Tdx/.tin/.tnt`. The other two blocks are 2-min tests from 30 Apr. Do you have the raw files (~19.7 GB `.tev`), e.g. on the rig PC?
-6. **Saline sessions named "glucose":** `48H_RZ10_1_saline_females_COM18(A)_COM16(C)_170624` (block `..._48HGlucose_170624`) and `48H_saline_RZ10-1_290524_COM12(A)_COM13(C)` (block `..._48H_glucose_RZ10-1_290524`). We read "glucose" as the study name and these as saline. Correct?
-7. **COM = mouse?** We read COM# as the mouse ID, one mouse per fiber, both fibers in PFC. In May, mice switch fiber between sessions (e.g. COM10 on A for glucose, on C for saline). Correct? And where is the EEG/EMG? None of the tanks has EEG/EMG channels.
+6. *(Answered by the lab journal, sheet 2: both are saline.)* **Saline sessions named "glucose":** `48H_RZ10_1_saline_females_COM18(A)_COM16(C)_170624` (block `..._48HGlucose_170624`) and `48H_saline_RZ10-1_290524_COM12(A)_COM13(C)` (block `..._48H_glucose_RZ10-1_290524`). We read "glucose" as the study name and these as saline. Correct?
+7. *(Mostly answered by the lab journal, sheet 2: COM# is the mouse, with sex, rig and fiber per session. Still open: the EEG/EMG.)* **COM = mouse?** We read COM# as the mouse ID, one mouse per fiber, both fibers in PFC. In May, mice switch fiber between sessions (e.g. COM10 on A for glucose, on C for saline). Correct? And where is the EEG/EMG? None of the tanks has EEG/EMG channels.
+
+8. **COM9's glucose injection time (May 8, RZ10-1):** the journal gives 11:30 for COM9 and 11:10 for its tank-mate COM10, and marks that day's start time "9:00(?)". COM9's signal has an injection-like change at 11:10 (465 up, 405 down, like COM10's) and nothing at 11:30. Was COM9 injected at 11:10?
 
 **Not needed anymore:** the LED modulation frequencies and demodulator filter (the earlier question for Verena). We only analyze frequencies below ~1 Hz, well under the ~6 Hz cutoff we see.
 

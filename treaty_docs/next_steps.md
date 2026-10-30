@@ -10,13 +10,22 @@ Active threads — read these first to know what work is in flight:
 - [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5): done 2026-10-28. All 9 sessions read from tanks; OC side check in the report (same 3 responders as PFC). Open only: the experimenter confirming fiber A = PFC (question 4).
 - [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; `spectra/` uses its raw traces, not its `dff`.
 
-- [48-h study data intake](#48-h-study-data-intake-claude-opus-5-5): 7 of 8 tanks verified 2026-10-29. Missing: May 8 RZ10-2 glucose (COM13/COM12), asked Rebeka. Analysis still out of scope.
+- [48-h study](#48-h-study-claude-opus-5-5): in scope since 2026-10-29. All 14 mouse-sessions extracted to `outputs/ne_48h_ds20/`. Next: spectra on the first ~6 h with the 5-h study's blocks, then the full 48 h. Missing: May 8 RZ10-2 glucose (COM13/COM12), asked Rebeka.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
-## 48-h study data intake (claude-opus-5-5)
+## 48-h study (claude-opus-5-5)
 
-Status: 7 of 8 tanks in and verified 2026-10-29 (claude-opus-5-5, effort low). Analysis of the 48-h study is still out of scope; this is data intake only.
+Status: in scope since 2026-10-29 (user's call). 7 of 8 tanks verified; all 14 mouse-sessions with raw data extracted (claude-opus-5-5, effort low). 6 mice have both conditions (COM9, COM10 male; COM14, COM15, COM16, COM18 female); COM12 and COM13 have saline only.
+
+Extraction: `sbatch extraction/run_extract_ne_48h.sbatch` -> `outputs/ne_48h_ds20/<mouse>_<condition>.mat`, ~8 min. Session table with journal metadata in `extraction/recordings48.m`; each file stores `inj_min`. QC: `outputs/ne_48h_ds20/qc/`, including `first6h_overview.png` (all 14, ±injection).
+
+Plan agreed with the user:
+
+- [ ] **First pass, spectra on the first ~6 h**, to compare block by block with the 5-h study: the same post-injection blocks (+20–80, +80–140, +140–200, +200–240 min) against the **last hour before the injection** (the first hour may still hold the settling-in after hookup). Same measures as `spectra/` (raw 465/405, coherence). Glucose vs saline within mouse is now possible (crossover).
+- [ ] **COM9 glucose baseline:** end it before 11:10, not at the journal's 11:30. Its signal shows an injection-like change at 11:10 and nothing at 11:30 (`qc/may8_injection_zoom.png`); asked Rebeka (question 8).
+- [ ] **Second pass, the full 48 h** in hourly bins. Spans 2 dark phases, so sleep/activity is a bigger confound than in the 5-h data, with no EEG to control for it.
+- [ ] dF/F in these files uses the long-session fit (first 50 min + last hour) and assumes NE is back to baseline at 48 h. Use the raw traces for spectra, as in the 5-h study.
 
 The user downloads the tanks into `Yue/48H_GLU_FP/` and `Yue/48H_SAL_FP/` (outside this repo, next to it). Check each new one with `outputs/checks/tsq_vs_tev.py <folder>` and `check_tank48('<folder>')` in a debug-partition `sbatch` job (32 GB); this session's own allocation was too small for `srun`.
 
@@ -32,7 +41,7 @@ Each fiber is a different mouse (COM# = mouse ID, both PFC). Fiber per mouse cha
 Open:
 
 - [ ] COM13/COM12 glucose block `Subject1-240508-090610` (tank `EliseFiber_EEG_timings-240430-184810`): `.tev` (~19.7 GB) and its `.tsq/.Tbk/.Tdx/.tin/.tnt/StoresListing.txt`. Asked Rebeka 2026-10-29 (questions file, 48-h section).
-- [ ] Confirm the two saline tanks whose block names say "glucose" are saline.
+- [x] The two saline tanks whose block names say "glucose" are saline (lab journal, sheet 2).
 - [ ] No tank has EEG/EMG stores, although the study had EEG/EMG. Find where it was recorded before planning sleep scoring.
 - Folder name `..._RZ10-2_050624_...` vs tank date 2024-06-03: likely the end date (day-first), not a mismatch.
 

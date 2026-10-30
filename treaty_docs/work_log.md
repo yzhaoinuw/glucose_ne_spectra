@@ -10,6 +10,20 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-10-29
 
+### 48-h study brought into scope; all 14 mouse-sessions extracted (claude-opus-5-5, effort low)
+
+- The user brought the 48-h study into scope, without waiting for the experimenter: the lab journal's sheet 2 gives mouse, sex, rig, fiber and injection time for every session, which is all extraction needs. It also answers questions 6 and most of 7.
+- Plan agreed: extract the full 48 h, then run spectra first on the first ~6 h with the 5-h study's post-injection blocks, against the last hour before the injection (rather than the full 2 h, since the first hour may still include settling-in). Full 48 h in hourly bins comes second.
+- Moved the v2 per-session processing into `process_ne_session.m`, shared by the 5-h and 48-h extractions, rather than copying it. The 5-h outputs (PFC and OC) are bit-identical after the change.
+- Rig clocks: tank start times decode to ~03:00 EDT, but the journal and every block name with a time say ~09:00 (within 2–4 s of +6 h). The rig PCs' clocks were 6 h off; `extract_ne_48h` converts to the rig wall clock and checks block-name times where present. All injections land 116–144 min in, on the handling spike.
+- Found a loader bug: one tank (June 3, RZ10-2) has 128 more 465C samples than 405C at the end. The loader's warning crashed, and its start-trim logic would have read the extra samples as a start shortfall (t0 off by 0.13 s). Now compared against the shorter store's index.
+- COM9 glucose: the journal says 11:30 (tank-mate COM10 11:10, start time marked "(?)"), but its signal changes at 11:10 and not at 11:30. Kept the journal time in the files; the spectra baseline for COM9 should end before 11:10. Asked Rebeka (question 8).
+- Verification:
+  - `outputs/checks/refactor_check.m` (re-runs `extract_ne_pfc_first5h` for fibers A and C, compares with saved outputs): max difference 0 in every field, 18/18 sessions
+  - `sbatch extraction/run_extract_ne_48h.sbatch` (job 2243867, commit `67ec3a4`): 14/14 ok, 47.9–48.1 h each
+  - `outputs/ne_48h_ds20/qc/first6h_overview.png`, `may8_injection_zoom.png`; fiber A vs C correlation per tank ≤ 0.36 (465), so the two mice in a tank are independent
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### 48-h study tanks pulled and verified: 7 of 8 (claude-opus-5-5, effort low)
 
 - The user is pulling the 48-h crossover tanks into `Yue/48H_GLU_FP/` and `Yue/48H_SAL_FP/`, outside this repo. Still out of scope for analysis; this was a data-intake check only. Inventory and caveats are in next steps.
