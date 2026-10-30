@@ -30,7 +30,10 @@ k465 = ['x465' fiber]; k405 = ['x405' fiber];
 heads = TDTbin2mat([rec_dir filesep], 'HEADERS', 1);
 fs = heads.stores.(k465).fs;
 assert(abs(heads.stores.(k405).fs - fs) < 1e-6, '465 and 405 sampling rates differ');
-n_tsq = tsq_sample_count(heads.stores.(k465));
+% The two stores can differ by a block at the end (one 48-h tank: 465C has
+% 128 more samples than 405C). Both start together, so compare against the
+% shorter index; a longer one would be read as a start-trim shortfall.
+n_tsq = min(tsq_sample_count(heads.stores.(k465)), tsq_sample_count(heads.stores.(k405)));
 
 switch src
     case 'tank'
@@ -52,7 +55,7 @@ end
 s465 = s465(:)'; s405 = s405(:)';
 n_source = [numel(s465) numel(s405)];
 if n_source(1) ~= n_source(2)
-    warning('%s: 465 has %d samples, 405 has %d; truncating to the shorter.', name, n_source);
+    warning('%s: 465 has %d samples, 405 has %d; truncating to the shorter.', name, n_source(1), n_source(2));
 end
 
 n = min(n_source);
