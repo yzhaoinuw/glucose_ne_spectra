@@ -23,28 +23,22 @@ Same measures as the 5-h study (`spectra/core.py`): Welch spectra with 2-min seg
 
 ## Results
 
-**Table 1. Slow NE fluctuations (0.01–0.05 Hz), 465 power not shared with 405: change vs. the session's own baseline.** Bold: a drop of 3× or more. Italic rows: glucose change divided by saline change, same mouse.
+**Table 1. Slow NE fluctuations (0.01–0.05 Hz), 465 power not shared with 405: change vs. the session's own baseline.** Bold: a drop of 3× or more. Last row (italic): the mean over the 6 crossover mice of each mouse's glucose change divided by its saline change (per mouse: `paired_difference.csv`, Figure 2).
 
 | Mouse | Sex | Session | +20-80 | +80-140 | +140-200 | +200-240 |
 |---|---|---|---|---|---|---|
 | COM9 | M | glucose | **÷9.3** | **÷3.8** | **÷3.1** | ÷1.4 |
 | COM9 | M | saline | ÷1.1 | ÷1.4 | ÷1.1 | ÷1.8 |
-| COM9 | | *glucose vs. saline* | *÷8.1* | *÷2.7* | *÷2.8* | *×1.2* |
 | COM10 | M | glucose | ÷2.0 | ×1.1 | ×1.9 | ×1.9 |
 | COM10 | M | saline | ÷1.5 | **÷3.4** | ÷2.3 | ÷2.4 |
-| COM10 | | *glucose vs. saline* | *÷1.3* | *×3.7* | *×4.4* | *×4.4* |
 | COM14 | F | glucose | ÷1.5 | ÷1.3 | ÷1.3 | ÷1.7 |
 | COM14 | F | saline | ×1.3 | ÷1.3 | ÷1.1 | ÷1.8 |
-| COM14 | | *glucose vs. saline* | *÷1.9* | *×1.1* | *÷1.1* | *×1.0* |
 | COM15 | F | glucose | ÷1.5 | ÷1.2 | ÷1.4 | ×1.4 |
 | COM15 | F | saline | ÷1.5 | ÷1.2 | ÷1.0 | **÷3.5** |
-| COM15 | | *glucose vs. saline* | *÷1.0* | *÷1.0* | *÷1.3* | *×5.0* |
 | COM16 | F | glucose | ÷1.6 | ÷1.4 | ÷2.6 | ÷2.2 |
 | COM16 | F | saline | ÷2.6 | ÷1.6 | ÷1.7 | **÷6.0** |
-| COM16 | | *glucose vs. saline* | *×1.6* | *×1.2* | *÷1.5* | *×2.8* |
 | COM18 | F | glucose | ÷2.1 | ÷1.4 | ÷1.1 | ÷1.1 |
 | COM18 | F | saline | ×1.1 | ×1.0 | ÷1.9 | ÷1.1 |
-| COM18 | | *glucose vs. saline* | *÷2.4* | *÷1.5* | *×1.7* | *÷1.0* |
 | COM12 | M | saline | ×1.3 | ÷1.3 | ÷1.1 | ÷1.3 |
 | COM13 | M | saline | ÷1.5 | ÷1.3 | ÷2.6 | ÷1.4 |
 | mean | | glucose (n=6) | ÷2.3 | ÷1.5 | ÷1.4 | ÷1.1 |
