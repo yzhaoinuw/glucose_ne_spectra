@@ -1,4 +1,4 @@
-"""Draft paper figure for the 5-h study: example mice plus responder / non-responder / saline means.
+"""Draft paper figure for the 5-h study on the 13-h dataset: example mice plus responder / non-responder / saline means.
 
 Responders are chosen by the rise in raw 465 (NE level) after the injection,
 a measure separate from the slow-fluctuation drop that the figure then shows.
@@ -264,7 +264,7 @@ def make_figure(traces, table, path):
     fig.text(
         0.5,
         0.995,
-        "DRAFT: 5-h study, PFC unless marked; mean ± SEM, n = 3 per group; grey band = injection "
+        "DRAFT: 5-h study on the 13-h dataset, PFC unless marked; mean ± SEM, n = 3 per group; grey band = injection "
         "and 20-min handling period",
         ha="center",
         va="top",
