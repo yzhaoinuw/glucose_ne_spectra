@@ -1,0 +1,10 @@
+mouse,treatment,group,ne_level_change_pct,slow_band_log2_change
+#3,glucose,non-responder,2.586,-1.069
+#4,glucose,non-responder,-0.065,0.217
+#5,glucose,responder,12.601,-2.793
+#22,glucose,non-responder,-7.655,0.973
+FP1,glucose,responder,11.718,-2.513
+FP2,glucose,responder,14.676,-1.592
+#1,saline,saline,-2.067,0.529
+#2,saline,saline,-1.726,0.164
+#33,saline,saline,-2.934,0.259

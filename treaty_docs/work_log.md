@@ -8,6 +8,21 @@ If today's date already has a `## YYYY-MM-DD` header at the top, add a new `###`
 
 Update this log at the end of any substantive work session unless the user explicitly asks not to document it. **The log records decisions about the project, not the content of the work produced** — the diff already says what changed. See [Work Log Discipline](treaty_conventions.md#work-log-discipline) for what counts as substantive and what to skip.
 
+## 2026-11-01
+
+### PI review of the 5-h report; draft figure with a responder split (claude-opus-5-5, effort low)
+
+- The PI reviewed the 5-h report and asked: are all mice included; weren't the same mice given saline and glucose (to Rebeka); where is OC; which figure panels; split glucose mice into NE responders (n=3) vs. poor/no response (n=3); add "activity recordings for similar mice".
+- Answers from the notebook: all 9 mice of the 5-h/13-h study are in; it is between-mouse (one injection per mouse), and the only possible overlap is FP2 = "#2" (open question 1). The crossover is the 48-h study. OC is in the report as a side check only.
+- Decision: define responders by the NE level rise (raw 465, +20–140 min vs. baseline), not by the slow-band drop the figure then shows, so the split isn't circular. It gives the PI's 3 vs. 3: #5, FP1, FP2 +12 to +15%; #3 +2.6%, #4 −0.1%, #22 −7.7%; saline −1.7 to −2.9%. #3 (brief first-hour drop) goes with the poor responders. Show descriptively, with no p-value between responders and non-responders.
+- Draft figure: examples #5 / #4 / #1 (#1 is the only saline mouse with video). Close-up windows are the same for every mouse (−45 to −25 and +90 to +110 min); +60–80 happened to catch none of #4's dips, which would have made it look like a responder.
+- "Activity recordings" is unclear: either separate lab data or movement from the `Cam1.avi` videos. Video exists for 7 of 9 sessions; #2 and #33 (saline) have none. Asked the PI via the user's reply (draft in `outputs/reply_to_pi_2026-11-01.txt`, not tracked).
+- Verification:
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests` (11 passed)
+  - `python -m spectra.draft_figure`; inspected `results/figure_draft/draft_figure.png`
+  - `python -m spectra.run_first5h` and `--fiber oc`: only `provenance.txt` timestamps changed (reverted)
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ## 2026-10-30
 
 ### First-6-h spectra for the 48-h study (claude-opus-5-5, effort low)
