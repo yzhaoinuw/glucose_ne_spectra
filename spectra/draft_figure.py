@@ -1,4 +1,4 @@
-"""Draft paper figure for the 5-h study on the 13-h dataset: example mice plus responder / non-responder / saline means.
+"""Draft paper figure for the 13-h study: example mice plus responder / non-responder / saline means.
 
 Responders are chosen by the rise in raw 465 (NE level) after the injection,
 a measure separate from the slow-fluctuation drop that the figure then shows.
@@ -40,7 +40,7 @@ EXAMPLE_TITLE = {
     "saline": "saline",
 }
 LABEL_NUDGE = {"#2": (5, -10)}  # panel G, keeps #2 clear of #4
-COLOR = {"responder": "#2a78d6", "non-responder": "#1baf7a", "saline": "#eb6834"}  # categorical slots 1, 3, 2
+COLOR = {"responder": "#eb6834", "non-responder": "#1baf7a", "saline": "#2a78d6"}  # categorical slots 2, 3, 1
 EXAMPLES = [("#5", "responder"), ("#4", "non-responder"), ("#1", "saline")]
 
 SLOW = "0.01-0.05 Hz"
@@ -264,7 +264,7 @@ def make_figure(traces, table, path):
     fig.text(
         0.5,
         0.995,
-        "DRAFT: 5-h study on the 13-h dataset, PFC unless marked; mean ± SEM, n = 3 per group; grey band = injection "
+        "DRAFT: 13-h study, PFC unless marked; mean ± SEM, n = 3 per group; grey band = injection "
         "and 20-min handling period",
         ha="center",
         va="top",

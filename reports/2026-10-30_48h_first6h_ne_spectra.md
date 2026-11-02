@@ -1,10 +1,10 @@
 # PFC NE spectra in the 48-h study, first 6 h: glucose vs. saline within mouse
 
-*2026-10-30. Code: `spectra/run_48h_first6h.py`; the commit is named in [`provenance.txt`](../results/spectra_48h_first6h/provenance.txt). Results: [`results/spectra_48h_first6h/`](../results/spectra_48h_first6h/). Companion to the [5-h study report](2026-10-27_first5h_ne_spectra.md), whose method this repeats.*
+*2026-10-30. Code: `spectra/run_48h_first6h.py`; the commit is named in [`provenance.txt`](../results/spectra_48h_first6h/provenance.txt). Results: [`results/spectra_48h_first6h/`](../results/spectra_48h_first6h/). Companion to the [13-h study report](2026-10-27_13h_first5h_ne_spectra.md), whose method this repeats.*
 
 ## Summary
 
-- **One of 6 glucose mice (COM9) shows the strong response seen in the 5-h study.** Its slow NE fluctuations (0.01–0.05 Hz) fell ÷9 in the first hour and stayed ÷3–4 for two more. The ~1-min NE dips disappear from its raw trace for ~2.5 h (Figure 1). Its own saline session shows no such drop. The 5-h study had this response in 3 of 6 glucose mice.
+- **One of 6 glucose mice (COM9) shows the strong response seen in the 13-h study.** Its slow NE fluctuations (0.01–0.05 Hz) fell ÷9 in the first hour and stayed ÷3–4 for two more. The ~1-min NE dips disappear from its raw trace for ~2.5 h (Figure 1). Its own saline session shows no such drop. The 13-h study had this response in 3 of 6 glucose mice.
 - **The other 5 glucose mice drop only mildly**, ÷1.5–2.1 in the first hour, and their dips continue through the injection.
 - **Within mouse, glucose vs. saline:** the first hour after glucose is lower than after saline in 4 of 6 mice (÷1.3–8.1; COM9, COM18, COM14, COM10), equal in COM15 and higher in COM16. The mean is ÷1.8, and without COM9 it is ÷1.3. After the first hour there is no consistent glucose effect.
 - **Saline sessions lose slow-band power as the day goes on**, by ÷2.1 on average by +200–240 min (late morning to mid-afternoon), in 405 as well as 465. So a drop vs. baseline alone is not evidence of an effect here; the within-mouse saline session is the reference. Late in the window this drift makes glucose look *higher* than saline (×2.1), which we read as saline-session drift, not a glucose increase.
@@ -14,12 +14,12 @@
 
 The 48-h crossover: each mouse got IP glucose and, 2–3 weeks later, saline (same 20 µL/g volume), both injected at ~11:00, ~2 h into a recording that starts at ~09:00. Two mice per tank, one per fiber, both PFC. 6 mice have both sessions; COM12 and COM13 have saline only (their glucose tank has no raw files). Extraction: `extraction/extract_ne_48h.m` (v2, ~20 Hz), `outputs/ne_48h_ds20/`.
 
-Same measures as the 5-h study (`spectra/core.py`): Welch spectra with 2-min segments of raw 465 and 405, 465–405 coherence, and the 465 power not shared with 405. Two differences:
+Same measures as the 13-h study (`spectra/core.py`): Welch spectra with 2-min segments of raw 465 and 405, 465–405 coherence, and the 465 power not shared with 405. Two differences:
 
-- **Baseline:** the last hour before the injection, ending 3 min before it. The recordings have ~2 h before the injection, but the first hour may still hold the settling-in after hookup, and one hour matches the 5-h study.
-- **Blocks:** the 5-h study's post-injection blocks, +20–80, +80–140, +140–200 and +200–240 min, so the studies compare block by block.
+- **Baseline:** the last hour before the injection, ending 3 min before it. The recordings have ~2 h before the injection, but the first hour may still hold the settling-in after hookup, and one hour matches the 13-h study.
+- **Blocks:** the 13-h study's post-injection blocks, +20–80, +80–140, +140–200 and +200–240 min, so the studies compare block by block.
 
-**COM9 glucose:** the journal gives its injection at 11:30, but its signal changes at 11:10, when its tank-mate COM10 was injected, and not at 11:30 (`outputs/ne_48h_ds20/qc/may8_injection_zoom.png`). Its trace from 11:10 has the same bump–dip–rise shape as 5-h mouse #3 right after its injection. Blocks use the journal's 11:30, and the baseline ends at 11:07, which is safe either way. If the injection was at 11:10, each block is 20 min later after injection than its label says. Asked the experimenter (question 8).
+**COM9 glucose:** the journal gives its injection at 11:30, but its signal changes at 11:10, when its tank-mate COM10 was injected, and not at 11:30 (`outputs/ne_48h_ds20/qc/may8_injection_zoom.png`). Its trace from 11:10 has the same bump–dip–rise shape as 13-h study mouse #3 right after its injection. Blocks use the journal's 11:30, and the baseline ends at 11:07, which is safe either way. If the injection was at 11:10, each block is 20 min later after injection than its label says. Asked the experimenter (question 8).
 
 ## Results
 
@@ -53,19 +53,20 @@ Raw 465 gives the same picture (`band_power.csv`): COM9 glucose ÷5.4, ÷3.4, ÷
 
 ![Within-mouse difference](../results/spectra_48h_first6h/paired_difference.png)
 
-*Figure 2. Within mouse: glucose change minus saline change (log2) by band and block. Grey: each of the 6 crossover mice; blue: mean. Below 0: power fell more, or rose less, after glucose.*
+*Figure 2. Within mouse: glucose change minus saline change (log2) by band and block. Grey: each of the 6 crossover mice; orange: mean. Below 0: power fell more, or rose less, after glucose.*
 
 Other figures in the results folder: `band_change.png` (all measures, both groups), `spectral_change.png`, `coherence.png`, `full_band_baseline.png`, and one `per_mouse/` and `full_band/` figure per session.
 
-**Artifact after glucose, again.** COM9's first post-glucose hour has a peak near 0.17 Hz, in step in 465 and 405 (coherence ~0.95). This matches the ~0.15 Hz peak the 5-h report saw right after glucose and treated as an artifact. The 465-not-shared-with-405 measure removes it.
+**Artifact after glucose, again.** COM9's first post-glucose hour has a peak near 0.17 Hz, in step in 465 and 405 (coherence ~0.95). This matches the ~0.15 Hz peak the 13-h report saw right after glucose and treated as an artifact. The 465-not-shared-with-405 measure removes it.
 
-## Comparison with the 5-h study
+## Comparison with the 13-h study
 
-| | 5-h study | 48-h study, first 6 h |
+| | 13-h study | 48-h study, first 6 h |
 |---|---|---|
 | Strong slow-band drop after glucose (÷3 or more, 2–3 h) | 3 of 6 (#5, FP1, FP2) | 1 of 6 (COM9) |
 | First hour only | #3 (÷3) | the other 5, mildly (÷1.5–2.1) |
 | Saline | no drop (3 mice) | drifts down over the afternoon (8 sessions) |
+| Recording used | first 5 h: ~1 h before the injection (baseline), ~4 h after | first 6 h: ~2 h before (last hour as baseline), 4 h after |
 | Design | 6 glucose vs. 3 saline, different mice | 6 mice with both (2 male, 4 female), plus 2 saline-only |
 
 The weaker response here could be chance with 6 mice, the different (mostly female) mice, or the 2-h longer time in the rig before the injection. We can't separate these.

@@ -1,4 +1,4 @@
-# PFC norepinephrine spectra after IP glucose vs. saline: first pass
+# PFC NE spectra in the 13-h study, first 5 h: glucose vs. saline
 
 *2026-10-27. Code: `spectra/`; the commit is named in [`provenance.txt`](../results/spectra_first5h/provenance.txt). Results: [`results/spectra_first5h/`](../results/spectra_first5h/).*
 
@@ -19,7 +19,7 @@
 
 ## Dataset
 
-The 9 mice of the glucose study have raw PFC signal. Fiber A (465A / 405A, named `FibPho1_PFC` in the tanks) is PFC. Fiber C (465C / 405C, the OC fiber) is used only as a side check. OC is most likely the occipital cortex; the experimenter has yet to confirm this. The 465 nm channel is GRAB-NE (`hSyn-NE2m`); the 405 nm channel is the isosbestic control. The sampling rate is ~1017 Hz, and the extraction downsampled it to ~20.3 Hz with anti-aliasing. All 9 recordings start ~09:00 in the light phase (lights 07–19). Only **the first 5 h** of each are used: ~1 h of baseline, the injection, and ~4 h after.
+The 9 mice of the 13-h study have raw PFC signal. The name tells it apart from the 48-h study; only 3 of its 9 recordings run 13 h (FP1, FP2, #2), the other 6 run 5 h. Fiber A (465A / 405A, named `FibPho1_PFC` in the tanks) is PFC. Fiber C (465C / 405C, the OC fiber) is used only as a side check. OC is most likely the occipital cortex; the experimenter has yet to confirm this. The 465 nm channel is GRAB-NE (`hSyn-NE2m`); the 405 nm channel is the isosbestic control. The sampling rate is ~1017 Hz, and the extraction downsampled it to ~20.3 Hz with anti-aliasing. All 9 recordings start ~09:00 in the light phase (lights 07–19). Only **the first 5 h** of each are used: ~1 h of baseline, the injection, and ~4 h after.
 
 | Mouse | Group | Dose (mL) | Injection (min into recording) | Recording | Raw source |
 |---|---|---|---|---|---|
@@ -66,7 +66,7 @@ Groups, doses and injection times come from the experimenter's notebook. The sev
 
 ![Baseline 465 and 405 spectra to 10 Hz for each mouse, and every mouse's 465–405 coherence](../results/spectra_first5h/full_band_baseline.png)
 
-*Figure 2. Baseline spectra (top 3×3: 465 black, 405 grey, and dashed the 465 not shared with 405, i.e. P465 × (1 − coherence), the main measure defined in the table above) and 465–405 coherence (bottom; blue glucose, orange saline), 0.008–10 Hz. Shaded: the analysed 0.01–1 Hz; dotted: the band edges at 0.05 and 0.2 Hz. Data: [`full_band_baseline.csv`](../results/spectra_first5h/full_band_baseline.csv).*
+*Figure 2. Baseline spectra (top 3×3: 465 black, 405 grey, and dashed the 465 not shared with 405, i.e. P465 × (1 − coherence), the main measure defined in the table above) and 465–405 coherence (bottom; orange glucose, blue saline), 0.008–10 Hz. Shaded: the analysed 0.01–1 Hz; dotted: the band edges at 0.05 and 0.2 Hz. Data: [`full_band_baseline.csv`](../results/spectra_first5h/full_band_baseline.csv).*
 
 - **Why stop at 1 Hz.** In short: above 1 Hz there is no signal, not a contaminated one. (The range where 465 and 405 are most tangled is 0.05–1 Hz, which is analysed.) In detail: from ~0.8–1.2 Hz upward, the 465 spectrum goes flat: it has hit the noise floor (Table A1). Coherence with 405 falls to 0.02–0.04 there, the level expected from pure chance with ~54 baseline segments. A flat spectrum that is uncorrelated between the two channels is what independent detector noise looks like. Nothing above ~1 Hz can be resolved in either channel. From ~6 Hz both channels roll off steeply. The full-rate (~1017 Hz) data show the same roll-off, so it comes from the acquisition's demodulator low-pass filter, not from our downsampling. The only shared structure above 1 Hz looks like artifact: a ~2–4 Hz trace in #5 from +30 to +90 min (likely breathing or movement) and a steady ~8 Hz band in #2 (likely heartbeat; a mouse's heart beats ~8–10 times a second). The GRAB-NE signal also takes seconds to decay after NE falls, which smooths out faster NE changes.
 - **Why stop at 0.01 Hz.** The 2-min Welch segment sets the frequency resolution to 1/120 s ≈ 0.008 Hz. The lowest bin, 0.008 Hz, is less than one cycle per segment. Longer segments would reach lower frequencies but give fewer segments: a ~55-min baseline yields ~54 two-min segments at 50% overlap, and fewer segments means noisier spectra. Below ~0.01 Hz, bleaching and slow drift dominate anyway, and the per-segment linear detrend removes them.
@@ -106,7 +106,7 @@ Groups, doses and injection times come from the experimenter's notebook. The sev
 
 ![Band-power change per mouse and post-injection block, for each measure and band](../results/spectra_first5h/band_change.png)
 
-*Figure 3. Table 1 for every measure and band. Rows: measure; columns: band; dots: mice; lines: group means (blue glucose, orange saline). The y-axis is log2 change: −1 = half, −2 = a quarter, +1 = double. The glucose drop is in the 0.01–0.05 Hz column and fades by +200 min.*
+*Figure 3. Table 1 for every measure and band. Rows: measure; columns: band; dots: mice; lines: group means (orange glucose, blue saline). The y-axis is log2 change: −1 = half, −2 = a quarter, +1 = double. The glucose drop is in the 0.01–0.05 Hz column and fades by +200 min.*
 
 **Table 2. Average change over the first 2 h after the injection** (+20–140 min). Averaged on the log scale, i.e. a geometric mean.
 
@@ -174,7 +174,7 @@ Other outputs: per-mouse figures for all 9 mice in [`per_mouse/`](../results/spe
 
 - **Small n, no statistics.** 6 glucose vs. 3 saline mice. The glucose response is split: 3 strong, 1 brief, 2 none.
 - **Sleep state.** Infraslow (~0.02 Hz) NE oscillations are a feature of NREM sleep. Less slow power after glucose may mean the mice slept less, not that glucose changes NE dynamics directly. There is no EEG. The injection itself wakes the mouse, but saline mice don't show the drop.
-- **Mouse identity.** FP1 and FP2 (2 of the 3 strong responders) are 13-h sessions recorded in April. Whether FP2 is a repeat of an earlier mouse is still an open question for the experimenter.
+- **Mouse identity.** FP1 and FP2 (2 of the 3 strong responders) are 13-h recordings from April. Whether FP2 is a repeat of an earlier mouse is still an open question for the experimenter.
 - **"Not shared with 405" assumes 405 is a pure control.** If 405 partly picks up NE, which GRAB sensors can do near their isosbestic point, that measure removes some real NE signal. The raw 465 spectrum gives the same direction of effect, which limits this concern.
 - **Fiber assignment.** Fiber A = PFC follows the tanks' store name (`FibPho1_PFC`); the experimenter hasn't yet confirmed it for every mouse. The pre-extracted `.mat` arrays used earlier for #1, #3, FP1 and FP2 are identical to fiber A.
 - **Short baseline.** ~1 h limits the slowest reliable frequency to ~0.01 Hz and makes the baseline spectrum itself noisy.

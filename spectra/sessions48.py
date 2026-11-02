@@ -3,10 +3,10 @@
 Sessions and injection times come from the extraction's summary.csv
 (extraction/recordings48.m, from the lab journal), so there is one source.
 
-Windows match the 5-h study's post-injection blocks, so the two studies can be
+Windows match the 13-h study's post-injection blocks, so the two studies can be
 compared block by block. The baseline is the last hour before the injection,
 not the full ~2 h: the first hour may still hold the settling-in after hookup,
-and one hour matches the 5-h study's baseline length.
+and one hour matches the 13-h study's baseline length.
 """
 
 from dataclasses import dataclass
@@ -17,7 +17,7 @@ import pandas as pd
 from .sessions import BASELINE_END_BEFORE_INJ_MIN, BLOCK_MIN, POST_SKIP_MIN, Session
 
 BASELINE_MIN = 60.0
-LAST_BLOCK_END_MIN = 240.0  # 5-h study: its last block runs to the 5-h mark, ~4 h after the injection
+LAST_BLOCK_END_MIN = 240.0  # 13-h study: its last block runs to the 5-h mark, ~4 h after the injection
 
 # Baseline end, rig wall clock, where the journal injection time is in doubt.
 # COM9 glucose: the journal says 11:30, but its signal changes at 11:10 (when its
@@ -66,7 +66,7 @@ def load_sessions(in_dir):
 
 def windows48(session, end_min):
     """Analysis windows as (label, start_min, stop_min) from recording start:
-    the hour before the injection, then the 5-h study's post-injection blocks."""
+    the hour before the injection, then the 13-h study's post-injection blocks."""
     inj = session.injection_min
     base_end = session.baseline_end_min
     if base_end is None:

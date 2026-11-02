@@ -8,6 +8,31 @@ If today's date already has a `## YYYY-MM-DD` header at the top, add a new `###`
 
 Update this log at the end of any substantive work session unless the user explicitly asks not to document it. **The log records decisions about the project, not the content of the work produced** — the diff already says what changed. See [Work Log Discipline](treaty_conventions.md#work-log-discipline) for what counts as substantive and what to skip.
 
+## 2026-11-02
+
+### 48-h responders; colors and study names made consistent (claude-opus-5-5, effort low)
+
+- PI asked whether COM9, COM14, (COM15), COM16 are responders or intermediate. Same NE-level measure as panel G (+20–140 min vs. baseline): COM9 +7.3% (saline −4.5%), the others −0.5 to +1.5%. Only COM9 is a responder. No "intermediate" group: COM18 sits in the same cluster, COM16's slow band drops less than after its own saline, and #3 (+2.6%) already went with the poor responders. No reply sent; the user met with the PI instead.
+- Panel G's correlation pooled over both studies' 12 glucose mice: r = −0.87. Within the 48-h study it rests on COM9 (Pearson −0.84, Spearman −0.49). The PI called it "high NE baseline", but the x-axis is the NE rise after glucose, not the baseline.
+- Colors (user): warm for glucose, cool for saline. Glucose orange, saline blue; in the draft figure, non-responders stay green, since no second warm hue next to orange passes the palette validator. The blue post-injection block shading in per-mouse figures was left as is.
+- Naming (user): the studies are named by recording length, "13-h study" and "48-h study", in both reports, the draft figure title and code comments. Both analyse ~1 h of baseline plus ~4 h after the injection; "first 5 h" vs. "first 6 h" only reflects the injection at ~1 h vs. ~2 h into the recording. The 13-h report is now `reports/2026-10-27_13h_first5h_ne_spectra.md`.
+- Verification:
+  - `python -m spectra.run_first5h`, `--fiber oc`, `python -m spectra.run_48h_first6h`, `python -m spectra.draft_figure`: only PNGs and `provenance.txt` changed; inspected `draft_figure.png` and `band_change.png`
+  - `black -l 110 --check spectra tests`
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
+### Reply to the PI settled; naming and the responder split clarified (claude-opus-5-5, effort low)
+
+- Naming (user): the figure and the reply call this cohort "the 5-h study on the 13-h dataset". Only 3 of its 9 sessions are literally 13 h (FP1, FP2, #2); the rest are 5 + 5-h days.
+- Responder split: the PI never said how to choose responders. "NE-responder" reads as an NE level rise, which is the definition panel G uses, so the figure supports her split and doesn't correct it. Her 3 vs. 3 most likely comes from the report's "3 strong, 1 brief, 2 none". #3 is the judgment call: it drops ÷3.0 in the first PFC hour (same as FP2), but its NE level barely rises (+2.6%) and its OC doesn't drop, so it goes with the poor responders.
+- "Activity recordings for similar mice": still unclear (locomotor, EEG/EMG or other, and from which mice). The user decided to ask the PI for clarification with examples, without offering new work. The offer to measure motion from the videos was dropped from the reply.
+- Reply shortened at the user's request: one or two plain sentences per question, no panel-by-panel guide (the figure titles carry it), no unexplained terms (e.g. "crossover"). Final draft: `outputs/reply_to_pi_2026-11-01.txt`, not tracked; the user sends it.
+- The user's own pending edit to the 48-h report (Table 1 keeps only the mean glucose-vs-saline row) was committed at their request.
+- Verification:
+  - `python -m spectra.draft_figure` after the title change; inspected the new header in `draft_figure.png`
+  - `black -l 110 --check spectra tests`
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ## 2026-11-01
 
 ### PI review of the 5-h report; draft figure with a responder split (claude-opus-5-5, effort low)
@@ -16,7 +41,7 @@ Update this log at the end of any substantive work session unless the user expli
 - Answers from the notebook: all 9 mice of the 5-h/13-h study are in; it is between-mouse (one injection per mouse), and the only possible overlap is FP2 = "#2" (open question 1). The crossover is the 48-h study. OC is in the report as a side check only.
 - Decision: define responders by the NE level rise (raw 465, +20–140 min vs. baseline), not by the slow-band drop the figure then shows, so the split isn't circular. It gives the PI's 3 vs. 3: #5, FP1, FP2 +12 to +15%; #3 +2.6%, #4 −0.1%, #22 −7.7%; saline −1.7 to −2.9%. #3 (brief first-hour drop) goes with the poor responders. Show descriptively, with no p-value between responders and non-responders.
 - Draft figure: examples #5 / #4 / #1 (#1 is the only saline mouse with video). Close-up windows are the same for every mouse (−45 to −25 and +90 to +110 min); +60–80 happened to catch none of #4's dips, which would have made it look like a responder.
-- "Activity recordings" is unclear: either separate lab data or movement from the `Cam1.avi` videos. Video exists for 7 of 9 sessions; #2 and #33 (saline) have none. Asked the PI via the user's reply (draft in `outputs/reply_to_pi_2026-11-01.txt`, not tracked).
+- "Activity recordings" is unclear: either separate lab data or movement from the `Cam1.avi` videos. Video exists for 7 of 9 sessions; #2 and #33 (saline) have none. To be asked in the user's reply (draft in `outputs/reply_to_pi_2026-11-01.txt`, not tracked).
 - Verification:
   - `black -l 110 --check spectra tests`; `python -m pytest -q tests` (11 passed)
   - `python -m spectra.draft_figure`; inspected `results/figure_draft/draft_figure.png`

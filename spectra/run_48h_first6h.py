@@ -1,7 +1,7 @@
 """Spectral comparison for the 48-h study, first ~6 h: post-injection vs. baseline,
 and glucose vs. saline within mouse (crossover).
 
-Same method as the 5-h study (run_first5h.analyse), on the ~20 Hz raw 465/405
+Same method as the 13-h study (run_first5h.analyse), on the ~20 Hz raw 465/405
 traces of the 48-h extraction (outputs/ne_48h_ds20/), cropped to 4 h after the
 injection. Windows in sessions48. Writes CSVs and figures to
 results/spectra_48h_first6h/, with the code commit in provenance.txt.

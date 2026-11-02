@@ -6,7 +6,7 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). First pass done 2026-10-27 (`spectra/`, option (c)); report in `reports/2026-10-27_first5h_ne_spectra.md`. PI reviewed it 2026-11-01; draft figure with a responder split (by NE level rise) in `results/figure_draft/`. Next: the PI's reply on the figure and on what "activity recordings" means; then sleep/activity, stats and FP1/FP2 identity before any claim.
+- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). First pass done 2026-10-27 (`spectra/`, option (c)); report in `reports/2026-10-27_13h_first5h_ne_spectra.md`. PI reviewed it 2026-11-01; draft figure with a responder split (by NE level rise) in `results/figure_draft/`. Next: the PI's reply on the figure and on what "activity recordings" means; then sleep/activity, stats and FP1/FP2 identity before any claim.
 - [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5): done 2026-10-28. All 9 sessions read from tanks; OC side check in the report (same 3 responders as PFC). Open only: the experimenter confirming fiber A = PFC (question 4).
 - [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; `spectra/` uses its raw traces, not its `dff`.
 
@@ -89,8 +89,9 @@ Open: stats approach (per-mouse change, permutation or mixed model; n is small),
 PI review (2026-11-01), follow-ups:
 
 - [x] Draft figure (`python -m spectra.draft_figure` -> `results/figure_draft/`): examples #5 / #4 / #1, mean ± SEM for NE responders (#5, FP1, FP2), poor/no response (#3, #4, #22) and saline, PFC and OC, and the responder-choice scatter.
+- [ ] User sends the reply (`outputs/reply_to_pi_2026-11-01.txt`, final 2026-11-02).
 - [ ] PI's feedback on the figure.
-- [ ] "Activity recordings for similar mice": waiting on the PI. If it means video, compute motion from `*_Cam1.avi` (7 of 9 sessions; none for #2, #33). That would also give a sleep proxy.
+- [ ] "Activity recordings for similar mice": the reply asks the PI what she means (locomotor, EEG/EMG or other; which mice). Don't start anything until she answers. For reference only: `*_Cam1.avi` exists for 7 of 9 sessions (none for #2, #33).
 - [ ] Rebeka: is FP2 the saline mouse #2? (question 1; the PI also asked her)
 
 Frequency range 0.01–1 Hz now justified from the full band (report Methodology + Appendix A, 2026-10-27). Not yet decided: whether to drop or flag the 0.2–1 Hz band for #22 and #33, where it is close to noise.

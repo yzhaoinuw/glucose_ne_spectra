@@ -9,7 +9,7 @@ import numpy as np  # noqa: E402
 
 # Reference palette (dataviz skill, light mode).
 SURFACE, INK, INK2, MUTED, GRID, AXIS = "#fcfcfb", "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"
-GROUP_COLOR = {"glucose": "#2a78d6", "saline": "#eb6834"}  # categorical slots 1, 2
+GROUP_COLOR = {"glucose": "#eb6834", "saline": "#2a78d6"}  # categorical slots 2, 1: warm glucose, cool saline
 BLOCK_RAMP = ["#86b6ef", "#3987e5", "#1c5cab", "#0d366b"]  # ordinal blue, post blocks in time order
 BASELINE_COLOR = INK2
 TITLES = {
