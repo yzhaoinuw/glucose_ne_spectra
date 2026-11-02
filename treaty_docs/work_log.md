@@ -10,6 +10,17 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-11-02
 
+### PI meeting plan; window scan of the panel G correlation (claude-opus-5-5, effort low)
+
+- Plan from the user's meeting with the PI: drop the responder/non-responder framing in favour of the continuous NE level vs. slow-fluctuation relation (panel G); (1) find when after the injection it is strongest; (2) later, a sensible 405 → 465 fit as a separate 13-h analysis/report, since the PI suspects some poor responders would show a level response with it; focus on the 13-h study, the 48-h study is parked.
+- (1) done as a temporary note (`reports/2026-11-02_13h_window_scan.md`, `spectra/window_scan.py`), at the user's request, with every window tried kept in the CSVs. Finding: no best window; r ≈ −0.8 to −0.96 throughout, slightly strongest in the first hour. Reported as a time course, not a chosen window, because picking the best of many overlapping windows with n = 9 overstates it.
+- Same relation within each glucose mouse over time; weaker in saline mice. A first exploratory pass that included the 0–20-min handling window showed saline as strongly coupled; that was corrected before the note, and the note says so.
+- Dip-free NE level (90th percentile of 10-s means) checked because the dips lower the mean by arithmetic; the correlation held, so kept as a check, not the main measure.
+- Verification:
+  - `python -m spectra.window_scan`; inspected `correlation_over_time.png`; note numbers from its CSVs and printout
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests`
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### 48-h responders; colors and study names made consistent (claude-opus-5-5, effort low)
 
 - PI asked whether COM9, COM14, (COM15), COM16 are responders or intermediate. Same NE-level measure as panel G (+20–140 min vs. baseline): COM9 +7.3% (saline −4.5%), the others −0.5 to +1.5%. Only COM9 is a responder. No "intermediate" group: COM18 sits in the same cluster, COM16's slow band drops less than after its own saline, and #3 (+2.6%) already went with the poor responders. No reply sent; the user met with the PI instead.

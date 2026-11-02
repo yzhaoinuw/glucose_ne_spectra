@@ -6,11 +6,11 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal. Scope set 2026-10-27: **first 5 h of each recording**, PFC spectra only (NE level is secondary). First pass done 2026-10-27 (`spectra/`, option (c)); report in `reports/2026-10-27_13h_first5h_ne_spectra.md`. PI reviewed it 2026-11-01; draft figure with a responder split (by NE level rise) in `results/figure_draft/`. Next: the PI's reply on the figure and on what "activity recordings" means; then sleep/activity, stats and FP1/FP2 identity before any claim.
+- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal, **13-h study only from 2026-11-02** (PI meeting). Plan from the meeting: (1) when after the injection the panel G correlation is strongest, done 2026-11-02 as a temporary note, `reports/2026-11-02_13h_window_scan.md`; (2) next: a sensible 405 → 465 fit, as a separate 13-h analysis/report, and whether it changes the NE level response (e.g. of the poor responders); then redo (1) with it. Responder groups are no longer the frame: the PI prefers the continuous NE level vs. slow-fluctuation relation.
 - [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5): done 2026-10-28. All 9 sessions read from tanks; OC side check in the report (same 3 responders as PFC). Open only: the experimenter confirming fiber A = PFC (question 4).
 - [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; `spectra/` uses its raw traces, not its `dff`.
 
-- [48-h study](#48-h-study-claude-opus-5-5): in scope since 2026-10-29. All 14 mouse-sessions extracted; first-6-h spectra done 2026-10-30 (`reports/2026-10-30_48h_first6h_ne_spectra.md`): 1 of 6 glucose mice (COM9) responds strongly. Next: the user reviews; decide on the full 48 h. Missing: May 8 RZ10-2 glucose (COM13/COM12), asked Rebeka.
+- [48-h study](#48-h-study-claude-opus-5-5): **parked 2026-11-02** (PI meeting: focus on the 13-h study; only COM9 responds). Was in scope since 2026-10-29. All 14 mouse-sessions extracted; first-6-h spectra done 2026-10-30 (`reports/2026-10-30_48h_first6h_ne_spectra.md`): 1 of 6 glucose mice (COM9) responds strongly. Next: the user reviews; decide on the full 48 h. Missing: May 8 RZ10-2 glucose (COM13/COM12), asked Rebeka.
 
 When an agent (or human) creates or significantly updates a thread/plan here, include model + version, effort/thinking mode, and token budget (if known) in parentheses after the thread name or at the end of the status line, using the same compact convention as `work_log.md`.
 
@@ -89,8 +89,9 @@ Open: stats approach (per-mouse change, permutation or mixed model; n is small),
 PI review (2026-11-01), follow-ups:
 
 - [x] Draft figure (`python -m spectra.draft_figure` -> `results/figure_draft/`): examples #5 / #4 / #1, mean ± SEM for NE responders (#5, FP1, FP2), poor/no response (#3, #4, #22) and saline, PFC and OC, and the responder-choice scatter.
-- [ ] User sends the reply (`outputs/reply_to_pi_2026-11-01.txt`, final 2026-11-02).
-- [ ] PI's feedback on the figure.
+- [x] User sent the reply; the PI liked the figure, especially panel G (2026-11-02).
+- [x] When is the panel G correlation strongest? (meeting 2026-11-02; `python -m spectra.window_scan`, note `reports/2026-11-02_13h_window_scan.md`): at every window, r ≈ −0.8 to −0.96, slightly strongest in the first hour; no single best window. The same relation holds within each glucose mouse over time, more weakly in saline mice.
+- [ ] **405 → 465 fit** (meeting 2026-11-02): pick a fit by a rule set in advance, not by which mice it helps; see the 13-h report's Methodology for why the whole-session fit (scaling too small) and the baseline-only fit (fragile) fail. Then check whether the NE level response changes, especially in the poor responders (#3, #4, #22), and redo the window scan with it. Separate 13-h analysis/report.
 - [ ] "Activity recordings for similar mice": the reply asks the PI what she means (locomotor, EEG/EMG or other; which mice). Don't start anything until she answers. For reference only: `*_Cam1.avi` exists for 7 of 9 sessions (none for #2, #33).
 - [ ] Rebeka: is FP2 the saline mouse #2? (question 1; the PI also asked her)
 

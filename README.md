@@ -61,6 +61,7 @@ Run them all from the repo root after `mkdir -p outputs/logs`. Each writes one `
 conda activate glucose_ne_spectra
 python -m spectra.run_first5h              # ~1 min; reads outputs/ne_pfc_ds20_first5h/, writes results/spectra_first5h/ (tracked)
 python -m spectra.run_first5h --fiber oc   # OC side check: outputs/ne_oc_ds20_first5h/ -> results/spectra_first5h_oc/
+python -m spectra.window_scan              # when the NE level vs. slow-fluctuation correlation is strongest -> results/window_scan_13h/
 ```
 
 - **Windows** (`spectra/sessions.py`): baseline = 5 min → injection − 3 min; skip 20 min after the injection; then 60-min blocks (+20–80, +80–140, +140–200, +200–end ≈ 35–40 min).
