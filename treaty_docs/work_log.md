@@ -10,6 +10,16 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-11-03
 
+### PI wants no normalization; reports shared with the PI (claude-opus-5-5, effort low)
+
+- PI (email thread): best to avoid normalization and use only "the first cohort". User reads that as the 13-h study (vs. the 48-h one); to confirm with her. If it meant the March 2024 mice only, FP1 and FP2 would drop out and only #5 would rise clearly in raw 465.
+- A lab member's hypothesis: 405 isn't exactly NE-blind for GRAB-NE2m, so a strong NE rise lowers 405 (TDT describes this for GCaMP). If true, the fit double-counts part of the rise. Checked against existing results, not settled: at the NE dips 405 moves with 465 in all 9 mice (opposite of the prediction), and across glucose mice the 405 drop doesn't grow with the 465 rise (FP1/FP2 lose least 405). Added to the fit report's caveats; the first minutes after the injection are still unchecked.
+- The window scan and panel G already use raw 465, so they match the PI's preference as they are.
+- User's call: merge dev into main and point the PI to the window-scan and fit reports on GitHub. README now lists the reports.
+- Verification:
+  - Numbers for the 405 check read from `results/spectra_first5h_fit/level.csv` and `fits.csv`
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### 405 → 465 fit learned from the fast band; Rebeka's answers (claude-opus-5-5, effort low)
 
 - Fit (user asked for a sensible fit as a separate 13-h experiment, focus on the NE level direction): 465 follows 405 with different strengths by time scale: 0.38–0.49 at 0.2–1 Hz in 8 of 9 mice (stable across fast bands and before/after the injection), 0.7–1.6 in the dip band, small/negative over hours. So the scaling is learned from the 0.2–1 Hz baseline and applied to the whole 405 trace. Rejected: equal-fraction (ratio) correction, because saline 405 falls 13–17% while 465 falls 3–6%, so it would make saline rise.

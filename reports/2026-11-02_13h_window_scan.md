@@ -38,5 +38,5 @@ The correlation looks less like a property of one time window than like a coupli
 ## Caveats
 
 - **9 mice, descriptive.** Correlation, not direction.
-- **The NE level is raw 465.** It includes the slow bleaching over the session (405 falls 15–20% over 5 h). The planned 405 → 465 fit would change the level axis, more so late in the session. Redo this note with it.
+- **The NE level is raw 465, with no 405 correction.** It includes the slow bleaching over the session (405 falls 15–20% over 5 h). The 405 → 465 fit is now in a [separate report](2026-11-03_13h_fitted_ne_level_spectra.md). It would move the level axis up, more in glucose mice than in saline mice and more late in the session. This note has not been redone with it.
 - **Same baseline for both axes.** Noise in a mouse's baseline moves both measures. The within-mouse result argues against this being the main driver.

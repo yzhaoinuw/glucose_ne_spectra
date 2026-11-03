@@ -16,6 +16,7 @@ This repo analyzes fiber-photometry recordings of norepinephrine (NE) in the mou
 | `AGENTS.md`, `project_overview.md`, `treaty_docs/` | Project documentation and work log ([Agent Collab Treaty](https://github.com/yzhaoinuw/agent_collab_treaty)). Start at `AGENTS.md`. |
 | `extraction/` | MATLAB extraction of PFC NE ΔF/F from the raw recordings: v1 full-rate (`extract_ne_pfc.m`), v2 ~20 Hz (`extract_ne_pfc_ds.m`, processing in `process_ne_session.m`), the 48-h study (`extract_ne_48h.m`), shared loader, SLURM wrappers, and the vendored TDT reader (`tdt/`) |
 | `spectra/` (Python) | Spectral analysis: 5-h study (`run_first5h`) and 48-h study, first 6 h (`run_48h_first6h`); tests in `tests/` |
+| `reports/` | Write-ups of each analysis, newest last: [13-h study spectra](reports/2026-10-27_13h_first5h_ne_spectra.md), [48-h study, first 6 h](reports/2026-10-30_48h_first6h_ne_spectra.md), [13-h window scan](reports/2026-11-02_13h_window_scan.md), [13-h with a 405 fit](reports/2026-11-03_13h_fitted_ne_level_spectra.md) |
 
 ## Extracted NE traces
 

@@ -134,6 +134,11 @@ The OC scaling is less consistent across bands (0.5–1 Hz gives 0.09–0.34, lo
 
 - **One scaling for every time scale.** The fit assumes that slow light loss (bleaching, and the extra 405 loss after glucose) carries over to 465 with the same strength as fast artifacts. Nothing measures the slow coupling directly. The saline ratio (0.2–0.5) suggests it may be a bit smaller, which would lower all fitted levels by a few % late in the session. Figure 2 shows how much each mouse depends on it.
 - **The extra 405 drop after glucose is unexplained.** If it comes from something that affects 405 more than 465 (e.g. blood absorbs more light at 405 nm), the fit over-corrects glucose mice. #4's small rise (+4.5%) is within that uncertainty; #3's (+13% in the first hour) is not.
+- **Could the extra 405 drop be NE itself?** Suggested in the lab after this report: 405 nm may not be exactly the wavelength at which the sensor ignores NE, so a strong NE rise could lower 405, as TDT describes for GCaMP. The fit would then count part of the NE rise twice. Two checks in these data argue against it, though neither settles it:
+  - At the ~1-min NE dips, 405 moves the same way as 465 in all 9 mice (scaling 0.7–2.4, `fits.csv`). This mechanism predicts the opposite.
+  - Across glucose mice, 405 doesn't drop more where 465 rises more (+20–140 min): FP1 and FP2 (raw 465 +12 to +15%) lose the least 405 (−10%), and #3 (+3%) loses the most (−15%).
+  - Feng et al. (2024) also found GRAB-NE2m fluorescence to be NE-independent at 400–420 nm in vitro.
+  - Not checked yet: the first minutes after the injection, where the drop is reported to be sharpest. If this can't be ruled out, raw 465 (no fit, Table 1) is the conservative measure.
 - **9 mice, descriptive.** No statistics.
 - **No fiber placement check.** There was no histology (the brains went to HPLC), so a fiber off target can't be ruled out for any mouse.
 
