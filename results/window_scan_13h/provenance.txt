@@ -1,4 +1,4 @@
-code commit: f527ad8
-created: 2026-11-03 00:50:18
+code commit: af121fb
+created: 2026-11-03 15:14:45
 input: outputs/ne_pfc_ds20_first5h
 script: python -m spectra.window_scan

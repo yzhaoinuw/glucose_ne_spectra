@@ -23,6 +23,11 @@ Panel G's correlation was recomputed in 60-min windows, moved in 10-min steps fr
 
 - **No window stands out.** r stays between −0.86 and −0.96 throughout. It is slightly strongest in the first hour (+20–80 min: −0.96) and weakest at +100–160 min (−0.86), but with 9 mice these differences are within what chance alone would give, so none of the windows is better than another. Panel G's own window gives −0.93.
 - **The same relation holds within each glucose mouse over time.** Cutting each mouse into 20-min windows (2 before the injection, 10–11 after), stretches with higher NE have less slow-fluctuation power: r = −0.66 to −0.88 in all 6 glucose mice, poor responders included (in #22, NE falls and slow power rises). So the correlation is not only some mice differing from others. In saline mice it is weaker (−0.29 to −0.66), as their NE level hardly moves.
+- **Panel G in the strongest window (Figure 2).** Panel G redrawn for +20–80 min, with the draft figure's groups and colours. The picture is the same as in panel G. The one visible change is #3, which sits closer to the responders here (+6%, slow power ÷3.0, vs. +2.6% and ÷1.8 over +20–140 min), because its NE rise is mostly in the first hour.
+
+![Panel G in the strongest window](../results/window_scan_13h/strongest_window_scatter.png)
+
+*Figure 2. Each mouse's NE level change (x) vs. its slow-fluctuation power (0.01–0.05 Hz, y), both over +20–80 min and vs. the mouse's own baseline. Same measures as panel G.*
 
 Side checks (numbers in the CSVs):
 

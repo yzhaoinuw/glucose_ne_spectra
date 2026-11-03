@@ -12,6 +12,9 @@ Update this log at the end of any substantive work session unless the user expli
 
 ### PI wants no normalization; reports shared with the PI (claude-opus-5-5, effort low)
 
+- User asked for panel G redrawn in the "optimal" window. Called it the strongest window in the note, not optimal: +20–80 min is best only by a hair (r −0.96 vs. −0.93 in panel G's window, within chance). The window is picked from the scan, not hardcoded; draft-figure groups and colours kept so it reads as panel G. #3 sits nearer the responders there, as its rise is mostly in the first hour.
+- Verification (panel G figure): `python -m spectra.window_scan`, CSVs and the existing figure byte-identical; inspected `strongest_window_scatter.png`; values checked against `scan_values.csv`; `black -l 110 --check spectra tests`; `python -m pytest -q tests` (11 passed)
+
 - PI (email thread): best to avoid normalization and use only "the first cohort". User reads that as the 13-h study (vs. the 48-h one); to confirm with her. If it meant the March 2024 mice only, FP1 and FP2 would drop out and only #5 would rise clearly in raw 465.
 - A lab member's hypothesis: 405 isn't exactly NE-blind for GRAB-NE2m, so a strong NE rise lowers 405 (TDT describes this for GCaMP). If true, the fit double-counts part of the rise. Checked against existing results, not settled: at the NE dips 405 moves with 465 in all 9 mice (opposite of the prediction), and across glucose mice the 405 drop doesn't grow with the 465 rise (FP1/FP2 lose least 405). Not put in the report or the email (user's call: don't assess her comment; let the PI judge the fit). The first minutes after the injection are still unchecked.
 - Fit report restructured at the user's request: Results = Figure 1 + Tables 1–2, only what changes vs. the first 13-h report, every point naming its figure/table; the scaling-sensitivity and band-change figures moved to appendices with plain what/why/how-to-read text; OC to an appendix.
