@@ -6,8 +6,8 @@ Use this checklist alongside `work_log.md`.
 
 Active threads — read these first to know what work is in flight:
 
-- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal, **13-h study only from 2026-11-02** (PI meeting). Plan from the meeting: (1) when after the injection the panel G correlation is strongest, done 2026-11-02 as a temporary note, `reports/2026-11-02_13h_window_scan.md`; (2) next: a sensible 405 → 465 fit, as a separate 13-h analysis/report, and whether it changes the NE level response (e.g. of the poor responders); then redo (1) with it. Responder groups are no longer the frame: the PI prefers the continuous NE level vs. slow-fluctuation relation.
-- [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5): done 2026-10-28. All 9 sessions read from tanks; OC side check in the report (same 3 responders as PFC). Open only: the experimenter confirming fiber A = PFC (question 4).
+- [Spectral analysis of NE oscillations](#spectral-analysis-of-ne-oscillations-claude-opus-5-5): the project's goal, **13-h study only from 2026-11-02** (PI meeting). Plan from the meeting: (1) when after the injection the panel G correlation is strongest, done 2026-11-02 as a temporary note, `reports/2026-11-02_13h_window_scan.md`; (2) a sensible 405 → 465 fit, done 2026-11-03 as `reports/2026-11-03_13h_fitted_ne_level_spectra.md` (scaling learned at 0.2–1 Hz): with it, #3 rises clearly, #4 slightly above saline, #22 undecidable; next: the user/PI review it, then redo (1) with the fitted level. Responder groups are no longer the frame: the PI prefers the continuous NE level vs. slow-fluctuation relation.
+- [Pull the 4 missing `.tev` files](#pull-the-4-missing-tev-files-claude-opus-5-5): done 2026-10-28. All 9 sessions read from tanks; OC side check in the report (same 3 responders as PFC). Fiber A = PFC confirmed by Rebeka 2026-11-03.
 - [NE extraction to .mat](#ne-extraction-to-mat-claude-opus-5-5): v2 (~20 Hz) in `outputs/ne_pfc_ds20/`. First-5-h run done for all 9 mice; `spectra/` uses its raw traces, not its `dff`.
 
 - [48-h study](#48-h-study-claude-opus-5-5): **parked 2026-11-02** (PI meeting: focus on the 13-h study; only COM9 responds). Was in scope since 2026-10-29. All 14 mouse-sessions extracted; first-6-h spectra done 2026-10-30 (`reports/2026-10-30_48h_first6h_ne_spectra.md`): 1 of 6 glucose mice (COM9) responds strongly. Next: the user reviews; decide on the full 48 h. Missing: May 8 RZ10-2 glucose (COM13/COM12), asked Rebeka.
@@ -43,7 +43,8 @@ Open:
 
 - [ ] COM13/COM12 glucose block `Subject1-240508-090610` (tank `EliseFiber_EEG_timings-240430-184810`): `.tev` (~19.7 GB) and its `.tsq/.Tbk/.Tdx/.tin/.tnt/StoresListing.txt`. Asked Rebeka 2026-10-29 (questions file, 48-h section).
 - [x] The two saline tanks whose block names say "glucose" are saline (lab journal, sheet 2).
-- [ ] No tank has EEG/EMG stores, although the study had EEG/EMG. Find where it was recorded before planning sleep scoring.
+- [x] EEG/EMG: recorded on Viewpoint (`.exp`), in `48H_FP+EEG_Glucose+Saline/48H_GLU_EEG` and `48H_SAL_EEG` (Rebeka 2026-11-03), not sleep scored; some folders hold sdreamer predictions. Not downloaded yet. This would allow the sleep test for the 48-h study if it is unparked.
+- [ ] COM12 May 8 glucose: Rebeka is uploading `ds_sec_signal`/`signals` .mat (COM12 only); raw may be on the CTN J-drive.
 - Folder name `..._RZ10-2_050624_...` vs tank date 2024-06-03: likely the end date (day-first), not a mismatch.
 
 ## Pull the 4 missing .tev files (claude-opus-5-5)
@@ -90,6 +91,8 @@ PI review (2026-11-01), follow-ups:
 
 - [x] Draft figure (`python -m spectra.draft_figure` -> `results/figure_draft/`): examples #5 / #4 / #1, mean ± SEM for NE responders (#5, FP1, FP2), poor/no response (#3, #4, #22) and saline, PFC and OC, and the responder-choice scatter.
 - [x] User sent the reply; the PI liked the figure, especially panel G (2026-11-02).
+- [x] 405 → 465 fit (2026-11-03, `python -m spectra.run_first5h_fit`, report `reports/2026-11-03_13h_fitted_ne_level_spectra.md`). Glucose mice lose more 405 after the injection than saline, which hides part of the 465 rise; with the fit every glucose mouse but #22 sits above saline. Open: whether the PI accepts the fit; whether #3 counts as a responder (level rises, slow band doesn't drop with the fit); what drives the extra 405 loss.
+- [ ] Redo the window scan with the fitted level, once the fit is accepted.
 - [x] When is the panel G correlation strongest? (meeting 2026-11-02; `python -m spectra.window_scan`, note `reports/2026-11-02_13h_window_scan.md`): at every window, r ≈ −0.8 to −0.96, slightly strongest in the first hour; no single best window. The same relation holds within each glucose mouse over time, more weakly in saline mice.
 - [ ] **405 → 465 fit** (meeting 2026-11-02): pick a fit by a rule set in advance, not by which mice it helps; see the 13-h report's Methodology for why the whole-session fit (scaling too small) and the baseline-only fit (fragile) fail. Then check whether the NE level response changes, especially in the poor responders (#3, #4, #22), and redo the window scan with it. Separate 13-h analysis/report.
 - [ ] "Activity recordings for similar mice": the reply asks the PI what she means (locomotor, EEG/EMG or other; which mice). Don't start anything until she answers. For reference only: `*_Cam1.avi` exists for 7 of 9 sessions (none for #2, #33).

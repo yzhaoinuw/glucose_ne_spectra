@@ -6,20 +6,20 @@ For the people who ran the glucose fiber-photometry recordings (Rebeka and Elise
 
 ## Last open questions
 
-Rebeka: thank you, your deck, notebook table and answers covered almost everything. These four are all that's left.
+Answered by Rebeka on 2026-11-03: all mice in the 5-h/13-h study are different animals (so FP1 and FP2 are new mice); no mouse or session was excluded, and fiber placement was not checked (the brains went to HPLC); the mice were not fasted and blood glucose was not measured; fiber A is always PFC and fiber C always OC.
 
-1. **Which mice are FP1 and FP2?** The notebook lists FP2 as "#2" and FP1 as "#2.1". Is FP2 the original #2 (saline, 21 Mar), the "new #2" (#22, glucose, 24 Mar), or a different mouse? Is FP1 a new mouse? Your PFC figures use 5 glucose mice, but the notebook lists 6 glucose IDs (#3, #4, #5, #22, FP1, FP2), so we want to know whether one is a repeat.
-2. **Exclusions:** should any mouse or session be left out, for example a misplaced fiber on histology, a cable disconnect or a tangled mouse?
-3. **Fasting and dose:** were the mice fasted before the injection, and for how long? Was blood glucose measured? If so, what were the values and when were they taken? What was the glucose concentration? We have the volume (20 µL/g) but need the concentration to give the dose in g/kg.
-4. **Fiber A = PFC?** In the 5-h and 13-h mice, is fiber A (`465A`/`405A`) always PFC? (We checked the pre-extracted `*_signal_465.mat` / `*_signal_405.mat` files against the recovered tanks: they are fiber A. The tanks name fiber A `FibPho1_PFC`.) And is "OC" (fiber C) the occipital cortex? Where exactly is that fiber?
+Still open:
+
+3. **Glucose concentration:** we have the volume (20 µL/g) but need the concentration of the glucose solution (e.g. 10% or 20% w/v) to give the dose in g/kg.
+4. **Where is the OC fiber?** Is "OC" the occipital cortex, and where exactly is that fiber?
 
 ## 48-h study (asked 2026-10-29)
 
 We're collecting the 48-h crossover tanks. 7 of 8 are here and complete.
 
-5. **Missing raw files, May 8 RZ10-2 glucose (COM13/COM12):** the folder `48H_Glucose_RZ10-2_COM13(A)_COM12(C)` holds the tank `EliseFiber_EEG_timings-240430-184810`. Its block `Subject1-240508-090610_COM13(Fib1)_COM12(Fib2)` has only your MATLAB plots (`COM12_PFC_raw+normalized.jpg` is 0 bytes), with no `.tev/.tsq/.Tbk/.Tdx/.tin/.tnt`. The other two blocks are 2-min tests from 30 Apr. Do you have the raw files (~19.7 GB `.tev`), e.g. on the rig PC?
-6. *(Answered by the lab journal, sheet 2: both are saline.)* **Saline sessions named "glucose":** `48H_RZ10_1_saline_females_COM18(A)_COM16(C)_170624` (block `..._48HGlucose_170624`) and `48H_saline_RZ10-1_290524_COM12(A)_COM13(C)` (block `..._48H_glucose_RZ10-1_290524`). We read "glucose" as the study name and these as saline. Correct?
-7. *(Mostly answered by the lab journal, sheet 2: COM# is the mouse, with sex, rig and fiber per session. Still open: the EEG/EMG.)* **COM = mouse?** We read COM# as the mouse ID, one mouse per fiber, both fibers in PFC. In May, mice switch fiber between sessions (e.g. COM10 on A for glucose, on C for saline). Correct? And where is the EEG/EMG? None of the tanks has EEG/EMG channels.
+5. *(Rebeka 2026-11-03: she doesn't have the raw files; she is uploading the `.mat` files, for COM12 only `ds_sec_signal` and `signals`. The raw files may be on the J-drive at CTN.)* **Missing raw files, May 8 RZ10-2 glucose (COM13/COM12):** the folder `48H_Glucose_RZ10-2_COM13(A)_COM12(C)` holds the tank `EliseFiber_EEG_timings-240430-184810`. Its block `Subject1-240508-090610_COM13(Fib1)_COM12(Fib2)` has only your MATLAB plots (`COM12_PFC_raw+normalized.jpg` is 0 bytes), with no `.tev/.tsq/.Tbk/.Tdx/.tin/.tnt`. The other two blocks are 2-min tests from 30 Apr. Do you have the raw files (~19.7 GB `.tev`), e.g. on the rig PC?
+6. *(Answered by the lab journal, sheet 2, and confirmed by Rebeka 2026-11-03: both are saline.)* **Saline sessions named "glucose":** `48H_RZ10_1_saline_females_COM18(A)_COM16(C)_170624` (block `..._48HGlucose_170624`) and `48H_saline_RZ10-1_290524_COM12(A)_COM13(C)` (block `..._48H_glucose_RZ10-1_290524`). We read "glucose" as the study name and these as saline. Correct?
+7. *(Answered by Rebeka 2026-11-03: COM# is one mouse with one PFC fiber. EEG/EMG was recorded on the Viewpoint system, `.exp` files in `48H_FP+EEG_Glucose+Saline/48H_GLU_EEG` and `48H_SAL_EEG`; not sleep scored, but some folders hold sdreamer predictions.)* **COM = mouse?** We read COM# as the mouse ID, one mouse per fiber, both fibers in PFC. In May, mice switch fiber between sessions (e.g. COM10 on A for glucose, on C for saline). Correct? And where is the EEG/EMG? None of the tanks has EEG/EMG channels.
 
 8. **COM9's glucose injection time (May 8, RZ10-1):** the journal gives 11:30 for COM9 and 11:10 for its tank-mate COM10, and marks that day's start time "9:00(?)". COM9's signal has an injection-like change at 11:10 (465 up, 405 down, like COM10's) and nothing at 11:30. Was COM9 injected at 11:10?
 

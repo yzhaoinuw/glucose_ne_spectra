@@ -62,6 +62,7 @@ conda activate glucose_ne_spectra
 python -m spectra.run_first5h              # ~1 min; reads outputs/ne_pfc_ds20_first5h/, writes results/spectra_first5h/ (tracked)
 python -m spectra.run_first5h --fiber oc   # OC side check: outputs/ne_oc_ds20_first5h/ -> results/spectra_first5h_oc/
 python -m spectra.window_scan              # when the NE level vs. slow-fluctuation correlation is strongest -> results/window_scan_13h/
+python -m spectra.run_first5h_fit          # 405 fit with the scaling learned at 0.2-1 Hz: NE level and spectra -> results/spectra_first5h_fit/ (--fiber oc: _oc)
 ```
 
 - **Windows** (`spectra/sessions.py`): baseline = 5 min → injection − 3 min; skip 20 min after the injection; then 60-min blocks (+20–80, +80–140, +140–200, +200–end ≈ 35–40 min).

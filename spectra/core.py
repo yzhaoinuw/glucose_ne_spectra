@@ -117,3 +117,29 @@ def window_spectra(y465, x405, dff, fs, seg_s=SEG_S):
         "465_indep_405": p465 * (1.0 - coh),
         "dff_baseline_fit": pdff,
     }
+
+
+FAST_BAND = (0.2, 1.0)  # Hz: 465 is mostly shared with 405 here, and NE contributes little
+
+
+def fast_band_gain(y465, x405, fs, lo=FAST_BAND[0], hi=FAST_BAND[1]):
+    """How many % 465 moves per 1 % move of 405 within [lo, hi] Hz: least-squares slope
+    of the band-passed signals, each as a fraction of its own mean."""
+    sos = signal.butter(4, [lo, hi], btype="band", fs=fs, output="sos")
+    yy = signal.sosfiltfilt(sos, y465 / np.mean(y465))
+    xx = signal.sosfiltfilt(sos, x405 / np.mean(x405))
+    return float(np.dot(xx, yy) / np.dot(xx, xx))
+
+
+def scaled_control(y465, x405, base_mask, gain):
+    """Fitted 405 control: equals the 465 baseline mean when 405 sits at its baseline mean,
+    and moves gain % per 1 % move of 405. In raw units, a line slope * 405 + intercept."""
+    y0, x0 = np.mean(y465[base_mask]), np.mean(x405[base_mask])
+    return y0 * (1.0 + gain * (x405 / x0 - 1.0))
+
+
+def fast_band_fit_dff(y465, x405, fs, base_mask, band=FAST_BAND):
+    """dF/F (%) against a 405 control whose scaling is learned from the fast band of the baseline."""
+    gain = fast_band_gain(y465[base_mask], x405[base_mask], fs, *band)
+    control = scaled_control(y465, x405, base_mask, gain)
+    return 100.0 * (y465 - control) / control, gain
