@@ -5,7 +5,8 @@ Slides a window over the 4 h after the injection and, in each window, correlates
 mice the NE level change (raw 465 mean vs. baseline, as in panel G) with the change in
 slow fluctuations (0.01-0.05 Hz, 465 power not shared with 405, log2 vs. baseline).
 Also checks the same relation within each mouse over time, and with an NE level measure
-that ignores the dips (90th percentile of 10-s means). Writes results/window_scan_13h/.
+that ignores the dips (90th percentile of 10-s means). Also redraws panel G for the strongest
+60-min window. Writes results/window_scan_13h/.
 
     python -m spectra.window_scan
 """
@@ -17,7 +18,8 @@ import pandas as pd
 from scipy.stats import pearsonr, spearmanr
 
 from . import core
-from .plots import INK, plt
+from .draft_figure import COLOR, GROUPS, LABEL, LABEL_NUDGE, fold_axis
+from .plots import INK, INK2, MUTED, plt
 from .run_first5h import REPO, git_state, load
 from .sessions import POST_SKIP_MIN, SESSIONS, windows
 
@@ -122,6 +124,46 @@ def make_figure(corr, path):
     plt.close(fig)
 
 
+def strongest_window(corr):
+    """The 60-min window (all 9 mice) with the most negative across-mouse r, as (start, stop, r)."""
+    d = corr[
+        (corr.level == "level_mean_pct") & (corr.length_min == FIGURE_LENGTH_MIN) & (corr.subset == "all")
+    ]
+    best = d[d.n == d.n.max()].sort_values("pearson_r").iloc[0]
+    return best.start_min, best.start_min + FIGURE_LENGTH_MIN, best.pearson_r
+
+
+def make_scatter(scan, corr, path):
+    """Panel G of the draft figure, redrawn for the strongest 60-min window."""
+    start, stop, r = strongest_window(corr)
+    d = scan[(scan.length_min == FIGURE_LENGTH_MIN) & (scan.start_min == start)]
+    fig, ax = plt.subplots(figsize=(5.2, 4.4))
+    for g, mice in GROUPS.items():
+        dd = d[d.mouse.isin(mice)]
+        ax.scatter(dd.level_mean_pct, dd.slow_log2, s=42, color=COLOR[g], zorder=3, label=LABEL[g])
+        for _, row in dd.iterrows():
+            ax.annotate(
+                row.mouse,
+                (row.level_mean_pct, row.slow_log2),
+                xytext=LABEL_NUDGE.get(row.mouse, (5, 3)),
+                textcoords="offset points",
+                fontsize=7.5,
+                color=INK2,
+            )
+    fold_axis(ax)
+    ax.axvline(0, color=MUTED, lw=0.8)
+    ax.set(
+        title=f"Panel G in the strongest window, +{start:.0f}–{stop:.0f} min: r = {r:.2f}",
+        xlabel=f"NE level change, +{start:.0f}–{stop:.0f} min (%)",
+        ylabel=f"Slow-fluctuation power, +{start:.0f}–{stop:.0f} min",
+        ylim=(-3.6, 1.8),
+    )
+    ax.legend(loc="lower left", fontsize=7.5, frameon=False)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     mice = [Mouse(s) for s in SESSIONS]
@@ -160,6 +202,7 @@ def main():
     per_mouse.to_csv(OUT / "within_mouse_r.csv", index=False)
     panel_g.to_csv(OUT / "panel_g_window.csv", index=False)
     make_figure(corr, OUT / "correlation_over_time.png")
+    make_scatter(scan, corr, OUT / "strongest_window_scatter.png")
     (OUT / "provenance.txt").write_text(
         f"code commit: {git_state()}\ncreated: {datetime.now():%Y-%m-%d %H:%M:%S}\n"
         f"input: {IN_DIR.relative_to(REPO)}\nscript: python -m spectra.window_scan\n"
