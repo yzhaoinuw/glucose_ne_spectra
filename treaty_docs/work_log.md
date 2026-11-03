@@ -8,6 +8,18 @@ If today's date already has a `## YYYY-MM-DD` header at the top, add a new `###`
 
 Update this log at the end of any substantive work session unless the user explicitly asks not to document it. **The log records decisions about the project, not the content of the work produced** — the diff already says what changed. See [Work Log Discipline](treaty_conventions.md#work-log-discipline) for what counts as substantive and what to skip.
 
+## 2026-11-03
+
+### Window-scan figure down to one panel (claude-opus-5-5, effort low)
+
+- User questioned the arbitrary-looking choices. Basis recorded in the note: 60-min windows match the report's blocks and the ~51–59-min baseline, so window and baseline power estimates are about equally precise; the 20-min skip is the handling spike. The 5-min step had no basis and the within-mouse 20-min windows were a convenience pick.
+- Figure is now only the across-mouse r, 60-min windows in 10-min steps (user's call), plotted at window start (+20 … +170) instead of window centre, which made it look like it started at +50.
+- Within-mouse panel dropped from the figure (too many dots, and not the PI's question); kept as one finding in the note, framed as support: the relation also holds within each mouse, so it is not only between-mouse differences.
+- Verification:
+  - `python -m spectra.window_scan`: 60-min r range unchanged (−0.86 to −0.96); inspected `correlation_over_time.png`
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests` (11 passed)
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ## 2026-11-02
 
 ### Window-scan note simplified (claude-opus-5-5, effort low)

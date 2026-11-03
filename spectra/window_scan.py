@@ -17,7 +17,7 @@ import pandas as pd
 from scipy.stats import pearsonr, spearmanr
 
 from . import core
-from .plots import GROUP_COLOR, INK, MUTED, plt
+from .plots import INK, plt
 from .run_first5h import REPO, git_state, load
 from .sessions import POST_SKIP_MIN, SESSIONS, windows
 
@@ -27,14 +27,12 @@ OUT = REPO / "results" / "window_scan_13h"
 SLOW = (0.01, 0.05)
 MEASURE = "465_indep_405"
 SCAN_LENGTHS_MIN = [20, 30, 60]
-SCAN_STEP_MIN = 5.0
+SCAN_STEP_MIN = 10.0
 SCAN_END_MIN = 240.0  # recordings end ~4 h after the injection
 WITHIN_LEN_MIN = 20.0
 PRE_WINDOWS = [(-43.0, -23.0), (-23.0, -3.0)]  # inside every mouse's baseline
 PANEL_G = (20.0, 140.0)
-FIGURE_LENGTH_MIN = 60
-FOLD_TICKS = [-4, -3, -2, -1, 0, 1, 2]  # log2, labelled as fold changes like the draft figure's panel G
-FOLD_LABELS = ["÷16", "÷8", "÷4", "÷2", "1", "×2", "×4"]
+FIGURE_LENGTH_MIN = 60  # same as the report's blocks and ~ the baseline length
 
 
 def tenth_s_means(v, fs, width_s=10.0):
@@ -102,44 +100,23 @@ def correlate(df, level):
     return pd.DataFrame(rows)
 
 
-def make_figure(corr, within, path):
-    """A: across-mouse r over time (60-min windows, all 9 mice). B: within-mouse view, drawn with
-    the same axes as the draft figure's panel G."""
-    fig, ax = plt.subplots(1, 2, figsize=(11, 4.4))
-
-    a = ax[0]
+def make_figure(corr, path):
+    """Across-mouse r (all 9 mice) in each 60-min window, plotted at the window start."""
+    fig, a = plt.subplots(figsize=(6.5, 4.2))
     d = corr[
         (corr.level == "level_mean_pct") & (corr.length_min == FIGURE_LENGTH_MIN) & (corr.subset == "all")
     ]
     d = d[d.n == d.n.max()]  # windows with all 9 mice
-    a.plot(d.centre_min, d.pearson_r, "-o", ms=3, color=INK, lw=2)
+    a.plot(d.start_min, d.pearson_r, "-o", ms=4, color=INK, lw=2)
     a.set(
         ylim=(-1, 0),
-        xlim=(0, SCAN_END_MIN),
-        xlabel="Window centre, min after injection",
+        xlim=(10, d.start_min.max() + 10),
+        xticks=np.arange(20, d.start_min.max() + 1, 30),
+        xlabel=f"Window start, min after injection (each window {FIGURE_LENGTH_MIN} min)",
         ylabel="Correlation r across the 9 mice",
-        title=f"A. Across mice: panel G's r in {FIGURE_LENGTH_MIN}-min windows,\nslid in {SCAN_STEP_MIN:g}-min steps",
+        title="13-h study, PFC: NE level vs. slow NE fluctuations (0.01–0.05 Hz),\n"
+        f"panel G's correlation in {FIGURE_LENGTH_MIN}-min windows, {SCAN_STEP_MIN:g}-min steps",
     )
-
-    a = ax[1]
-    for mouse, g in within.groupby("mouse", sort=False):
-        c = GROUP_COLOR[g.group.iloc[0]]
-        a.plot(g.level_mean_pct, g.slow_log2, "o", ms=4, color=c, alpha=0.6)
-        k = np.polyfit(g.level_mean_pct, g.slow_log2, 1)
-        xs = np.array([g.level_mean_pct.min(), g.level_mean_pct.max()])
-        a.plot(xs, np.polyval(k, xs), color=c, lw=1.2)
-    a.axhline(0, color=MUTED, lw=0.8)
-    a.axvline(0, color=MUTED, lw=0.8)
-    a.set_yticks(FOLD_TICKS, FOLD_LABELS)
-    a.plot([], [], "o-", color=GROUP_COLOR["glucose"], label="glucose mouse")
-    a.plot([], [], "o-", color=GROUP_COLOR["saline"], label="saline mouse")
-    a.legend(loc="lower left", fontsize=8, frameon=False)
-    a.set(
-        xlabel=f"NE level change (%), {WITHIN_LEN_MIN:g}-min windows",
-        ylabel=f"Slow-fluctuation power, {WITHIN_LEN_MIN:g}-min windows",
-        title="B. Within each mouse: its 20-min windows over time\n(dots), with a fitted line per mouse",
-    )
-    fig.suptitle("13-h study, PFC: NE level vs. slow NE fluctuations (0.01–0.05 Hz)", color=INK, fontsize=11)
     fig.tight_layout()
     fig.savefig(path, dpi=130)
     plt.close(fig)
@@ -182,7 +159,7 @@ def main():
     within.to_csv(OUT / "within_mouse_values.csv", index=False)
     per_mouse.to_csv(OUT / "within_mouse_r.csv", index=False)
     panel_g.to_csv(OUT / "panel_g_window.csv", index=False)
-    make_figure(corr, within, OUT / "correlation_over_time.png")
+    make_figure(corr, OUT / "correlation_over_time.png")
     (OUT / "provenance.txt").write_text(
         f"code commit: {git_state()}\ncreated: {datetime.now():%Y-%m-%d %H:%M:%S}\n"
         f"input: {IN_DIR.relative_to(REPO)}\nscript: python -m spectra.window_scan\n"
@@ -193,7 +170,7 @@ def main():
         best = d.loc[d.pearson_r.idxmin()]
         print(
             f"{lv:15} {length:2d} min {sub:7}: r {d.pearson_r.min():+.2f} to {d.pearson_r.max():+.2f}; "
-            f"strongest at centre +{best.centre_min:.0f} min"
+            f"strongest in +{best.start_min:.0f}-{best.start_min + length:.0f} min"
         )
     print(per_mouse.round(2).to_string(index=False))
     for lv in ["level_mean_pct", "level_p90_pct"]:
