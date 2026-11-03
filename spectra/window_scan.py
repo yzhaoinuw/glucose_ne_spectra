@@ -17,7 +17,7 @@ import pandas as pd
 from scipy.stats import pearsonr, spearmanr
 
 from . import core
-from .plots import GROUP_COLOR, INK, INK2, MUTED, plt
+from .plots import GROUP_COLOR, INK, MUTED, plt
 from .run_first5h import REPO, git_state, load
 from .sessions import POST_SKIP_MIN, SESSIONS, windows
 
@@ -32,7 +32,9 @@ SCAN_END_MIN = 240.0  # recordings end ~4 h after the injection
 WITHIN_LEN_MIN = 20.0
 PRE_WINDOWS = [(-43.0, -23.0), (-23.0, -3.0)]  # inside every mouse's baseline
 PANEL_G = (20.0, 140.0)
-HANDLING_GREY = "#e1e0d9"
+FIGURE_LENGTH_MIN = 60
+FOLD_TICKS = [-4, -3, -2, -1, 0, 1, 2]  # log2, labelled as fold changes like the draft figure's panel G
+FOLD_LABELS = ["÷16", "÷8", "÷4", "÷2", "1", "×2", "×4"]
 
 
 def tenth_s_means(v, fs, width_s=10.0):
@@ -100,58 +102,42 @@ def correlate(df, level):
     return pd.DataFrame(rows)
 
 
-def make_figure(corr, within, panel_g_r, path):
-    fig, ax = plt.subplots(1, 3, figsize=(16, 4.6))
-    for i, length in enumerate([60, 30]):
-        a = ax[i]
-        full = corr[(corr.level == "level_mean_pct") & (corr.length_min == length)]
-        full = full[full.n == full.groupby("subset").n.transform("max")]  # all mice present
-        d = full[full.subset == "all"]
-        a.fill_between(d.centre_min, d.ci95_lo, d.ci95_hi, color=INK, alpha=0.08, lw=0, label="95% CI, all 9")
-        a.plot(d.centre_min, d.pearson_r, "-o", ms=3, color=INK, lw=2, label="all 9 mice")
-        g = full[full.subset == "glucose"]
-        a.plot(
-            g.centre_min, g.pearson_r, "-o", ms=3, color=GROUP_COLOR["glucose"], lw=2, label="6 glucose mice"
-        )
-        p = corr[(corr.level == "level_p90_pct") & (corr.length_min == length) & (corr.subset == "all")]
-        p = p[p.n == p.n.max()]
-        a.plot(p.centre_min, p.pearson_r, "--", color=MUTED, lw=1.4, label="all 9, dip-free NE level")
-        a.axvspan(0, POST_SKIP_MIN, color=HANDLING_GREY, alpha=0.6, lw=0)
-        a.plot(
-            sum(PANEL_G) / 2,
-            panel_g_r,
-            "D",
-            ms=7,
-            mfc="none",
-            mec=INK,
-            mew=1.4,
-            label="panel G (+20–140, all 9)",
-        )
-        a.set(
-            ylim=(-1, 0),
-            xlim=(0, SCAN_END_MIN),
-            xlabel="Window centre, min after injection",
-            ylabel="r, NE level vs. slow fluctuations" if i == 0 else "",
-            title=f"{chr(65 + i)}. Across mice, {length}-min window sliding by {SCAN_STEP_MIN:g} min",
-        )
-    ax[1].legend(loc="upper right", fontsize=8, frameon=False)
+def make_figure(corr, within, path):
+    """A: across-mouse r over time (60-min windows, all 9 mice). B: within-mouse view, drawn with
+    the same axes as the draft figure's panel G."""
+    fig, ax = plt.subplots(1, 2, figsize=(11, 4.4))
 
-    a = ax[2]
+    a = ax[0]
+    d = corr[
+        (corr.level == "level_mean_pct") & (corr.length_min == FIGURE_LENGTH_MIN) & (corr.subset == "all")
+    ]
+    d = d[d.n == d.n.max()]  # windows with all 9 mice
+    a.plot(d.centre_min, d.pearson_r, "-o", ms=3, color=INK, lw=2)
+    a.set(
+        ylim=(-1, 0),
+        xlim=(0, SCAN_END_MIN),
+        xlabel="Window centre, min after injection",
+        ylabel="Correlation r across the 9 mice",
+        title=f"A. Across mice: panel G's r in {FIGURE_LENGTH_MIN}-min windows,\nslid in {SCAN_STEP_MIN:g}-min steps",
+    )
+
+    a = ax[1]
     for mouse, g in within.groupby("mouse", sort=False):
         c = GROUP_COLOR[g.group.iloc[0]]
         a.plot(g.level_mean_pct, g.slow_log2, "o", ms=4, color=c, alpha=0.6)
         k = np.polyfit(g.level_mean_pct, g.slow_log2, 1)
         xs = np.array([g.level_mean_pct.min(), g.level_mean_pct.max()])
         a.plot(xs, np.polyval(k, xs), color=c, lw=1.2)
-    a.axhline(0, color=INK2, lw=0.6)
-    a.axvline(0, color=INK2, lw=0.6)
+    a.axhline(0, color=MUTED, lw=0.8)
+    a.axvline(0, color=MUTED, lw=0.8)
+    a.set_yticks(FOLD_TICKS, FOLD_LABELS)
     a.plot([], [], "o-", color=GROUP_COLOR["glucose"], label="glucose mouse")
     a.plot([], [], "o-", color=GROUP_COLOR["saline"], label="saline mouse")
     a.legend(loc="lower left", fontsize=8, frameon=False)
     a.set(
-        xlabel=f"NE level vs. baseline (%), {WITHIN_LEN_MIN:g}-min windows",
-        ylabel="Slow fluctuations, log2 vs. baseline",
-        title="C. Within each mouse over time\n(2 windows before, 10–11 after the injection; line per mouse)",
+        xlabel=f"NE level change (%), {WITHIN_LEN_MIN:g}-min windows",
+        ylabel=f"Slow-fluctuation power, {WITHIN_LEN_MIN:g}-min windows",
+        title="B. Within each mouse: its 20-min windows over time\n(dots), with a fitted line per mouse",
     )
     fig.suptitle("13-h study, PFC: NE level vs. slow NE fluctuations (0.01–0.05 Hz)", color=INK, fontsize=11)
     fig.tight_layout()
@@ -196,12 +182,7 @@ def main():
     within.to_csv(OUT / "within_mouse_values.csv", index=False)
     per_mouse.to_csv(OUT / "within_mouse_r.csv", index=False)
     panel_g.to_csv(OUT / "panel_g_window.csv", index=False)
-    make_figure(
-        corr,
-        within,
-        pearsonr(panel_g.level_mean_pct, panel_g.slow_log2)[0],
-        OUT / "correlation_over_time.png",
-    )
+    make_figure(corr, within, OUT / "correlation_over_time.png")
     (OUT / "provenance.txt").write_text(
         f"code commit: {git_state()}\ncreated: {datetime.now():%Y-%m-%d %H:%M:%S}\n"
         f"input: {IN_DIR.relative_to(REPO)}\nscript: python -m spectra.window_scan\n"

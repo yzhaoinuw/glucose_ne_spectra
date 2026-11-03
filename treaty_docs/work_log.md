@@ -10,6 +10,16 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-11-02
 
+### Window-scan note simplified (claude-opus-5-5, effort low)
+
+- User found the window-scan figure and note too busy: 20-min windows were described but not plotted, and the dip-free line, the 95% CI band and the glucose-only line needed explaining. Figure cut to two panels (user's choice: 60-min windows): A, panel G's r over time for all 9 mice; B, the within-mouse 20-min scatter, now with panel G's axis labels and fold-change ticks so the two read as a pair. Other window lengths, glucose-only r, the dip check and leave-one-out stay in the CSVs and get one line each in the note.
+- The dip check stays as a check, explained in plain terms: dips both lower the mean level and are themselves slow-band power, so fewer dips alone would produce the correlation. It became relevant once the correlation itself, not the responder split, is the claim. The 11-01 entry's "not circular" split was only partly so for this reason.
+- CI dropped from the figure: with n = 9 it only says the window-to-window differences are within chance, which one sentence in the note now says.
+- Verification:
+  - `python -m spectra.window_scan`: CSV outputs unchanged; inspected the new `correlation_over_time.png`
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests` (11 passed)
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### PI meeting plan; window scan of the panel G correlation (claude-opus-5-5, effort low)
 
 - Plan from the user's meeting with the PI: drop the responder/non-responder framing in favour of the continuous NE level vs. slow-fluctuation relation (panel G); (1) find when after the injection it is strongest; (2) later, a sensible 405 → 465 fit as a separate 13-h analysis/report, since the PI suspects some poor responders would show a level response with it; focus on the 13-h study, the 48-h study is parked.
