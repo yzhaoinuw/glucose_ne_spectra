@@ -18,24 +18,58 @@
 
 ## Methodology: the fit
 
-**Why the usual fit failed.** The usual correction fits one line, 465 ≈ a × 405 + b, by least squares on the raw traces. But 465 follows 405 with a different strength at different time scales (`fits.csv`, 465 change per 1% change of 405):
+**What a 405 fit does.** 405 is the control channel: the same sensor lit with a colour that doesn't respond to NE. It still picks up everything else that changes the light, such as bleaching, movement and blood flow. A fit predicts from 405 how much of 465 is that non-NE part. This prediction is the *control*, and the NE signal is what 465 does beyond it: ΔF/F = 465 / control − 1. The usual control is a straight line, control = a × 405 + b.
 
-| Time scale | Coupling (8 of 9 mice) | What dominates there |
+**The scaling is `a`, in % units.** Raw brightness differs a lot between mice (baseline 465 from ~41 a.u. in #22 to ~483 in #3), so a raw `a` can't be compared across mice. The scaling expresses the same coefficient as "465 moves this many % for every 1% that 405 moves". The two convert as:
+
+  a = scaling × (465 baseline mean ÷ 405 baseline mean),  b = 465 baseline mean × (1 − scaling)
+
+For example, #5's scaling of 0.49 is a = 0.67 and b = 127 in raw units. Both forms are in `fits.csv`. Written with the scaling, the control is: control = 465 baseline mean × (1 + scaling × % change of 405 vs. its baseline). So when 405 sits at its baseline, the control equals 465's baseline, and when 405 drops 10%, the control drops scaling × 10%.
+
+- Scaling 0 means no correction (raw 465).
+- Scaling 1 means 465 and 405 lose the same fraction of light, i.e. dividing 465 by 405.
+- Everything that follows is about choosing a value in between.
+
+**Why the usual way of choosing `a` failed.** The usual fit picks `a` and `b` by least squares on the raw traces. But 465 follows 405 with a different strength at different time scales (`fits.csv`):
+
+| Time scale | Scaling (8 of 9 mice) | What dominates there |
 |---|---|---|
 | Hours (whole session) | small or negative (first report) | 405 bleaching down while 465 rises after glucose |
 | ~1-min dips (0.01–0.05 Hz) | 0.7–1.6 | the NE dips, which line up with 405 dips |
 | Fast (0.2–1 Hz) | 0.38–0.49 | movement and blood-flow artifacts, little NE |
 
-A fit on the whole session is pulled toward the first row, and a fit on the baseline hour toward the second. Neither measures how a non-NE change in light carries over from 405 to 465.
+A least-squares fit is pulled toward whichever time scale has the biggest swings. On the whole session that is the hours row: the glucose rise in 465 against 405 bleaching makes `a` too small or negative. On the baseline hour it is the dips row: real NE dips that happen to line up with 405 dips make `a` too large. In both cases the fit is partly fitting NE, which is exactly what the control must not contain.
 
-**The fit used here.** The scaling is learned from the fast band of each mouse's baseline. Both signals are band-passed to 0.2–1 Hz, expressed as % of their mean, and 465 is regressed on 405. The 405 control is then that scaling applied to the whole 405 trace: control = baseline 465 × (1 + scaling × % change of 405). The NE signal is ΔF/F = 465 / control − 1. In raw units, this is still the usual line a × 405 + b. Only the way the slope is chosen differs.
+**How the scaling is chosen here.** It is learned from fast fluctuations (0.2–1 Hz) during the baseline. NE contributes little at these speeds, because the sensor responds too slowly and the NE dips are much slower. 465 and 405 move together there (coherence 0.7–0.9 in most mice), so the fast band shows how a non-NE change in light carries over from 405 to 465. In practice:
+
+1. Take the baseline window of both channels.
+2. Express each as a fraction of its own mean.
+3. Band-pass both to 0.2–1 Hz.
+4. Regress 465 on 405 (least squares). The slope is the scaling.
+5. Build the control from the whole 405 trace with that scaling, and compute ΔF/F.
+
+The key assumption is that slow non-NE light changes (bleaching, and the extra 405 drop after glucose) carry over to 465 with the same scaling as the fast ones. Nothing in the data measures the slow scaling directly. Figure 2 below shows how much each mouse depends on it.
 
 **Checks on the scaling** (`fits.csv`):
 
 - **Same in other fast bands.** 0.1–1 Hz and 0.5–1 Hz give the same value within 0.03 in 7 mice.
 - **Same after the injection.** +20–140 min gives 0.41–0.58, against 0.38–0.49 at baseline.
-- **Exceptions.** #22 gives 0.88 at baseline but 0.43–0.98 depending on band, and 0.48 after the injection. It is the dim recording whose 405 sits near its noise floor, so its value is unreliable. #33 (weak recording) gives 0.18 at 0.5–1 Hz.
+- **Exceptions.** #22 (next paragraph) and #33, a weak recording, which gives 0.18 at 0.5–1 Hz.
 - **Saline stays near its baseline.** Over 4 h, the fitted saline level stays between −1% and +5% (Table 1). Over the last hour, saline 465 falls 3–6% while 405 falls 13–17%, a ratio of 0.2–0.5. The fast-band scaling (0.41–0.47) is at the upper end of that, so late in the session the fit may over-correct by a few %.
+
+**The outlier: #22.** #22's level can't be decided with this fit, for two reasons that come together.
+
+- **Its level flips sign within the plausible range of scalings.** Over +20–140 min it is negative below a scaling of ~0.55 and positive above (−1.6% at 0.45, +4.9% at 0.88; Figure 2). The other glucose mice keep the same sign anywhere between 0.4 and 1.0.
+- **Its scaling can't be pinned down.** The estimate depends on the band: 0.88 at 0.2–1 Hz (the standard), 0.98 at 0.1–1 Hz, 0.43 at 0.5–1 Hz, and 0.48 after the injection. In the other mice except #33 these agree within ~0.1.
+- **Why the estimate is unstable.** #22 is by far the dimmest recording (baseline 465 ≈ 41 a.u., 405 ≈ 31, against 71–483 and 44–306 in the other mice). In the first report, its 405 sat near the noise floor across 0.05–1 Hz. Much of the fast 405 signal the fit learns from is detector noise rather than shared light changes, and some shared component between 0.1 and 0.5 Hz pulls the estimate up. Why its channels relate differently from the other mice is not known.
+- **What hinges on it: a drop in both channels around the injection.** It starts ~10 min before the injection, so it looks like handling or a shift in the light path rather than NE. Then 465 recovers while 405 stays down:
+
+| Minutes from injection (5-min means, bin start) | −10 | +20 | +55 |
+|---|---|---|---|
+| 465 vs. baseline | −3.5% | −15.6% | −5.2% |
+| 405 vs. baseline | −4.2% | −12.3% | −11.8% |
+
+A scaling near 0.9 treats almost all of the shared fall as non-NE, so 465's later recovery reads as an NE rise. A scaling near 0.45 removes only half of it, so part of the fall stays in the NE trace. The data can't tell these apart, so #22 is left undecided. Something may be wrong with this recording, but nothing here shows it, and the experimenter excluded no sessions.
 
 ## Results
 
@@ -55,7 +89,7 @@ A fit on the whole session is pulled toward the first row, and a fit on the base
 | saline | #2 | 0.47 | −8.5 | −1.7 | **+2.4** | +1.7 | +3.1 | +4.7 | +4.9 |
 | saline | #33 | 0.41 | −7.0 | −2.9 | **−0.0** | +0.1 | −0.1 | −0.5 | −1.3 |
 
-\* unreliable; at the typical 0.45, #22's fitted +20–140 level is −1.6%.
+\* unreliable (see [The outlier: #22](#methodology-the-fit)); at the typical 0.45, #22's fitted +20–140 level is −1.6%.
 
 ![Raw 465 and fitted ΔF/F per mouse](../results/spectra_first5h_fit/level_traces.png)
 
