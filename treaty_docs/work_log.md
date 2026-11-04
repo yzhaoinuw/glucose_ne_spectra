@@ -10,6 +10,16 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-11-04
 
+### Draft-figure panels D–G with the fit, glucose vs. saline (claude-opus-5-5, effort low)
+
+- PI asked to see panels D–G with the fit and the strongest-correlation window, grouped only glucose (n = 6) vs. saline (n = 3). New script `spectra/draft_figure_fit.py`, output `results/figure_draft_fit/`; the original draft figure is unchanged.
+- Fit applied to the NE level only (D, and G's x-axis); slow fluctuations (E, F, G's y-axis) keep "465 not shared with 405", per the fit report's decision.
+- Window scan redone with the fitted level (60-min windows, 10-min steps, all 9 mice): strongest is still +20–80 min, r −0.96, same as raw 465. With the fit, r weakens later in the session (−0.75 at +170 vs. −0.89 raw). #22 uses its own scaling (0.88), as in the fit report.
+- Verification:
+  - `python -m spectra.draft_figure_fit`; fitted levels match `results/spectra_first5h_fit/level.csv` (#3 +13.4%, +20–80 min); inspected the figure
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests` (11 passed)
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### Step-by-step guide to the fast-band fit (claude-opus-5-5, effort low)
 
 - User prepared for the PI meeting (PI on the fit report: "an amazing report"). Asked for a hands-on explanation of the fit, function by function, then to keep it in `spectra/` rather than `reports/`. Written as `spectra/README.md`, with the user's questions reframed as a general FAQ.
