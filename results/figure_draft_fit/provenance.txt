@@ -1,4 +1,0 @@
-code commit: c66716b
-created: 2026-11-04 12:22:33
-input: outputs/ne_pfc_ds20_first5h, results/spectra_first5h, results/spectra_first5h_oc
-script: python -m spectra.draft_figure_fit

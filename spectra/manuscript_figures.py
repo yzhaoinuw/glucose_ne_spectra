@@ -1,35 +1,43 @@
-"""Draft figure panels D-G for the 13-h study, redrawn with the fast-band 405 fit and two groups.
+"""Candidate manuscript figures for the 13-h study, all with the fast-band 405 fit.
 
-Changes from `spectra.draft_figure`:
-  * NE level (panels D and G, x) is fitted: 465 / control, with the control's scaling learned from
-    the 0.2-1 Hz baseline (`core.fast_band_fit_dff`). Slow fluctuations (E, F, G y) keep the
-    "465 not shared with 405" measure, which the fit report keeps for spectra.
-  * Panel G uses the 60-min window where the NE level vs. slow-fluctuation correlation (all 9 mice)
-    is strongest, found by redoing the window scan with the fitted level.
-  * Groups are glucose (n = 6) vs. saline (n = 3); no responder split.
+  * group_summary.png, panels A-D, glucose (n = 6) vs. saline (n = 3): A, NE level over time;
+    B, C, slow fluctuations per block in PFC and OC; D, NE level vs. slow fluctuations across mice
+    in the 60-min window where their correlation is strongest (window scan redone with the fitted
+    level). Fitted NE level = 465 / control, with the control's scaling learned from the 0.2-1 Hz
+    baseline (`core.fast_band_fit_dff`). Slow fluctuations keep the "465 not shared with 405"
+    measure, which the fit report keeps for spectra.
+  * mouse_<id>.png, one per mouse (PFC): the fitted NE signal (top) over its spectrogram (bottom),
+    sharing the time axis.
 
-Writes results/figure_draft_fit/.
+Writes results/manuscript_figures/.
 
-    python -m spectra.draft_figure_fit
+    python -m spectra.manuscript_figures
 """
 
 from datetime import datetime
 
 import numpy as np
 import pandas as pd
+from matplotlib.ticker import NullFormatter
+from scipy import ndimage
 
 from . import core
 from .draft_figure import BLOCK_MID, LABEL_NUDGE, RESULTS, fold_axis, mark_injection, panel_letter
-from .plots import GROUP_COLOR, INK2, MUTED, plt
+from .plots import GROUP_COLOR, INK, INK2, MUTED, SPECTROGRAM_CMAP, SURFACE, patheffects, plt
 from .run_first5h import REPO, git_state
 from .sessions import POST_SKIP_MIN, SESSIONS
 from .window_scan import FIGURE_LENGTH_MIN, IN_DIR, MEASURE, SCAN_END_MIN, SCAN_STEP_MIN, Mouse, correlate
 
-OUT = REPO / "results" / "figure_draft_fit"
+OUT = REPO / "results" / "manuscript_figures"
 GROUPS = {g: [s.mouse for s in SESSIONS if s.group == g] for g in ["glucose", "saline"]}
 LABEL = {"glucose": "Glucose", "saline": "Saline"}
 SLOW = "0.01-0.05 Hz"
-NUDGE = {**LABEL_NUDGE, "#5": (-16, 4), "FP1": (5, -9)}  # panel G, keeps #5 clear of FP1
+SPEC_RANGE = (0.01, 0.2)  # Hz: the slow band (0.01-0.05) and the next band up
+SLOW_EDGE = 0.05  # Hz
+SPEC_STEP_S = 60.0  # spectrogram step; segments are core.SEG_S (120 s) long
+TRACE_BIN_S = 1.0
+SPEC_SMOOTH = 5  # spectrogram columns averaged (5 min), as Welch averages segments
+NUDGE = {**LABEL_NUDGE, "#5": (-16, 4), "FP1": (5, -9)}  # panel D, keeps #5 clear of FP1
 
 
 class FitMouse(Mouse):
@@ -88,11 +96,11 @@ def group_labels(ax, x, ys, min_gap):
         )
 
 
-def make_figure(mice, values, win, path):
+def group_summary(mice, values, win, path):
     fig, axes = plt.subplots(1, 4, figsize=(16, 4.9), gridspec_kw=dict(wspace=0.42))
     by_mouse = {m.s.mouse: m for m in mice}
 
-    # D: fitted NE level, mean ± SEM, 5-min bins
+    # A: fitted NE level, mean ± SEM, 5-min bins
     ax = axes[0]
     edges = np.arange(-55.0, 236.0, 5.0)
     tt = edges[:-1] + 2.5
@@ -115,10 +123,10 @@ def make_figure(mice, values, win, path):
         ylabel="% change from baseline",
         xlim=(-55, 285),
     )
-    panel_letter(ax, "D")
+    panel_letter(ax, "A")
 
-    # E, F: slow-fluctuation power by block, PFC and OC (measure unchanged by the fit)
-    for ax, fiber, letter in [(axes[1], "PFC", "E"), (axes[2], "OC", "F")]:
+    # B, C: slow-fluctuation power by block, PFC and OC (measure unchanged by the fit)
+    for ax, fiber, letter in [(axes[1], "PFC", "B"), (axes[2], "OC", "C")]:
         bands = pd.read_csv(RESULTS[fiber] / "band_power.csv")
         bands = bands[(bands.measure == MEASURE) & (bands.band == SLOW) & bands.window.isin(BLOCK_MID)]
         ends = {}
@@ -136,13 +144,13 @@ def make_figure(mice, values, win, path):
         ax.set(
             title=f"Slow NE fluctuations, {fiber} (0.01–0.05 Hz)",
             xlabel="Minutes from injection (block centre)",
-            ylabel="Power vs. baseline" if letter == "E" else "",
+            ylabel="Power vs. baseline" if letter == "B" else "",
             ylim=(-3.6, 1.8),
             xlim=(-45, 235),
         )
         panel_letter(ax, letter)
 
-    # G: fitted NE level vs. slow fluctuations in the strongest window
+    # D: fitted NE level vs. slow fluctuations in the strongest window
     ax = axes[3]
     start, stop, r = win
     d = values[values.start_min == start]
@@ -166,7 +174,7 @@ def make_figure(mice, values, win, path):
         ylabel=f"Slow-fluctuation power, +{start:.0f}–{stop:.0f} min",
         ylim=(-3.6, 1.8),
     )
-    panel_letter(ax, "G")
+    panel_letter(ax, "D")
 
     handles = [plt.Line2D([], [], color=GROUP_COLOR[g], lw=2, marker="o", ms=5) for g in GROUPS]
     fig.legend(
@@ -180,7 +188,7 @@ def make_figure(mice, values, win, path):
     fig.text(
         0.5,
         0.99,
-        "DRAFT: 13-h study, PFC unless marked; mean ± SEM (glucose n = 6, saline n = 3); "
+        "13-h study, PFC unless marked; mean ± SEM (glucose n = 6, saline n = 3); "
         "grey band = injection and 20-min handling period. NE level: 405 scaling learned at 0.2–1 Hz "
         "in the baseline. Slow fluctuations: 465 not shared with 405.",
         ha="center",
@@ -193,20 +201,96 @@ def make_figure(mice, values, win, path):
     plt.close(fig)
 
 
+def mouse_spectrogram(m):
+    """Spectrogram of the fitted ratio 465 / control (% of each segment's mean, i.e. fitted dF/F
+    units), averaged over SPEC_SMOOTH neighbouring segments, kept to the plotted range.
+    Returns f, segment-centre times (min from injection), S[f, t]."""
+    f, ts, S = core.spectrogram(m.ratio, m.fs, step_s=SPEC_STEP_S)
+    S = ndimage.uniform_filter1d(S, SPEC_SMOOTH, axis=1, mode="nearest")
+    keep = (f > SPEC_RANGE[0] / 2) & (f <= SPEC_RANGE[1] * 1.05)
+    return f[keep], m.t[0] + ts / 60.0, S[keep]
+
+
+def mouse_figure(m, spec, clim, path):
+    """Fitted NE signal (top) over its spectrogram (bottom), sharing the time axis."""
+    f, ts, S = spec
+    fig = plt.figure(figsize=(10, 6))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1, 0.018], height_ratios=[1, 1.15], hspace=0.08, wspace=0.03)
+    top = fig.add_subplot(gs[0, 0])
+    bot = fig.add_subplot(gs[1, 0], sharex=top)
+
+    n = int(round(TRACE_BIN_S * m.fs))
+    k = m.ratio.size // n
+    tb = m.t[: k * n].reshape(k, n).mean(1)
+    yb = 100 * (m.ratio[: k * n].reshape(k, n).mean(1) / m.base_ratio - 1)
+    top.plot(tb, yb, color=GROUP_COLOR[m.s.group], lw=0.6)
+    mark_injection(top)
+    top.axhline(0, color=MUTED, lw=0.8)
+    top.set_ylabel(f"Fitted ΔF/F (%, {TRACE_BIN_S:g}-s means)")
+    top.set_title(
+        f"{m.s.mouse}, {m.s.group}, PFC: fitted NE signal and its spectrogram (405 scaling {m.gain:.2f})",
+        loc="left",
+    )
+    top.tick_params(labelbottom=False)
+
+    df = f[1] - f[0]
+    dt = ts[1] - ts[0]
+    mesh = bot.pcolormesh(
+        np.r_[ts - dt / 2, ts[-1] + dt / 2],
+        np.r_[f - df / 2, f[-1] + df / 2],
+        np.log10(S),
+        shading="flat",
+        cmap=SPECTROGRAM_CMAP,
+        vmin=clim[0],
+        vmax=clim[1],
+        rasterized=True,
+    )
+    bot.set_yscale("log")
+    bot.set_ylim(*SPEC_RANGE)
+    bot.set_yticks([0.01, 0.02, 0.05, 0.1, 0.2], ["0.01", "0.02", "0.05", "0.1", "0.2"])
+    bot.yaxis.set_minor_formatter(NullFormatter())
+    bot.grid(False)
+    eff = [patheffects.withStroke(linewidth=2.4, foreground=INK)]
+    bot.axvline(0, color=SURFACE, lw=1.1, path_effects=eff)
+    bot.axhline(SLOW_EDGE, color=SURFACE, lw=0.9, ls=(0, (4, 3)), path_effects=eff)
+    bot.text(
+        m.t[0] + 2,
+        SLOW_EDGE * 0.93,
+        "slow band below",
+        color=SURFACE,
+        fontsize=7.5,
+        va="top",
+        path_effects=eff,
+    )
+    bot.set(xlabel="Minutes from injection", ylabel="Frequency (Hz)", xlim=(m.t[0], m.t[-1]))
+    cbar = fig.colorbar(mesh, cax=fig.add_subplot(gs[1, 1]))
+    cbar.set_label("log10 power (%²/Hz)")
+    fig.subplots_adjust(left=0.08, right=0.92, top=0.93, bottom=0.09)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     mice = [FitMouse(s) for s in SESSIONS]
+
+    specs = {m.s.mouse: mouse_spectrogram(m) for m in mice}
+    pooled = np.concatenate([np.log10(S[(f >= SPEC_RANGE[0])]).ravel() for f, _, S in specs.values()])
+    clim = tuple(np.percentile(pooled, [1, 99.5]))  # one colour scale for every mouse
+    for m in mice:
+        mouse_figure(m, specs[m.s.mouse], clim, OUT / f"mouse_{m.s.mouse.lstrip('#')}.png")
+
     values, corr = scan(mice)
     win = strongest(corr, "level_fit_pct")
     raw = strongest(corr, "level_mean_pct")
 
     values.round(4).to_csv(OUT / "scan_values.csv", index=False)
     corr.round(4).to_csv(OUT / "scan_correlation.csv", index=False)
-    make_figure(mice, values, win, OUT / "draft_figure_fit_DtoG.png")
+    group_summary(mice, values, win, OUT / "group_summary.png")
     (OUT / "provenance.txt").write_text(
         f"code commit: {git_state()}\ncreated: {datetime.now():%Y-%m-%d %H:%M:%S}\n"
         f"input: {IN_DIR.relative_to(REPO)}, {RESULTS['PFC'].relative_to(REPO)}, "
-        f"{RESULTS['OC'].relative_to(REPO)}\nscript: python -m spectra.draft_figure_fit\n"
+        f"{RESULTS['OC'].relative_to(REPO)}\nscript: python -m spectra.manuscript_figures\n"
     )
 
     d = corr[corr.subset == "all"].pivot(index="start_min", columns="level", values="pearson_r")

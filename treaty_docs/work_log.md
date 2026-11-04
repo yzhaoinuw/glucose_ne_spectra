@@ -10,6 +10,16 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-11-04
 
+### Candidate manuscript figures (claude-opus-5-5, effort low)
+
+- User asked for a folder of candidate manuscript figures: `results/manuscript_figures/`, made by `spectra/manuscript_figures.py` (renamed from `draft_figure_fit.py`). The fitted D–G figure moved there as `group_summary.png`, relettered A–D; `results/figure_draft_fit/` removed at the user's request.
+- New per-mouse figures (`mouse_<id>.png`, PFC, all 9 mice): fitted ΔF/F (1-s means) over its spectrogram, shared time axis. Choices: 0.01–0.2 Hz (the slow band plus the next band up; the fit report doesn't use fitted ΔF/F above 0.05 Hz, so that part is context only); 120-s segments as in the analysis, 60-s steps, averaged over 5 neighbouring segments because single segments were too noisy to read; one colour scale for all mice (1st–99.5th percentile, pooled), so mice can be compared. The spectrogram is of 465 / control, because `core.spectrogram` scales each segment by its own mean and ΔF/F sits near 0.
+- The per-mouse spectrograms use fitted ΔF/F, while the group panels' slow fluctuations use "465 not shared with 405"; the two measures agree on the slow-band drop (fit report, Table 2) except #3.
+- Verification:
+  - `python -m spectra.manuscript_figures`: scan values unchanged (+20–80 min, r −0.96); inspected `group_summary.png` and the #1, #5, FP1 figures
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests`
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### Draft-figure panels D–G with the fit, glucose vs. saline (claude-opus-5-5, effort low)
 
 - PI asked to see panels D–G with the fit and the strongest-correlation window, grouped only glucose (n = 6) vs. saline (n = 3). New script `spectra/draft_figure_fit.py`, output `results/figure_draft_fit/`; the original draft figure is unchanged.
