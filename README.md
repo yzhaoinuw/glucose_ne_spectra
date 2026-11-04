@@ -74,7 +74,6 @@ python -m spectra.run_first5h --fiber oc   # OC side check: outputs/ne_oc_ds20_f
 python -m spectra.window_scan              # when the NE level vs. slow-fluctuation correlation is strongest -> results/window_scan_13h/
 python -m spectra.run_first5h_fit          # 405 fit with the scaling learned at 0.2-1 Hz: NE level and spectra -> results/spectra_first5h_fit/ (--fiber oc: _oc)
 python -m spectra.manuscript_figures       # candidate manuscript figures -> results/manuscript_figures/
-python -m spectra.manuscript_figures --freq 0.01 1   # per-mouse figures only, spectrogram 0.01-1 Hz -> results/manuscript_figures/spectrogram_0.01-1Hz/
 ```
 
 - **Windows** (`spectra/sessions.py`): baseline = 5 min → injection − 3 min; skip 20 min after the injection; then 60-min blocks (+20–80, +80–140, +140–200, +200–end ≈ 35–40 min).
@@ -85,7 +84,15 @@ python -m spectra.manuscript_figures --freq 0.01 1   # per-mouse figures only, s
 
 ### Candidate manuscript figures
 
-In `results/manuscript_figures/`, made by `python -m spectra.manuscript_figures`: `group_summary.png` (glucose vs. saline, NE level with the fit, slow fluctuations, and their correlation in the strongest window) and `mouse_<id>.png` (each mouse's fitted NE signal over its spectrogram, 0.01–0.2 Hz by default). To redraw the per-mouse figures with another frequency range, pass `--freq LO HI` in Hz. LO can't be below ~0.008 Hz (the 2-min segments) and HI can't be above ~10 Hz (half the ~20 Hz sampling rate). `--out-dir` picks another folder; `--help` lists the options. Above ~0.05 Hz the fitted signal still carries some 405 artifact after glucose.
+`results/manuscript_figures/` holds `group_summary.png` (glucose vs. saline) and one `mouse_<id>.png` per mouse (fitted NE signal over its spectrogram). One command draws all 9 mice. Run it on the lab cluster, from the repo root:
+
+```
+module load miniforge3/25.11.0-1 && conda activate glucose_ne_spectra
+python -m spectra.manuscript_figures                 # all figures; spectrograms at 0.01-0.2 Hz
+python -m spectra.manuscript_figures --freq 0.01 1   # the 9 per-mouse figures at 0.01-1 Hz -> results/manuscript_figures/spectrogram_0.01-1Hz/
+```
+
+`--freq` takes any range within 0.008–10 Hz. Above ~0.05 Hz the fitted signal still carries some 405 artifact. `--help` lists the other options.
 
 ## Data
 
