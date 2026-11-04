@@ -1,4 +1,4 @@
-code commit: 28691b0-dirty
-created: 2026-11-04 14:07:22
+code commit: c0e6a60
+created: 2026-11-04 14:07:55
 input: outputs/ne_pfc_ds20_first5h, results/spectra_first5h, results/spectra_first5h_oc
 script: python -m spectra.manuscript_figures
