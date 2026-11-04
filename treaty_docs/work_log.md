@@ -8,6 +8,17 @@ If today's date already has a `## YYYY-MM-DD` header at the top, add a new `###`
 
 Update this log at the end of any substantive work session unless the user explicitly asks not to document it. **The log records decisions about the project, not the content of the work produced** — the diff already says what changed. See [Work Log Discipline](treaty_conventions.md#work-log-discipline) for what counts as substantive and what to skip.
 
+## 2026-11-04
+
+### Step-by-step guide to the fast-band fit (claude-opus-5-5, effort low)
+
+- User prepared for the PI meeting (PI on the fit report: "an amazing report"). Asked for a hands-on explanation of the fit, function by function, then to keep it in `spectra/` rather than `reports/`. Written as `spectra/README.md`, with the user's questions reframed as a general FAQ.
+- Added `spectra/fit_walkthrough.py` so the guide's numbers and figure can be reproduced; it asserts that its own scaling matches `core.fast_band_gain`. Only #5's figure is tracked (`results/spectra_first5h_fit/fit_walkthrough_5.png`). No analysis code or results changed.
+- Verification:
+  - `python -m spectra.fit_walkthrough` (#5: scaling 0.488, fitted +20.1%, matching `fits.csv` and `level.csv`) and `--mouse "#22"` (+4.9%)
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests`
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ## 2026-11-03
 
 ### PI wants no normalization; reports shared with the PI (claude-opus-5-5, effort low)
