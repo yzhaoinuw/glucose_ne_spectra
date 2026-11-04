@@ -12,9 +12,20 @@
 Writes results/manuscript_figures/.
 
     python -m spectra.manuscript_figures
+
+Custom spectrogram range: --freq LO HI (Hz) redraws only the per-mouse figures, into
+results/manuscript_figures/spectrogram_<LO>-<HI>Hz/ (or --out-dir), leaving the default set as is:
+
+    python -m spectra.manuscript_figures --freq 0.01 1
+
+The lowest usable frequency is ~0.008 Hz (the 120-s segments); the highest is the Nyquist frequency,
+~10 Hz. Above ~0.05 Hz the fitted signal still carries some 405 artifact after glucose (see the fit
+report), and the recordings roll off above ~6 Hz.
 """
 
+import argparse
 from datetime import datetime
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -32,7 +43,7 @@ OUT = REPO / "results" / "manuscript_figures"
 GROUPS = {g: [s.mouse for s in SESSIONS if s.group == g] for g in ["glucose", "saline"]}
 LABEL = {"glucose": "Glucose", "saline": "Saline"}
 SLOW = "0.01-0.05 Hz"
-SPEC_RANGE = (0.01, 0.2)  # Hz: the slow band (0.01-0.05) and the next band up
+SPEC_RANGE = (0.01, 0.2)  # Hz, default: the slow band (0.01-0.05) and the next band up
 SLOW_EDGE = 0.05  # Hz
 SPEC_STEP_S = 60.0  # spectrogram step; segments are core.SEG_S (120 s) long
 TRACE_BIN_S = 1.0
@@ -201,17 +212,28 @@ def group_summary(mice, values, win, path):
     plt.close(fig)
 
 
-def mouse_spectrogram(m):
+def log_ticks(lo, hi):
+    """1-2-5 ticks inside [lo, hi]; the two ends if fewer than two fall inside."""
+    ticks = [
+        m * 10.0**e
+        for e in range(int(np.floor(np.log10(lo))), int(np.ceil(np.log10(hi))) + 1)
+        for m in (1, 2, 5)
+    ]
+    ticks = [float(f"{v:.3g}") for v in ticks if lo * (1 - 1e-9) <= v <= hi * (1 + 1e-9)]
+    return ticks if len(ticks) >= 2 else [lo, hi]
+
+
+def mouse_spectrogram(m, f_range=SPEC_RANGE):
     """Spectrogram of the fitted ratio 465 / control (% of each segment's mean, i.e. fitted dF/F
     units), averaged over SPEC_SMOOTH neighbouring segments, kept to the plotted range.
     Returns f, segment-centre times (min from injection), S[f, t]."""
     f, ts, S = core.spectrogram(m.ratio, m.fs, step_s=SPEC_STEP_S)
     S = ndimage.uniform_filter1d(S, SPEC_SMOOTH, axis=1, mode="nearest")
-    keep = (f > SPEC_RANGE[0] / 2) & (f <= SPEC_RANGE[1] * 1.05)
+    keep = (f > f_range[0] / 2) & (f <= f_range[1] * 1.05)
     return f[keep], m.t[0] + ts / 60.0, S[keep]
 
 
-def mouse_figure(m, spec, clim, path):
+def mouse_figure(m, spec, clim, path, f_range=SPEC_RANGE):
     """Fitted NE signal (top) over its spectrogram (bottom), sharing the time axis."""
     f, ts, S = spec
     fig = plt.figure(figsize=(10, 6))
@@ -246,22 +268,24 @@ def mouse_figure(m, spec, clim, path):
         rasterized=True,
     )
     bot.set_yscale("log")
-    bot.set_ylim(*SPEC_RANGE)
-    bot.set_yticks([0.01, 0.02, 0.05, 0.1, 0.2], ["0.01", "0.02", "0.05", "0.1", "0.2"])
+    bot.set_ylim(*f_range)
+    ticks = log_ticks(*f_range)
+    bot.set_yticks(ticks, [f"{v:g}" for v in ticks])
     bot.yaxis.set_minor_formatter(NullFormatter())
     bot.grid(False)
     eff = [patheffects.withStroke(linewidth=2.4, foreground=INK)]
     bot.axvline(0, color=SURFACE, lw=1.1, path_effects=eff)
-    bot.axhline(SLOW_EDGE, color=SURFACE, lw=0.9, ls=(0, (4, 3)), path_effects=eff)
-    bot.text(
-        m.t[0] + 2,
-        SLOW_EDGE * 0.93,
-        "slow band below",
-        color=SURFACE,
-        fontsize=7.5,
-        va="top",
-        path_effects=eff,
-    )
+    if f_range[0] < SLOW_EDGE < f_range[1]:
+        bot.axhline(SLOW_EDGE, color=SURFACE, lw=0.9, ls=(0, (4, 3)), path_effects=eff)
+        bot.text(
+            m.t[0] + 2,
+            SLOW_EDGE * 0.93,
+            "slow band below",
+            color=SURFACE,
+            fontsize=7.5,
+            va="top",
+            path_effects=eff,
+        )
     bot.set(xlabel="Minutes from injection", ylabel="Frequency (Hz)", xlim=(m.t[0], m.t[-1]))
     cbar = fig.colorbar(mesh, cax=fig.add_subplot(gs[1, 1]))
     cbar.set_label("log10 power (%²/Hz)")
@@ -270,16 +294,62 @@ def mouse_figure(m, spec, clim, path):
     plt.close(fig)
 
 
-def main():
-    OUT.mkdir(parents=True, exist_ok=True)
-    mice = [FitMouse(s) for s in SESSIONS]
-
-    specs = {m.s.mouse: mouse_spectrogram(m) for m in mice}
-    pooled = np.concatenate([np.log10(S[(f >= SPEC_RANGE[0])]).ravel() for f, _, S in specs.values()])
-    clim = tuple(np.percentile(pooled, [1, 99.5]))  # one colour scale for every mouse
+def mouse_figures(mice, f_range, out_dir):
+    """One figure per mouse, all on one colour scale (1st-99.5th percentile of the plotted range)."""
+    specs = {m.s.mouse: mouse_spectrogram(m, f_range) for m in mice}
+    pooled = np.concatenate(
+        [np.log10(S[(f >= f_range[0]) & (f <= f_range[1])]).ravel() for f, _, S in specs.values()]
+    )
+    clim = tuple(np.percentile(pooled, [1, 99.5]))
     for m in mice:
-        mouse_figure(m, specs[m.s.mouse], clim, OUT / f"mouse_{m.s.mouse.lstrip('#')}.png")
+        mouse_figure(m, specs[m.s.mouse], clim, out_dir / f"mouse_{m.s.mouse.lstrip('#')}.png", f_range)
 
+
+def range_error(lo, hi, fs):
+    """Why [lo, hi] Hz can't be drawn, or None if it can."""
+    f_min, f_max = 1.0 / core.SEG_S, fs / 2
+    if not 0 < lo < hi:
+        return f"need 0 < LO < HI, got {lo:g} {hi:g}"
+    if lo < f_min:
+        return f"LO must be at least {f_min:.4f} Hz (1 / the {core.SEG_S:g}-s segment), got {lo:g}"
+    if hi > f_max:
+        return f"HI must be at most {f_max:.2f} Hz (the Nyquist frequency), got {hi:g}"
+    return None
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument(
+        "--freq",
+        nargs=2,
+        type=float,
+        metavar=("LO", "HI"),
+        help=f"spectrogram range in Hz; draws only the per-mouse figures (default {SPEC_RANGE[0]:g} "
+        f"{SPEC_RANGE[1]:g}, with all figures)",
+    )
+    ap.add_argument("--out-dir", help="output folder for a custom range (default: a subfolder named by it)")
+    args = ap.parse_args()
+    if args.freq and (err := range_error(*args.freq, fs=np.inf)):  # fail fast; HI is checked once fs is known
+        ap.error(err)
+
+    mice = [FitMouse(s) for s in SESSIONS]
+    if args.freq:
+        f_range = tuple(args.freq)
+        if err := range_error(*f_range, fs=min(m.fs for m in mice)):
+            ap.error(err)
+        out = Path(args.out_dir) if args.out_dir else OUT / f"spectrogram_{f_range[0]:g}-{f_range[1]:g}Hz"
+        out.mkdir(parents=True, exist_ok=True)
+        mouse_figures(mice, f_range, out)
+        (out / "provenance.txt").write_text(
+            f"code commit: {git_state()}\ncreated: {datetime.now():%Y-%m-%d %H:%M:%S}\n"
+            f"input: {IN_DIR.relative_to(REPO)}\n"
+            f"script: python -m spectra.manuscript_figures --freq {f_range[0]:g} {f_range[1]:g}\n"
+        )
+        print(f"Wrote {len(mice)} per-mouse figures, {f_range[0]:g}-{f_range[1]:g} Hz, to {out}")
+        return
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    mouse_figures(mice, SPEC_RANGE, OUT)
     values, corr = scan(mice)
     win = strongest(corr, "level_fit_pct")
     raw = strongest(corr, "level_mean_pct")

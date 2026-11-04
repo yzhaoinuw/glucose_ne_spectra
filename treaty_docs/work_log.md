@@ -10,6 +10,17 @@ Update this log at the end of any substantive work session unless the user expli
 
 ## 2026-11-04
 
+### Custom frequency range for the per-mouse figures (claude-opus-5-5, effort low)
+
+- User asked that collaborators can redraw the per-mouse figures with their own frequency range. `python -m spectra.manuscript_figures --freq LO HI` redraws only the per-mouse figures, into `results/manuscript_figures/spectrogram_<LO>-<HI>Hz/` (or `--out-dir`), so the default set is never overwritten. Without `--freq` the script runs as before.
+- Range checks: LO ≥ 1/120 s ≈ 0.0083 Hz (segment length), HI ≤ Nyquist from the data (~10.17 Hz). The 0.05-Hz slow-band line is drawn only when it falls inside the range. Usage note in `README.md`.
+- The shared colour scale now uses only the plotted frequencies; before, it also counted the 0.208-Hz bin just above the default range, so the default per-mouse PNGs shifted slightly (limits −1.84/1.62 → −1.80/1.63, log10).
+- Verification:
+  - `--freq 0.01 1` and `--freq 0.5 5` into the scratchpad, inspected #5; bad ranges (`0.2 0.1`, `0.001 1`, `0.01 12`) give clear errors
+  - default run: group summary and CSVs unchanged; per-mouse PNGs changed only by the colour-scale fix
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests` (14 passed, 3 new)
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ### Candidate manuscript figures (claude-opus-5-5, effort low)
 
 - User asked for a folder of candidate manuscript figures: `results/manuscript_figures/`, made by `spectra/manuscript_figures.py` (renamed from `draft_figure_fit.py`). The fitted D–G figure moved there as `group_summary.png`, relettered A–D; `results/figure_draft_fit/` removed at the user's request.
