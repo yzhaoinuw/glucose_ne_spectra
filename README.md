@@ -8,6 +8,15 @@ This repo analyzes fiber-photometry recordings of norepinephrine (NE) in the mou
 - **Acquisition:** TDT Synapse, about 1017.3 Hz, with two fibers: **PFC** (`465A`/`405A`) and **OC** (`465C`/`405C`; occipital cortex, from memory of a meeting, to be confirmed with the experimenter).
 - **Protocol:** one IP injection per mouse. Baseline from 09:00, injection at ~10:00, recording to 14:00 (the "morning" session), a 3-h break, then 17:00–22:00 (the "evening" session, ~7–12 h post-injection). The two 13-h sessions run the same protocol without the break. Lights are on 07:00–19:00, so each evening session and the last ~3 h of each 13-h session are in the dark. Source: the experimenter's summary deck (see [`questions_for_experimenters.md`](questions_for_experimenters.md)).
 
+## Contents
+
+- [Repo layout](#repo-layout): what each folder holds
+- [Extracted NE traces](#extracted-ne-traces): the `.mat` outputs of the MATLAB extraction, versions and variables
+- [Spectral analysis (first 5 h)](#spectral-analysis-first-5-h): the Python commands, windows, bands and outputs
+  - [Candidate manuscript figures](#candidate-manuscript-figures): the figures and how to redraw them with your own frequency range
+- [Data](#data): where the recordings live and what each file is
+  - [Which recordings have usable signal](#which-recordings-have-usable-signal)
+
 ## Repo layout
 
 | Path | What it is |
@@ -68,13 +77,15 @@ python -m spectra.manuscript_figures       # candidate manuscript figures -> res
 python -m spectra.manuscript_figures --freq 0.01 1   # per-mouse figures only, spectrogram 0.01-1 Hz -> results/manuscript_figures/spectrogram_0.01-1Hz/
 ```
 
-Candidate manuscript figures (`results/manuscript_figures/`): `group_summary.png` (glucose vs. saline, NE level with the fit, slow fluctuations, and their correlation in the strongest window) and `mouse_<id>.png` (each mouse's fitted NE signal over its spectrogram, 0.01–0.2 Hz by default). To redraw the per-mouse figures with another frequency range, pass `--freq LO HI` in Hz. LO can't be below ~0.008 Hz (the 2-min segments) and HI can't be above ~10 Hz (half the ~20 Hz sampling rate). `--out-dir` picks another folder; `--help` lists the options. Above ~0.05 Hz the fitted signal still carries some 405 artifact after glucose.
-
 - **Windows** (`spectra/sessions.py`): baseline = 5 min → injection − 3 min; skip 20 min after the injection; then 60-min blocks (+20–80, +80–140, +140–200, +200–end ≈ 35–40 min).
 - **Spectra:** Welch, 2-min Hann segments, 50% overlap, linear detrend per segment (~0.008 Hz resolution). Each channel is expressed as % of its own window mean.
 - **Measures:** the 465 and 405 spectra; the 465–405 coherence; **the part of 465 not shared with 405**, P465 × (1 − coherence): the 465 power left after removing what moves in step with 405 at each frequency (no 405 trace is subtracted); and, as a cross-check, ΔF/F with a robust fit on the baseline only.
 - **Bands:** 0.01–0.05, 0.05–0.2, 0.2–1 Hz. Band power is reported as log2 change vs. baseline (coherence as a difference).
 - **Outputs** (in `results/spectra_first5h/`, or `results/spectra_first5h_oc/` for OC, whose figures are labelled in the corner; committed; `provenance.txt` names the code commit): `band_power.csv`, `spectra_logbinned.csv`, `baseline_fits.csv`, `raw_traces.png` (raw 465 and 405 of all mice with the fitted 405 scaling), `band_change.png`, `spectral_change.png`, `coherence.png`, `per_mouse/*.png`; full band to ~10 Hz: `full_band_baseline.png` / `.csv` (baseline spectra and coherence, all mice) and `full_band/*.png` (spectrograms of 465 and 405 and sliding coherence per recording).
+
+### Candidate manuscript figures
+
+In `results/manuscript_figures/`, made by `python -m spectra.manuscript_figures`: `group_summary.png` (glucose vs. saline, NE level with the fit, slow fluctuations, and their correlation in the strongest window) and `mouse_<id>.png` (each mouse's fitted NE signal over its spectrogram, 0.01–0.2 Hz by default). To redraw the per-mouse figures with another frequency range, pass `--freq LO HI` in Hz. LO can't be below ~0.008 Hz (the 2-min segments) and HI can't be above ~10 Hz (half the ~20 Hz sampling rate). `--out-dir` picks another folder; `--help` lists the options. Above ~0.05 Hz the fitted signal still carries some 405 artifact after glucose.
 
 ## Data
 
