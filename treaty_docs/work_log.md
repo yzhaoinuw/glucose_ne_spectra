@@ -8,6 +8,17 @@ If today's date already has a `## YYYY-MM-DD` header at the top, add a new `###`
 
 Update this log at the end of any substantive work session unless the user explicitly asks not to document it. **The log records decisions about the project, not the content of the work produced** — the diff already says what changed. See [Work Log Discipline](treaty_conventions.md#work-log-discipline) for what counts as substantive and what to skip.
 
+## 2026-11-05
+
+### Baseline-matched glucose/saline pairs (claude-opus-5-5, effort low)
+
+- PI on the per-mouse figures: "Spectrograms are looking great. Find a glucose with baseline activity that better matches the saline." Read as: the glucose example (#5) has a quieter pre-injection hour than the saline example (#1), so its post-injection drop could be read as a quieter mouse. Baseline slow-band power (raw 465, 0.01-0.05 Hz) put FP1 (0.44) and FP2 (0.56) near #1 (0.37) and #2 (0.55); #3/#4/#5/#22 are 0.15-0.22. The user confirmed the pairs by eye.
+- New `results/manuscript_figures/baseline_matched_pairs.png` (2 x 2): FP1 | #1, FP2 | #2, same panels and pooled colour scale as `mouse_<id>.png`. NE traces share a y-axis within a row, and all four panels share one time range (FP1 starts ~6 min earlier). The pairs are set in `BASELINE_PAIRS` and the figure is drawn by default and with `--freq`.
+- Verification:
+  - `python -m spectra.manuscript_figures`: all existing PNGs/CSVs byte-identical (md5); inspected the new figure
+  - `black -l 110 --check spectra tests`; `python -m pytest -q tests` (14 passed)
+  - `~/.local/venvs/treaty/bin/treaty validate .`
+
 ## 2026-11-04
 
 ### Custom frequency range for the per-mouse figures (claude-opus-5-5, effort low)

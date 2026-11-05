@@ -8,6 +8,8 @@
     measure, which the fit report keeps for spectra.
   * mouse_<id>.png, one per mouse (PFC): the fitted NE signal (top) over its spectrogram (bottom),
     sharing the time axis.
+  * baseline_matched_pairs.png: the same panels for glucose/saline pairs with similar baselines
+    (FP1 next to #1, FP2 next to #2), on the per-mouse colour scale.
 
 Writes results/manuscript_figures/.
 
@@ -48,6 +50,9 @@ SLOW_EDGE = 0.05  # Hz
 SPEC_STEP_S = 60.0  # spectrogram step; segments are core.SEG_S (120 s) long
 TRACE_BIN_S = 1.0
 SPEC_SMOOTH = 5  # spectrogram columns averaged (5 min), as Welch averages segments
+# (glucose, saline) pairs whose pre-injection activity looks alike, for the PI's request to show a
+# glucose mouse whose baseline matches the saline one (checked by eye and baseline slow-band power).
+BASELINE_PAIRS = [("FP1", "#1"), ("FP2", "#2")]
 NUDGE = {**LABEL_NUDGE, "#5": (-16, 4), "FP1": (5, -9)}  # panel D, keeps #5 clear of FP1
 
 
@@ -233,14 +238,9 @@ def mouse_spectrogram(m, f_range=SPEC_RANGE):
     return f[keep], m.t[0] + ts / 60.0, S[keep]
 
 
-def mouse_figure(m, spec, clim, path, f_range=SPEC_RANGE):
-    """Fitted NE signal (top) over its spectrogram (bottom), sharing the time axis."""
+def draw_mouse(fig, top, bot, m, spec, clim, f_range, title):
+    """Fitted NE signal on `top` over its spectrogram on `bot` (shared time axis). Returns the mesh."""
     f, ts, S = spec
-    fig = plt.figure(figsize=(10, 6))
-    gs = fig.add_gridspec(2, 2, width_ratios=[1, 0.018], height_ratios=[1, 1.15], hspace=0.08, wspace=0.03)
-    top = fig.add_subplot(gs[0, 0])
-    bot = fig.add_subplot(gs[1, 0], sharex=top)
-
     n = int(round(TRACE_BIN_S * m.fs))
     k = m.ratio.size // n
     tb = m.t[: k * n].reshape(k, n).mean(1)
@@ -249,10 +249,7 @@ def mouse_figure(m, spec, clim, path, f_range=SPEC_RANGE):
     mark_injection(top)
     top.axhline(0, color=MUTED, lw=0.8)
     top.set_ylabel(f"Fitted ΔF/F (%, {TRACE_BIN_S:g}-s means)")
-    top.set_title(
-        f"{m.s.mouse}, {m.s.group}, PFC: fitted NE signal and its spectrogram (405 scaling {m.gain:.2f})",
-        loc="left",
-    )
+    top.set_title(title, loc="left")
     top.tick_params(labelbottom=False)
 
     df = f[1] - f[0]
@@ -287,6 +284,17 @@ def mouse_figure(m, spec, clim, path, f_range=SPEC_RANGE):
             path_effects=eff,
         )
     bot.set(xlabel="Minutes from injection", ylabel="Frequency (Hz)", xlim=(m.t[0], m.t[-1]))
+    return mesh
+
+
+def mouse_figure(m, spec, clim, path, f_range=SPEC_RANGE):
+    """Fitted NE signal (top) over its spectrogram (bottom), sharing the time axis."""
+    fig = plt.figure(figsize=(10, 6))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1, 0.018], height_ratios=[1, 1.15], hspace=0.08, wspace=0.03)
+    top = fig.add_subplot(gs[0, 0])
+    bot = fig.add_subplot(gs[1, 0], sharex=top)
+    title = f"{m.s.mouse}, {m.s.group}, PFC: fitted NE signal and its spectrogram (405 scaling {m.gain:.2f})"
+    mesh = draw_mouse(fig, top, bot, m, spec, clim, f_range, title)
     cbar = fig.colorbar(mesh, cax=fig.add_subplot(gs[1, 1]))
     cbar.set_label("log10 power (%²/Hz)")
     fig.subplots_adjust(left=0.08, right=0.92, top=0.93, bottom=0.09)
@@ -294,8 +302,46 @@ def mouse_figure(m, spec, clim, path, f_range=SPEC_RANGE):
     plt.close(fig)
 
 
+def pairs_figure(mice, specs, clim, path, f_range=SPEC_RANGE):
+    """Glucose vs. saline mice with similar baselines, one pair per row (glucose left, saline right).
+    Same drawing and colour scale as the per-mouse figures; NE traces share a y-axis within a row; all
+    panels share one time range."""
+    by_id = {m.s.mouse: m for m in mice}
+    fig = plt.figure(figsize=(17, 11.5))
+    outer = fig.add_gridspec(len(BASELINE_PAIRS), 3, width_ratios=[1, 1, 0.018], hspace=0.28, wspace=0.16)
+    shown = [by_id[mouse] for pair in BASELINE_PAIRS for mouse in pair]
+    xlim = (min(m.t[0] for m in shown), max(m.t[-1] for m in shown))  # one time axis for all
+    mesh = None
+    for r, pair in enumerate(BASELINE_PAIRS):
+        tops = []
+        for c, mouse in enumerate(pair):
+            m = by_id[mouse]
+            cell = outer[r, c].subgridspec(2, 1, height_ratios=[1, 1.15], hspace=0.08)
+            top = fig.add_subplot(cell[0], sharey=tops[0] if tops else None)
+            bot = fig.add_subplot(cell[1], sharex=top)
+            title = f"{mouse}, {m.s.group}, PFC (405 scaling {m.gain:.2f})"
+            mesh = draw_mouse(fig, top, bot, m, specs[mouse], clim, f_range, title)
+            bot.set_xlim(*xlim)
+            if c:
+                top.set_ylabel("")
+                bot.set_ylabel("")
+            tops.append(top)
+        cax = fig.add_subplot(outer[r, 2].subgridspec(2, 1, height_ratios=[1, 1.15], hspace=0.08)[1])
+        fig.colorbar(mesh, cax=cax).set_label("log10 power (%²/Hz)")
+    fig.suptitle(
+        "Glucose and saline mice with similar baselines: fitted NE signal and its spectrogram",
+        x=0.05,
+        ha="left",
+        fontsize=13,
+    )
+    fig.subplots_adjust(left=0.05, right=0.95, top=0.93, bottom=0.05)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+
+
 def mouse_figures(mice, f_range, out_dir):
-    """One figure per mouse, all on one colour scale (1st-99.5th percentile of the plotted range)."""
+    """One figure per mouse, plus the baseline-matched pairs, all on one colour scale
+    (1st-99.5th percentile of the plotted range, pooled over all mice)."""
     specs = {m.s.mouse: mouse_spectrogram(m, f_range) for m in mice}
     pooled = np.concatenate(
         [np.log10(S[(f >= f_range[0]) & (f <= f_range[1])]).ravel() for f, _, S in specs.values()]
@@ -303,6 +349,7 @@ def mouse_figures(mice, f_range, out_dir):
     clim = tuple(np.percentile(pooled, [1, 99.5]))
     for m in mice:
         mouse_figure(m, specs[m.s.mouse], clim, out_dir / f"mouse_{m.s.mouse.lstrip('#')}.png", f_range)
+    pairs_figure(mice, specs, clim, out_dir / "baseline_matched_pairs.png", f_range)
 
 
 def range_error(lo, hi, fs):
